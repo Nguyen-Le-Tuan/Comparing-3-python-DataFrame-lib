@@ -112,7 +112,7 @@ As my personal laptop is different from the computational system set up in the p
 | OS / kernel | Ubuntu 26.04.1 LTS, kernel 7.0.0-38-generic |
 | perf | 7.0.14 |
 | Python | 3.12.14 (via uv) |
-| Library versions | Locked in `requirements.lock`; summary: pandas TODO, polars TODO, dask TODO, pyarrow TODO, numpy TODO |
+| Library versions | Locked in `requirements.lock`; summary: Pandas 3.0.6, Polars 2.0.0, Dask 2026.8.0, pyarrow 26.0.0, numpy 2.5.4, scikit-learn 1.9.1. |
 | RAPL domains available | package, core, uncore, psys; **no DRAM** |
 
 ## 11. Known differences from the paper and threats to validity
