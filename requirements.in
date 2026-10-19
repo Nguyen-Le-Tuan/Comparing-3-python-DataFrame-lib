@@ -1,0 +1,7 @@
+pandas
+polars
+dask[dataframe]
+pyarrow
+numpy
+scikit-learn
+psutil

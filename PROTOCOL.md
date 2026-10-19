@@ -111,7 +111,7 @@ As my personal laptop is different from the computational system set up in the p
 | GPU | NVIDIA GeForce RTX 3050 Laptop, 4 GB (driver TODO) |
 | OS / kernel | Ubuntu 26.04.1 LTS, kernel 7.0.0-38-generic |
 | perf | 7.0.14 |
-| Python | 3.12 (via uv), exact version TODO |
+| Python | 3.12.14 (via uv) |
 | Library versions | Locked in `requirements.lock`; summary: pandas TODO, polars TODO, dask TODO, pyarrow TODO, numpy TODO |
 | RAPL domains available | package, core, uncore, psys; **no DRAM** |
 
