@@ -78,7 +78,10 @@ Thumbs.db
 .data/
 data/
 results/
-
+data/raw/
+data/processed/
+results/raw/
+results/figures/
 # Local secrets and configuration
 *.local
 secrets.toml

@@ -35,10 +35,9 @@ I don't test ResNet, Mask R-CNN and the dataset COCO because these it will absol
 
 | Dataset | Source | License | Rows × columns | SHA-256 of downloaded file |
 | --- | --- | --- | --- | --- |
-| Insurance | Medical Cost Personal Datasets ([Kaggle](https://www.kaggle.com/datasets/mirichoi0218/insurance)) | [Database: Open Database, Contents: Database Contents](https://opendatacommons.org/licenses/dbcl/1-0/) | TODO <!-- paper ghi 1.000 dòng; đếm lại, lệch thì ghi vào mục 11 --> | TODO |
-| MovieLens-1M | [GroupLens](https://grouplens.org/datasets/movielens/1m/) (paper cited) |Custom Non-Commercial / Academic Use| TODO | TODO |
+| Insurance | Medical Cost Personal Datasets ([Kaggle](https://www.kaggle.com/datasets/mirichoi0218/insurance)) | [Database: Open Database, Contents: Database Contents](https://opendatacommons.org/licenses/dbcl/1-0/) | 1339 rows x 7 columns <!-- paper ghi 1.000 dòng; đếm lại, lệch thì ghi vào mục 11 --> | 388eff679557d08ac19f463d025de5e0b4adc482537c8456d19934d78621fd47|
+| MovieLens-1M | [GroupLens](https://grouplens.org/datasets/movielens/1m/) (paper cited) | Custom Non-Commercial / Academic Use | `users.dat`: 6,040 rows × 5 columns; `movies.dat`: 3,883 rows × 3 columns; `ratings.dat`: 1,000,209 rows × 4 columns (1,010,132 **total records**) | a6898adb50b9ca05aa231689da44c217cb524e7ebd39d264c56e2832f2c54e20 |
 
-- Data is downloaded by `TODO: script name`; raw data is **not** committed.
 
 ## 4. Pipeline definition
 
@@ -117,8 +116,12 @@ As my personal laptop is different from the computational system set up in the p
 
 ## 11. Known differences from the paper and threats to validity
 
-- Laptop instead of workstation; hybrid performance/efficiency cores may add scheduling noise.
+- Laptop instead of workstation.
 - Current library versions instead of the 2022 versions.
+- My *Insurance* dataset has 1338 rows but on Section *Experimental Setup* reports 1000 records.
+
+
+
 - RAPL measures the whole CPU package, not only our process; other processes add noise (mitigated by the idle baseline and closing apps).
 - No DRAM energy domain, so CPU energy is not the paper's energy-cores + energy-ram sum.
 - Possible thermal throttling on a laptop: TODO (how you check or limit it).
