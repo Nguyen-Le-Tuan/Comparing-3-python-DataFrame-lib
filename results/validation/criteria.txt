@@ -1,0 +1,1 @@
+Sleep error <= 15%; CPU 2N/N net-energy ratio = 1.8 to 2.2  

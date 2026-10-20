@@ -74,14 +74,12 @@ dmypy.json
 .DS_Store
 Thumbs.db
 
-# Local data and experiment outputs
+# Downloaded datasets: not redistributed (see PROTOCOL.md, Section 3)
 .data/
 data/
-results/
-data/raw/
-data/processed/
-results/raw/
-results/figures/
+
+# results/ is committed on purpose: raw measurements are part of the evidence
+
 # Local secrets and configuration
 *.local
 secrets.toml

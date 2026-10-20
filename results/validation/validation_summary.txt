@@ -1,0 +1,3 @@
+Idle power: 4.776 W (median of the baseline runs)
+Test 1, sleep 10 s: error 0.377% -> PASS (limit: 15%)
+Test 2, CPU loop 2N/N: net-energy ratio 1.854 -> PASS (range: 1.8 to 2.2)

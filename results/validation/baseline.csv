@@ -1,0 +1,6 @@
+file,energy_J,elapsed_s,power_W
+results/validation/baseline_01.csv,144.48,30.017241,4.813234
+results/validation/baseline_02.csv,142.69,30.005348,4.755486
+results/validation/baseline_03.csv,143.32,30.005431,4.776469
+results/validation/baseline_04.csv,144.44,30.005335,4.813811
+results/validation/baseline_05.csv,143.17,30.004915,4.771552

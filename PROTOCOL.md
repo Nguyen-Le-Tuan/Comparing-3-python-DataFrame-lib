@@ -27,32 +27,53 @@ Gợi ý C2: ML-1M + CF: Polars < Pandas < Dask (1.437 / 3.328 / 3.748 J). -->
 - **My hypothesis before running:** Because the Insurance dataset is in tabular format and only has 1k rows while the MovieLens is 1M samples, I assume that Pandas will perform the best in the Insurance Dataset while the Polars will be the best in the ML-1M. I have these assumptions because I already knew that Pandas is still advantageous on small data while Polars (which written in Rust) will outperform Pandas on larger data (from several GB to hundred GB).  <!-- Bạn đoán kết quả trên laptop sẽ thế nào, và vì sao. Viết trước khi chạy, không sửa sau. -->
 
 ## 2. Scope
-In this reproduction repository, I check two results from Table 1: The energy consumption of each Python DataFrame library when using model: Random Forest, Support Vector Regression (SVR), TabNet, XGBoost, Collaborative Filtering (CF) and Neural Collabroative Filtering (NCF) on two datasets Insurance and MovieLens-1M. I measure the energy consumption and the time it taken for both the **data stage alone** and **the full run (including the training stage)**.
-I don't test ResNet, Mask R-CNN and the dataset COCO because these it will absolutely exceed my laptop GPU 4GB VRAM and 16GB RAM.   
 
+In this replication, I check two results from Table 1 of the paper on two datasets, Insurance and MovieLens-1M. For each library, I measure the energy consumption and the time it takes for both the **data stage alone** and **the full run (data stage + model training)**.
+
+- **Required (C1):** Insurance with Random Forest.
+- **Secondary (C2):** MovieLens-1M with Collaborative Filtering (CF). If it is not finished by Oct 21, I mark it as "not tested".
+- **Deciding later:** Support Vector Regression (SVR) and XGBoost on Insurance; a small Neural Collaborative Filtering (NCF) model on the GPU.
+- **Not tested:** TabNet; ResNet and Mask R-CNN on COCO, because training them needs far more GPU memory and time than my laptop (4 GB VRAM, about 14 GB of usable RAM) and my schedule allow; DRAM energy, because my CPU does not expose a DRAM energy counter.
 
 ## 3. Data
 
 | Dataset | Source | License | Rows × columns | SHA-256 of downloaded file |
 | --- | --- | --- | --- | --- |
-| Insurance | Medical Cost Personal Datasets ([Kaggle](https://www.kaggle.com/datasets/mirichoi0218/insurance)) | [Database: Open Database, Contents: Database Contents](https://opendatacommons.org/licenses/dbcl/1-0/) | 1339 rows x 7 columns <!-- paper ghi 1.000 dòng; đếm lại, lệch thì ghi vào mục 11 --> | 388eff679557d08ac19f463d025de5e0b4adc482537c8456d19934d78621fd47|
-| MovieLens-1M | [GroupLens](https://grouplens.org/datasets/movielens/1m/) (paper cited) | Custom Non-Commercial / Academic Use | `users.dat`: 6,040 rows × 5 columns; `movies.dat`: 3,883 rows × 3 columns; `ratings.dat`: 1,000,209 rows × 4 columns (1,010,132 **total records**) | a6898adb50b9ca05aa231689da44c217cb524e7ebd39d264c56e2832f2c54e20 |
+| Insurance | Medical Cost Personal Datasets ([Kaggle](https://www.kaggle.com/datasets/mirichoi0218/insurance)) | [Database: Open Database, Contents: Database Contents](https://opendatacommons.org/licenses/dbcl/1-0/) | 1,338 rows x 7 columns <!-- paper ghi 1.000 dòng; đếm lại, lệch thì ghi vào mục 11 --> | 388eff679557d08ac19f463d025de5e0b4adc482537c8456d19934d78621fd47|
+| MovieLens-1M | [GroupLens](https://grouplens.org/datasets/movielens/1m/) (paper cited) | Custom Non-Commercial / Academic Use | `users.dat`: 6,040 rows × 5 columns; `movies.dat`: 3,883 rows × 3 columns; `ratings.dat`: 1,000,209 rows × 4 columns  | a6898adb50b9ca05aa231689da44c217cb524e7ebd39d264c56e2832f2c54e20 |
 
 
 ## 4. Pipeline definition
 
-<!-- Viết pseudocode bằng lời của mình: mỗi bước một dòng, vào gì / ra gì. Ba thư viện phải làm đúng các bước này. -->
-Based on the section: "*Algorithm 1: Unified Data Processing Pipeline*", section 3.1.
-1. Load insurance.csv into a dataframe (expect from the dataset description: 1,338 rows × 7 columns).
-2. Take the raw dataframe, impute missing values, and then producing a complete dataframe
-3. Take the complete dataframe, encode categorical column, produce a numeric-feature dataframe.
-4. Take the numeric-feature dataframe, normalize the numerical features, and then producing a scaled dataframe.
-5. Take the scaled dataframe, convert to NumPy arrays / dataset object => slices the processed data into mini-batches suitable for training.
+Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the paper). All three libraries must do exactly these steps.
 
-- **The numerical NumPy shape output:**: All three libraries must produce the same checksum before any comparison.
-- **Library-specific choices:** Polars TODO (eager `read_csv` or lazy `scan_csv` + `.collect()`); Dask TODO (number of partitions, scheduler). <!-- chọn một lần, ghi lý do, giữ cố định -->
-- **Randomness:** TODO (batch shuffling on/off; seed if on).
-- **Two stages per configuration:** `--stage data` runs only the dataframe part; `--stage full` runs the dataframe part and then trains the downstream model. Training energy is estimated as *full* - *data*.
+**Insurance (C1)**
+
+1. Load `insurance.csv` into a dataframe (expect 1,338 rows × 7 columns: `age`, `sex`, `bmi`, `children`, `smoker`, `region`, `charges`).
+2. Take the raw dataframe and impute missing values (numeric columns: the column mean; text columns: the most frequent value), producing a complete dataframe. Insurance has no missing cells, so this step changes nothing, but it still runs so that every library does the same work as in the paper. I use the mean instead of the median because Dask only computes an approximate median.
+3. Take the complete dataframe and encode the categorical columns (`sex`: male = 1, female = 0; `smoker`: yes = 1, no = 0; `region`: one-hot, one column per region in alphabetical order), producing a numeric dataframe.
+4. Take the numeric dataframe and standardize `age`, `bmi` and `children` (subtract the mean, divide by the sample standard deviation with ddof = 1), producing a scaled dataframe. The target `charges` is not scaled.
+5. Take the scaled dataframe and convert it to NumPy arrays: `X` with 9 feature columns in a fixed order (`age`, `bmi`, `children`, `sex`, `smoker`, `region_northeast`, `region_northwest`, `region_southeast`, `region_southwest`) and `y` = `charges`. Then slice `X` and `y` into mini-batches of 64 rows in file order (21 batches; the last one has 58 rows).
+
+**MovieLens-1M (C2)**, to be written in full before the first C2 run (Step 5):
+
+1. Load `ratings.dat`, `users.dat` and `movies.dat` (separator `::`).
+2. Join ratings with users and movies.
+3. Build the user × movie rating matrix (expect 6,040 × 3,706; a missing rating is 0).
+
+**Rules for both datasets**
+
+- **Output checksum:** at the end, the program prints the shapes of the output arrays and the sum of all their elements. The sum is computed over the mini-batches, so every batch is actually used. All three libraries must give the same shapes, the same feature-column order and sums that differ by less than 1e-6 before any energy comparison.
+- **Library-specific choices** (fixed for all runs):
+  - Pandas: eager, `pd.read_csv` with default settings.
+  - Polars: lazy, `pl.scan_csv` and expressions, with a single `.collect()` before the NumPy conversion, because the paper credits Polars' lazy expressions for its efficiency.
+  - Dask: `dd.read_csv` with the default block size and the default threaded scheduler; the number of partitions is printed at runtime. Categorical columns are made "known" with `.categorize()` before one-hot encoding, because Dask needs every category in advance.
+- **Randomness:** mini-batches are taken in file order without shuffling, so the data stage has no randomness. The only random parts are the train/test split and the model, both with seed 42.
+- **Two stages per configuration:** `--stage data` runs only the dataframe part; `--stage full` runs the dataframe part and then trains the downstream model. Training energy is estimated as *full* − *data*.
+- **Downstream models** (the paper does not report its hyperparameters, so these are my choices):
+  - Insurance: scikit-learn `RandomForestRegressor` with default hyperparameters (100 trees, one CPU core) and `random_state=42`, trained on 80% of the rows (`train_test_split` with `test_size=0.2`, `random_state=42`: 1,070 training rows, 268 test rows). Random Forest trains on the whole training array; the mini-batch step is kept only to follow the paper. The test R² is printed as a sanity check.
+  - MovieLens-1M: CF as a factorization of the user × movie matrix with `TruncatedSVD(n_components=50, random_state=42)`.
+  - NCF (optional, GPU): defined later, only if Step 7 is done.
 
 ## 5. Comparisons
 
@@ -81,25 +102,49 @@ sudo perf stat -e power/energy-pkg/,power/energy-cores/ -x, -o results/raw/<conf
 
 ## 7. Procedure
 
-1. **Before measuring:** AC power connected; browser and IDE closed; CPU governor fixed to TODO and recorded; network TODO.
-2. **Idle baseline:** `sudo perf stat -e power/energy-pkg/ -- sleep 30`, repeated 5 times → idle power (W).
-3. **Validation tests (must pass before any real measurement):**
-   - `sleep 10` energy ≈ idle power × 10 s (tolerance: TODO %).
-   - A CPU loop with twice the iterations uses ≈ twice the net energy (tolerance: TODO %).
-4. **Runs per configuration:** 1 warm-up (discarded) + 10 measured runs; a fresh process per run; 40 s idle between runs; configuration order randomized with seed TODO.
-5. **Raw data:** every run, including failed ones, is saved under `results/raw/`. No run is discarded after the fact.
+1. **Before measuring:** AC power connected for the whole session; browser and IDE closed; network: TODO. CPU settings stay at the laptop defaults and are the same for every run: governor `powersave` on all 16 CPUs (`intel_pstate`, active mode), EPP `balance_performance`, power profile `balanced`, Turbo Boost on. They are recorded before and after each session.
+2. **Idle baseline:** `sudo perf stat -e power/energy-pkg/ -- sleep 30`, 5 runs with a 40 s pause after each; idle power = median of the five average powers.
+3. **Measurement validation tests** (pass limits written in `results/validation/criteria.txt` before the first measurement; both must pass before any pipeline is measured):
+   - Test 1: the energy of `sleep 10` is within 15% of idle power × elapsed time.
+   - Test 2: a single-threaded Python loop, `sum(i*i for i in range(N))` with N = 400,000,000 (about 15 s), is run with N and 2N iterations; the 2N/N ratio of net energy must be between 1.8 and 2.2.
+   - Scripts: `scripts/validate_measurement.sh` (measures) and `scripts/analyze_validation.sh` (computes).
+   - Result on Oct 19, 2026: idle power 4.776 W (five runs, 4.755 to 4.814 W); Test 1 error 0.38% (pass); Test 2 ratio 1.854 (pass). Files and notes: `results/validation/`.
+   - The tests are repeated if the kernel, BIOS or power settings change.
+4. **Data-pipeline smoke test** (before the first energy run of the pipelines):
+   - Run the same Insurance input through Pandas, Polars, and Dask.
+   - Check the expected input shape, column names, and missing-value counts.
+   - After the defined preprocessing, check that all libraries produce the same output shape, feature-column order, and checksum.
+   - Save the test output under `results/smoke_test/`.
+5. **Runs per configuration:** 1 warm-up (discarded) + 10 measured runs; a fresh process per run; 40 s idle between runs; the CPU package temperature is recorded before each run; configuration order randomized with seed TODO.
+6. **Raw data:** every run, including failed ones, is saved under `results/raw/`. No run is discarded after the fact.
 
-## 8. Analysis system
-For each library, dataset and model, I will report the median energy and runtime across the measured runs. I use the median because one run may be unusually slow due to different background activities.
-As my personal laptop is different from the computational system set up in the paper, I will try to re-rank Pandas, Polars and Dask base on their efficiency after the experiement rather than trying to replicate the similar result reported in the paper.
+## 8. Analysis plan
+
+For each configuration (library × dataset × stage), I report the median and the interquartile range (IQR) of net energy and runtime over the 10 measured runs. I use the median because one run may be unusually slow when a background process wakes up. I also report the trimmed mean, because the paper uses it.
+
+- **Decision rule:** two libraries "differ" only if the 95% bootstrap confidence intervals of their median net energy do not overlap (10,000 resamples, seed 42); otherwise I report "no clear difference". The same rule is used for runtime.
+- **Comparison with the paper:** my laptop and library versions differ from the paper's, so I compare the **direction** of the results (which library uses more energy, and by roughly what percentage), not the absolute joules. Table 1 reports end-to-end numbers, so this comparison uses `--stage full`.
+- **Ranking on my laptop:** I also rank Pandas, Polars and Dask by median net energy and report my ranking next to the paper's.
+- **Decomposition:** the share of the data stage in the end-to-end energy, *data* / *full*.
 
 ## 9. Outcome criteria
 
-| Outcome | Condition |
-| --- | --- |
-| Reproduced | The best choice for small and tabular dataset is Pandas, while best use for the larger dataset is Polars while Dask will show the biggest different when in comparison to two libraries above when experimenting on *Insurance* and *MovieLens-1M* datasets. |
-| Partially reproduced | Cannot show that Dask is not totally suitable for small to medium datasets.|
-| Not reproduced | The ranking is totally different from the paper or the results cannot be easily forseen before doing the experiment.|
+Written before any measurement. Each claim is judged on `--stage full` with the decision rule in Section 8.
+
+| Outcome | C1: Insurance, Random Forest | C2: MovieLens-1M, CF |
+| --- | --- | --- |
+| Reproduced | No clear difference between Pandas and Polars in net energy, **and** Dask has the highest net energy and the longest runtime, clearly different from both | Polars < Pandas < Dask in net energy, with each difference clear |
+| Partially reproduced | Only one of the two parts holds | Polars is the lowest, but the order of Pandas and Dask is unclear or reversed |
+| Not reproduced | Neither part holds | Polars is not the lowest |
+| Not tested | — | Not run by Oct 21 |
+
+**Stop and fix first** (no conclusion is drawn until the problem is fixed):
+
+- an energy-measurement validation test fails (the `sleep` test or the 2× CPU-loop test);
+- the three libraries give different checksums or a different feature-column order (smoke test in Section 7);
+- the coefficient of variation (standard deviation / mean) of net energy within one configuration is above 10%.
+
+My hypothesis in Section 1 is checked separately in the report; it does not change these outcomes.
 
 ## 10. Environment
 
@@ -127,11 +172,10 @@ As my personal laptop is different from the computational system set up in the p
 - Possible thermal throttling on a laptop: TODO (how you check or limit it).
 - Inconsistencies in the paper: it states both "five runs, trimmed mean and 95% CI" and "mean of four measured runs"; the Insurance row count differs from the cited dataset (TODO: confirm).
 - The paper does not report hyperparameters, the train/test split or the CF algorithm; the choices in Section 4 are ours.
-- TODO: anything else you notice.
 
 ## 12. Use of AI assistance
 
-Pipeline code was written with AI assistance, one step at a time, then reviewed, run and annotated by the author; the Pandas version was retyped by the author from pseudocode. The protocol, measurement procedure, validation tests and analysis are the author's own. TODO: adjust to what actually happened.
+Pipeline code is written with AI assistance, one step at a time, then reviewed, run and annotated by the author. Sections 2, 4, 7, 8 and 9 of this protocol and the scripts in scripts/ were drafted with AI assistance from the author’s decisions and terminal commands, then reviewed by the author. The claims, hypothesis, data choices and all measurements are the author’s own.
 
 ## 13. Deviations log
 

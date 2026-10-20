@@ -1,0 +1,1 @@
+measured=47.970 J; expected=47.790 J; error=0.377%
