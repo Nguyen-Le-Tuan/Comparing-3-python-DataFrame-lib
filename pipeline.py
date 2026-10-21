@@ -1,5 +1,6 @@
 import pandas as pd
-
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
 df = pd.read_csv("data/raw/insurance.csv")
 
 print("Shape: ", df.shape)
@@ -92,3 +93,16 @@ print("First batch:", x_batches[0].shape, y_batches[0].shape)
 print("Last batch:", x_batches[-1].shape, y_batches[-1].shape)
 print(f"X sum: {x_sum:.10f}")
 print(f"y sum: {y_sum:.10f}")
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+
+print("\nRandom Forest")
+print("Train:", X_train.shape, y_train.shape)
+print("Test:", X_test.shape, y_test.shape)
+print("Test R²:", model.score(X_test, y_test))
