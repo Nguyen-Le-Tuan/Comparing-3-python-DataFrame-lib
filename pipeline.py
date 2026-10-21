@@ -1,6 +1,13 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--lib", choices=["pandas"], required=True)
+parser.add_argument("--data", choices=["insurance"], required=True)
+parser.add_argument("--stage", choices=["data", "full"], required=True)
+args = parser.parse_args()
+
+
 df = pd.read_csv("data/raw/insurance.csv")
 
 print("Shape: ", df.shape)
@@ -95,14 +102,18 @@ print(f"X sum: {x_sum:.10f}")
 print(f"y sum: {y_sum:.10f}")
 
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+if args.stage == "full":
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestRegressor
 
-model = RandomForestRegressor(random_state=42)
-model.fit(X_train, y_train)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
-print("\nRandom Forest")
-print("Train:", X_train.shape, y_train.shape)
-print("Test:", X_test.shape, y_test.shape)
-print("Test R²:", model.score(X_test, y_test))
+    model = RandomForestRegressor(random_state=42)
+    model.fit(X_train, y_train)
+
+    print("\nRandom Forest")
+    print("Train:", X_train.shape, y_train.shape)
+    print("Test:", X_test.shape, y_test.shape)
+    print("Test R²:", model.score(X_test, y_test))
