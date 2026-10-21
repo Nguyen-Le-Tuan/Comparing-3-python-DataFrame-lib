@@ -17,7 +17,7 @@
 
 ## 1. My claim before testing
 
-<!-- Hai claim, viết lại bằng lời của mình. C1 bắt buộc (trước email 29/10). C2 là phần thêm: chưa xong trước 21/10 thì ghi "not tested".
+<!-- Hai claim, viết lại bằng lời của mình. C1 bắt buộc (trước email 29/10). C2 làm cùng C1 trong tuần 19–25/10 (quyết định 19/10).
 Gợi ý C1: Insurance + Random Forest: Pandas ≈ Polars về CPU energy (146,8 J so với 146,8 J), Dask cao hơn khoảng 14% (167,4 J) và chạy lâu nhất. Với SVR và XGBoost, Dask cao hơn khoảng 20–22%; ngoại lệ là TabNet.
 Gợi ý C2: ML-1M + CF: Polars < Pandas < Dask (1.437 / 3.328 / 3.748 J). -->
 
@@ -31,7 +31,7 @@ Gợi ý C2: ML-1M + CF: Polars < Pandas < Dask (1.437 / 3.328 / 3.748 J). -->
 In this replication, I check two results from Table 1 of the paper on two datasets, Insurance and MovieLens-1M. For each library, I measure the energy consumption and the time it takes for both the **data stage alone** and **the full run (data stage + model training)**.
 
 - **Required (C1):** Insurance with Random Forest.
-- **Secondary (C2):** MovieLens-1M with Collaborative Filtering (CF). If it is not finished by Oct 21, I mark it as "not tested".
+- **Secondary (C2):** MovieLens-1M with Collaborative Filtering (CF), measured together with C1 (planned for Oct 22–24).
 - **Deciding later:** Support Vector Regression (SVR) and XGBoost on Insurance; a small Neural Collaborative Filtering (NCF) model on the GPU.
 - **Not tested:** TabNet; ResNet and Mask R-CNN on COCO, because training them needs far more GPU memory and time than my laptop (4 GB VRAM, about 14 GB of usable RAM) and my schedule allow; DRAM energy, because my CPU does not expose a DRAM energy counter.
 
@@ -136,7 +136,7 @@ Written before any measurement. Each claim is judged on `--stage full` with the 
 | Reproduced | No clear difference between Pandas and Polars in net energy, **and** Dask has the highest net energy and the longest runtime, clearly different from both | Polars < Pandas < Dask in net energy, with each difference clear |
 | Partially reproduced | Only one of the two parts holds | Polars is the lowest, but the order of Pandas and Dask is unclear or reversed |
 | Not reproduced | Neither part holds | Polars is not the lowest |
-| Not tested | — | Not run by Oct 21 |
+| Not tested | — | Not run before the report is written |
 
 **Stop and fix first** (no conclusion is drawn until the problem is fixed):
 
