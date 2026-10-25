@@ -3,8 +3,8 @@
 | Field | Value |
 | --- | --- |
 | Author | Le Tuan Nguyen (University at Buffalo, CS) |
-| Status | ACTIVE <!-- đổi thành: FROZEN on YYYY-MM-DD, trước khi chạy đầy đủ --> |
-| Last updated | Oct 19, 2026 |
+| Status | ACTIVE — freeze the protocol after reviewing the pilot and before the full measurement session. |
+| Last updated | Oct 25, 2026 |
 | Study type | Small-scale **replication**:personal laptop, updated library |
 | Repository | https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib |
 
@@ -31,7 +31,7 @@ Gợi ý C2: ML-1M + CF: Polars < Pandas < Dask (1.437 / 3.328 / 3.748 J). -->
 In this replication, I check two results from Table 1 of the paper on two datasets, Insurance and MovieLens-1M. For each library, I measure the energy consumption and the time it takes for both the **data stage alone** and **the full run (data stage + model training)**.
 
 - **Required (C1):** Insurance with Random Forest.
-- **Secondary (C2):** MovieLens-1M with Collaborative Filtering (CF), measured together with C1 (planned for Oct 22–24).
+- **Secondary (C2):** MovieLens-1M with Collaborative Filtering (CF), measured in the same full session as C1.
 - **Deciding later:** Support Vector Regression (SVR) and XGBoost on Insurance; a small Neural Collaborative Filtering (NCF) model on the GPU.
 - **Not tested:** TabNet; ResNet and Mask R-CNN on COCO, because training them needs far more GPU memory and time than my laptop (4 GB VRAM, about 14 GB of usable RAM) and my schedule allow; DRAM energy, because my CPU does not expose a DRAM energy counter.
 
@@ -73,7 +73,7 @@ Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the pap
   For ML-1M, Polars scans and joins lazily, collects the joined rows once, then performs the dynamic user–movie pivot eagerly in Polars before NumPy conversion. The rated MovieID columns are not known before scanning, so this is not a fully lazy pivot.
   - Dask: `dd.read_csv` with the default block size and the default threaded scheduler; the number of partitions is printed at runtime. Categorical columns are made "known" with `.categorize()` before one-hot encoding, because Dask needs every category in advance.
 For ML-1M, Dask reads :: with the Python CSV engine and default block size, joins the three tables, checks joined-row and unique user–movie-pair counts, categorizes MovieID, then uses pivot_table(aggfunc="first"). Because pairs are unique, this produces the same rating matrix as the Pandas pivot. The computed matrix is sorted by numeric UserID and MovieID before NumPy conversion.
-- **Randomness:** mini-batches are taken in file order without shuffling, so the data stage has no randomness. The only random parts are the train/test split and the model, both with seed 42.
+- **Randomness:** mini-batches are taken in file order without shuffling, so the data stage has no randomness. Insurance uses seed 42 for its train/test split and Random Forest; MovieLens-1M uses seed 42 for TruncatedSVD and has no train/test split. The measurement schedule is independently randomized with seed 42 (Section 7).
 - **Two stages per configuration:** `--stage data` runs only the dataframe part; `--stage full` runs the dataframe part and then trains the downstream model. Training energy is estimated as *full* − *data*.
 - **Downstream models** (the paper does not report its hyperparameters, so these are my choices):
   - Insurance: scikit-learn `RandomForestRegressor` with default hyperparameters (100 trees, one CPU core) and `random_state=42`, trained on 80% of the rows (`train_test_split` with `test_size=0.2`, `random_state=42`: 1,070 training rows, 268 test rows). Random Forest trains on the whole training array; the mini-batch step is kept only to follow the paper. The test R² is printed as a sanity check.
@@ -90,38 +90,42 @@ For ML-1M, Dask reads :: with the Python CSV engine and default block size, join
 
 | Metric | Unit | Tool and formula |
 | --- | --- | --- |
-| Runtime | s | Wall-clock time reported by `perf stat` |
+| Runtime | s | `power/energy-pkg/` event running time from `perf stat -x,` (nanoseconds divided by 1e9); `/usr/bin/time -v` also retains elapsed wall-clock time for cross-checking |
 | CPU package energy | J | `power/energy-pkg/` via `sudo perf stat` |
 | CPU core energy | J | `power/energy-cores/` via `sudo perf stat` |
-| Net energy | J | measured energy − idle power × runtime |
-| Training energy (derived) | J | net energy of `--stage full` and net energy of `--stage data` |
-| Peak memory | MB | maximum resident set size from `/usr/bin/time -v` |
-| GPU energy | J | pynvml power samples every 1 s, integrated over time |
-| Disk usage | TODO | TODO <!-- paper có đo disk I/O; đo hoặc ghi not tested --> |
+| Net CPU package energy | J | package energy − session idle package power × runtime; core energy is reported separately and is not substituted for package energy |
+| Training energy (derived) | J | median net package energy of `--stage full` minus median net package energy of `--stage data` for the same library and dataset; this is an estimate, not a separately metered training phase |
+| Peak memory | kB (convert to MB in analysis) | maximum resident set size from `/usr/bin/time -v` |
+| GPU energy | Not measured in C1/C2 | A GPU measurement method must be defined before any optional NCF experiment; the Step 6 script does not sample GPU power |
+| Disk I/O / usage | Not measured | The Step 6 script does not record per-run disk I/O or disk footprint; storage hardware is reported in Section 10, not treated as a workload metric |
 
-Measurement command (one run):
+The pre-registered measurement runner is `scripts/run_measurements.sh`. It calls `perf stat` and `/usr/bin/time -v` around each fresh pipeline process, records both RAPL domains, and checks the pipeline output. It sets `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, and `PYTHONDONTWRITEBYTECODE=1` for every run. The script is launched once for the full session:
 
+```bash
+sudo ./scripts/run_measurements.sh
 ```
-sudo perf stat -e power/energy-pkg/,power/energy-cores/ -x, -o results/raw/<config>_<run>.csv -- .venv/bin/python pipeline.py --lib <lib> --data <dataset> --stage <data|full>
-```
+
+An optional preflight pilot uses `sudo ./scripts/run_measurements.sh --pilot pandas insurance data`. Its results are stored separately and excluded from the final analysis. No pilot or full run had been performed when this protocol update was written.
 
 ## 7. Procedure
 
-1. **Before measuring:** AC power connected for the whole session; browser and IDE closed; network: TODO. CPU settings stay at the laptop defaults and are the same for every run: governor `powersave` on all 16 CPUs (`intel_pstate`, active mode), EPP `balance_performance`, power profile `balanced`, Turbo Boost on. They are recorded before and after each session.
-2. **Idle baseline:** `sudo perf stat -e power/energy-pkg/ -- sleep 30`, 5 runs with a 40 s pause after each; idle power = median of the five average powers.
+Before the full session, review the optional pilot output and this protocol. If no method change is needed, change the status above to `FROZEN on YYYY-MM-DD` and commit the protocol and measurement runner before starting the 120 measured runs. If the pilot reveals a problem, fix and document it before freezing; pilot results never enter the final analysis.
+
+1. **Before measuring:** Connect AC power for the whole full session; close browser, IDE, and other avoidable foreground/background apps; enable Airplane mode. The full runner requires Wi-Fi disabled and no IPv4/IPv6 default route. Keep the CPU settings fixed for every run: governor `powersave` on all 16 logical CPUs (`intel_pstate`, active mode), CPU0 EPP `balance_performance`, power profile `balanced` (laptop Balanced Mode), and Turbo Boost enabled (`no_turbo=0`). The runner checks these settings before each full-session baseline and pipeline run and records system state before and after the session. Closing apps is a manual action, not something the script can verify. Do not present the current app-open state as the full-session state.
+2. **Idle baseline:** For each full session, the runner measures `power/energy-pkg/` during `sleep 30` five times with a 40 s pause after each; idle power is the median of the five average package powers. The earlier Step 2 validation baseline is evidence that the meter worked, not a substitute for this new session baseline. The optional pilot uses only one baseline and is not included in final analysis.
 3. **Measurement validation tests** (pass limits written in `results/validation/criteria.txt` before the first measurement; both must pass before any pipeline is measured):
    - Test 1: the energy of `sleep 10` is within 15% of idle power × elapsed time.
    - Test 2: a single-threaded Python loop, `sum(i*i for i in range(N))` with N = 400,000,000 (about 15 s), is run with N and 2N iterations; the 2N/N ratio of net energy must be between 1.8 and 2.2.
    - Scripts: `scripts/validate_measurement.sh` (measures) and `scripts/analyze_validation.sh` (computes).
    - Result on Oct 19, 2026: idle power 4.776 W (five runs, 4.755 to 4.814 W); Test 1 error 0.38% (pass); Test 2 ratio 1.854 (pass). Files and notes: `results/validation/`.
    - The tests are repeated if the kernel, BIOS or power settings change.
-4. **Data-pipeline smoke test** (before the first energy run of the pipelines):
-   - Run the same Insurance input through Pandas, Polars, and Dask.
-   - Check the expected input shape, column names, and missing-value counts.
-   - After the defined preprocessing, check that all libraries produce the same output shape, feature-column order, and checksum.
-   - Save the test output under `results/smoke_test/`.
-5. **Runs per configuration:** 1 warm-up (discarded) + 10 measured runs; a fresh process per run; 40 s idle between runs; the CPU package temperature is recorded before each run; configuration order randomized with seed TODO.
-6. **Raw data:** every run, including failed ones, is saved under `results/raw/`. No run is discarded after the fact.
+4. **Data-pipeline smoke test** (before the first full energy session):
+   - Run both Insurance and MovieLens-1M in `data` and `full` stages through Pandas, Polars, and Dask.
+   - Check input shape, columns, and missing values where applicable; then compare output shapes, feature or ID order, and checksums across libraries. For MovieLens-1M also check the nonzero rating count and 6,040 × 50 SVD output in `full` mode.
+   - Smoke-test evidence is retained under `results/smoke_test/`: the Insurance three-library, two-stage comparison is summarized in `insurance_backends_2026-10-24.md`, and all six MovieLens-1M logs agree on matrix shape, sum, nonzero count, and ordered-ID hashes. The full runner rechecks key output checksums during measurement.
+5. **Runs per configuration:** The runner creates 12 configurations (3 libraries × 2 datasets × 2 stages). It first executes one warm-up of each configuration (12 warm-ups, excluded from analysis), then 10 rounds in which each configuration appears once (120 measured runs). Order within warm-ups and each round is pseudorandomized with schedule seed 42, which is separate from model seed 42. Each run starts a fresh Python process. There is a 40 s pause between pipeline runs; the CPU package temperature is recorded before each run.
+6. **Raw data and failures:** A unique directory under `results/raw/full-.../` stores the schedule, input SHA-256 values, Git state, pre/post CPU/network/power state, idle baseline, `runs.csv`, and each run's `perf.csv`, `time.txt`, stdout, and stderr. Warm-ups and failed attempts remain in the raw data. The script stops on a failed run and marks the session `INCOMPLETE`; such a session is not used as the final 120-run dataset. A pilot is stored under `results/raw/pilot-.../` and excluded from final analysis. No result is selectively deleted after inspection.
+7. **Session-specific report (after the full run):** Add a brief `session_notes.md` inside that `results/raw/full-.../` directory. Manually state whether the browser, IDE, and other avoidable apps were closed; whether AC and Airplane mode were maintained; and any interruptions, updates, thermal concerns, or reruns. Refer to `cpu_state_before.txt`, `cpu_state_after.txt`, `idle/`, and `runs.csv` for observed machine settings and readings instead of copying the current app-open state into this protocol.
 
 ## 8. Analysis plan
 
@@ -134,7 +138,7 @@ For each configuration (library × dataset × stage), I report the median and th
 
 ## 9. Outcome criteria
 
-Written before any measurement. Each claim is judged on `--stage full` with the decision rule in Section 8.
+Written before the comparative pipeline measurements. Each claim is judged on `--stage full` with the decision rule in Section 8.
 
 | Outcome | C1: Insurance, Random Forest | C2: MovieLens-1M, CF |
 | --- | --- | --- |
@@ -157,8 +161,9 @@ My hypothesis in Section 1 is checked separately in the report; it does not chan
 | --- | --- |
 | CPU | Intel Core i5-12500H (12 cores: 4 performance + 8 efficient, 16 threads) |
 | RAM | 16 GB |
-| GPU | NVIDIA GeForce RTX 3050 Laptop, 4 GB (driver TODO) |
+| GPU | NVIDIA GeForce RTX 3050 Laptop, 4 GB; NVIDIA kernel module 615.71.09 (verified from `/proc/driver/nvidia/version` on Oct 25, 2026); CUDA UMD 13.4 reported by the author, not independently verified in this app session |
 | OS / kernel | Ubuntu 26.04.1 LTS, kernel 7.0.0-38-generic |
+| Data/results storage | WD Green SN350 500GB NVMe (`/dev/nvme1n1p2`, ext4); repository and raw data reside on this volume |
 | perf | 7.0.14 |
 | Python | 3.12.14 (via uv) |
 | Library versions | Locked in `requirements.lock`; summary: Pandas 3.0.6, Polars 2.0.0, Dask 2026.8.0, pyarrow 26.0.0, numpy 2.5.4, scikit-learn 1.9.1. |
@@ -168,14 +173,13 @@ My hypothesis in Section 1 is checked separately in the report; it does not chan
 
 - Laptop instead of workstation.
 - Current library versions instead of the 2022 versions.
-- My *Insurance* dataset has 1338 rows but on Section *Experimental Setup* reports 1000 records.
-
-
-
+- My *Insurance* dataset has 1,338 rows, while the paper's *Experimental Setup* reports 1,000 records; this difference is retained rather than silently subsampling.
 - RAPL measures the whole CPU package, not only our process; other processes add noise (mitigated by the idle baseline and closing apps).
 - No DRAM energy domain, so CPU energy is not the paper's energy-cores + energy-ram sum.
-- Possible thermal throttling on a laptop: TODO (how you check or limit it).
-- Inconsistencies in the paper: it states both "five runs, trimmed mean and 95% CI" and "mean of four measured runs"; the Insurance row count differs from the cited dataset (TODO: confirm).
+- Possible thermal throttling on a laptop: the runner records package temperature before each run, but does not directly measure clock throttling. High temperature or drift must therefore be discussed as a limitation, not treated as ruled out.
+- Disk I/O and GPU energy are outside the measured C1/C2 metrics; filesystem free space and GPU model are hardware context, not substitutes for those workload measurements.
+- The one-thread BLAS/OpenMP settings and this laptop's power policy may change timings relative to the paper, but they remain fixed across all local configurations.
+- Inconsistencies in the paper: it states both "five runs, trimmed mean and 95% CI" and "mean of four measured runs"; the Insurance row count differs from the cited dataset.
 - The paper does not report hyperparameters, the train/test split or the CF algorithm; the choices in Section 4 are ours.
 
 ## 12. Use of AI assistance
