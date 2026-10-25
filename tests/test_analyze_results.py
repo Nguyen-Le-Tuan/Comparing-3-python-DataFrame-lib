@@ -1,9 +1,11 @@
 """Check the measured-run audit against the manual calculation."""
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from statistics import median
+from xml.etree import ElementTree
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +17,8 @@ from analyze_results import (  # noqa: E402
     quartiles,
     summarize_measured_runs,
     trimmed_mean_10pct,
+    write_figure,
+    write_report_table,
 )
 
 
@@ -45,6 +49,19 @@ class AnalyzeResultsTest(unittest.TestCase):
         self.assertEqual(quartiles(values), (3.25, 7.75))
         self.assertEqual(trimmed_mean_10pct(values), 5.5)
         self.assertEqual(bootstrap_median_ci(values), bootstrap_median_ci(values))
+
+    def test_report_outputs(self) -> None:
+        _, measured = audit_session(DEFAULT_SESSION)
+        summary = summarize_measured_runs(measured)
+        with tempfile.TemporaryDirectory() as directory:
+            output_dir = Path(directory)
+            table_path = write_report_table(summary, output_dir)
+            figure_path = write_figure(summary, output_dir)
+            table = table_path.read_text(encoding="utf-8")
+            self.assertEqual(sum(line.startswith("| ") for line in table.splitlines()), 8)
+            svg = ElementTree.parse(figure_path)
+            circles = svg.findall(".//{http://www.w3.org/2000/svg}circle")
+            self.assertEqual(len(circles), 6)
 
 
 if __name__ == "__main__":

@@ -8,5 +8,7 @@ Source: `results/raw/full-20261025-135703-JICxLk/`. I use only the 120 `measured
 - The 10% trimmed mean removes the lowest and highest value from each set of 10.
 - A 95% percentile bootstrap interval for each median uses 10,000 resamples with replacement and seed 42. Each metric and configuration starts from the same seed.
 - CV uses sample standard deviation divided by mean net energy. A configuration above 10% stops analysis, as specified in the protocol.
+- Data share is median data-stage net energy divided by median full-stage net energy. The training estimate is the difference between those medians.
+- The full-stage figure shows one 95% CI per library. The two dataset panels use separate joule scales.
 
 These conventions fill in details not specified by the frozen protocol. The script reports measurements and derived statistics; I interpret C1 and C2 separately.

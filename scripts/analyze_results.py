@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from itertools import product
 from pathlib import Path
 from statistics import fmean, median, stdev
+from xml.sax.saxutils import escape
 
 import numpy as np
 
@@ -245,6 +246,113 @@ def write_summary(rows: list[dict[str, str | int | float]], output_dir: Path) ->
     return path
 
 
+def write_report_table(rows: list[dict[str, str | int | float]], output_dir: Path) -> Path:
+    by_key = {
+        (row["dataset"], row["library"], row["stage"]): row for row in rows
+    }
+    lines = [
+        "# Full-stage comparison",
+        "",
+        "| Dataset | Library | Data net (J) | Full net (J, 95% CI) | Full runtime (s, 95% CI) | Data share | Training estimate (J) |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for dataset in DATASETS:
+        for library in LIBRARIES:
+            data = by_key[(dataset, library, "data")]
+            full = by_key[(dataset, library, "full")]
+            data_net = float(data["median_net_j"])
+            full_net = float(full["median_net_j"])
+            share = 100 * data_net / full_net
+            training = full_net - data_net
+            lines.append(
+                f"| {dataset} | {library} | {data_net:.3f} | "
+                f"{full_net:.3f} [{float(full['ci95_low_net_j']):.3f}, "
+                f"{float(full['ci95_high_net_j']):.3f}] | "
+                f"{float(full['median_runtime_s']):.3f} "
+                f"[{float(full['ci95_low_runtime_s']):.3f}, "
+                f"{float(full['ci95_high_runtime_s']):.3f}] | "
+                f"{share:.1f}% | {training:.3f} |"
+            )
+    lines += [
+        "",
+        "Values are medians of 10 measured runs. CI is the percentile bootstrap interval for the median.",
+        "Data share and training estimate use the stage medians, not paired run differences.",
+    ]
+    path = output_dir / "full_stage_table.md"
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def axis_scale(high: float) -> tuple[float, float]:
+    rough_step = high / 4
+    power = 10 ** math.floor(math.log10(rough_step))
+    step = next(factor * power for factor in (1, 2, 5, 10) if factor * power >= rough_step)
+    return step, math.ceil(high / step) * step
+
+
+def write_figure(rows: list[dict[str, str | int | float]], output_dir: Path) -> Path:
+    full_rows = {
+        (row["dataset"], row["library"]): row
+        for row in rows if row["stage"] == "full"
+    }
+    colors = {"pandas": "#2563eb", "polars": "#059669", "dask": "#ea580c"}
+    parts = [
+        '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="450" viewBox="0 0 1200 450" role="img" aria-label="Full-stage net CPU package energy with bootstrap confidence intervals">',
+        '<rect width="1200" height="450" fill="#ffffff"/>',
+        '<text x="600" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111827">Full-stage net CPU package energy</text>',
+        '<text x="600" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#4b5563">Median of 10 runs; whiskers show 95% bootstrap CI. Each panel has its own joule scale.</text>',
+    ]
+    for panel_index, dataset in enumerate(DATASETS):
+        panel_x = 25 + panel_index * 600
+        plot_x = panel_x + 115
+        plot_width = 350
+        selected = [full_rows[(dataset, library)] for library in LIBRARIES]
+        max_high = max(float(row["ci95_high_net_j"]) for row in selected)
+        tick_step, axis_max = axis_scale(max_high)
+        parts.append(
+            f'<rect x="{panel_x}" y="83" width="550" height="315" rx="8" fill="#ffffff" stroke="#d1d5db"/>'
+        )
+        title = "Insurance / Random Forest" if dataset == "insurance" else "MovieLens-1M / TruncatedSVD"
+        parts.append(
+            f'<text x="{panel_x + 20}" y="113" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#111827">{escape(title)}</text>'
+        )
+        tick_count = int(round(axis_max / tick_step))
+        for tick_index in range(tick_count + 1):
+            tick = tick_index * tick_step
+            x = plot_x + plot_width * tick / axis_max
+            parts.append(
+                f'<line x1="{x:.2f}" y1="131" x2="{x:.2f}" y2="344" stroke="#e5e7eb"/>'
+            )
+            parts.append(
+                f'<text x="{x:.2f}" y="369" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">{tick:g}</text>'
+            )
+        for row_index, library in enumerate(LIBRARIES):
+            row = full_rows[(dataset, library)]
+            y = 168 + row_index * 70
+            low = float(row["ci95_low_net_j"])
+            high = float(row["ci95_high_net_j"])
+            point = float(row["median_net_j"])
+            x_low = plot_x + plot_width * low / axis_max
+            x_high = plot_x + plot_width * high / axis_max
+            x_point = plot_x + plot_width * point / axis_max
+            color = colors[library]
+            parts.extend([
+                f'<text x="{panel_x + 20}" y="{y + 5}" font-family="Arial, sans-serif" font-size="14" fill="#111827">{escape(library.capitalize())}</text>',
+                f'<line x1="{x_low:.2f}" y1="{y}" x2="{x_high:.2f}" y2="{y}" stroke="{color}" stroke-width="4"/>',
+                f'<line x1="{x_low:.2f}" y1="{y - 9}" x2="{x_low:.2f}" y2="{y + 9}" stroke="{color}" stroke-width="2"/>',
+                f'<line x1="{x_high:.2f}" y1="{y - 9}" x2="{x_high:.2f}" y2="{y + 9}" stroke="{color}" stroke-width="2"/>',
+                f'<circle cx="{x_point:.2f}" cy="{y}" r="6" fill="{color}" stroke="#ffffff" stroke-width="1"/>',
+                f'<text x="{panel_x + 480}" y="{y + 5}" font-family="Arial, sans-serif" font-size="13" fill="#111827">{point:.2f} J</text>',
+            ])
+        parts.append(
+            f'<text x="{panel_x + 290}" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">Net CPU package energy (J)</text>'
+        )
+    parts.append('</svg>')
+    path = output_dir / "full_stage_energy.svg"
+    path.write_text("\n".join(parts) + "\n", encoding="utf-8")
+    return path
+
+
 def main() -> None:
     args = parse_args()
     try:
@@ -256,6 +364,8 @@ def main() -> None:
     if output_dir == args.session_dir.resolve() or args.session_dir.resolve() in output_dir.parents:
         raise SystemExit("The output directory must be outside the raw session")
     summary_path = write_summary(rows, output_dir)
+    table_path = write_report_table(rows, output_dir)
+    figure_path = write_figure(rows, output_dir)
     manual_group = [
         run.net_energy_j for run in measured
         if (run.library, run.dataset, run.stage) == ("pandas", "insurance", "full")
@@ -264,6 +374,8 @@ def main() -> None:
     print(f"Idle package power: {idle_power_w:.6f} W")
     print(f"Pandas / Insurance / full median: {median(manual_group):.7f} J")
     print(f"Wrote {len(rows)} configurations to {summary_path}")
+    print(f"Wrote report table to {table_path}")
+    print(f"Wrote figure to {figure_path}")
 
 
 if __name__ == "__main__":
