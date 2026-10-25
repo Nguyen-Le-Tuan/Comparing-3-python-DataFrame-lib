@@ -57,9 +57,11 @@ Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the pap
 
 **MovieLens-1M (C2)**, to be written in full before the first C2 run (Step 5):
 
-1. Load `ratings.dat`, `users.dat` and `movies.dat` (separator `::`).
-2. Join ratings with users and movies.
-3. Build the user × movie rating matrix (expect 6,040 × 3,706; a missing rating is 0).
+1. Load `ratings.dat` (1,000,209 × 4), `users.dat` (6,040 × 5) and `movies.dat` (3,883 × 3), using the `::` separator → three dataframes.
+2. Join ratings to users on `UserID` and to movies on `MovieID`, validating many-to-one joins and preserving all 1,000,209 ratings → one joined dataframe.
+3. Check that each `(UserID, MovieID)` pair is unique; pivot `Rating` to rows = sorted `UserID`, columns = sorted rated `MovieID`, and fill unrated cells with 0 → a 6,040 × 3,706 `float64` matrix `X`.
+4. Slice `X` into file-order batches of 64 user rows without shuffling and sum every batch → the data-stage checksum (`X` shape, sum, nonzero count, and ordered-ID hashes).
+5. For `--stage full`, fit `TruncatedSVD(n_components=50, random_state=42)` to the whole `X` matrix → a 6,040 × 50 user-factor matrix. For `--stage data`, stop after the checksum; there is no target `y` or train/test split in this C2 pipeline.
 
 **Rules for both datasets**
 

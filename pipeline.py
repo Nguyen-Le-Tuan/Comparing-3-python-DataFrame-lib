@@ -75,6 +75,31 @@ def polars_insurance():
     return X, y
 
 
+def dask_insurance():
+    import dask.dataframe as dd
+
+    ddf = dd.read_csv(DATA_PATH)
+    print("Dask partitions:", ddf.npartitions)
+
+    # Build the dataframe graph with default read block size and scheduler.
+    for col in NUMERIC_COLUMNS:
+        ddf[col] = ddf[col].fillna(ddf[col].mean())
+    for col in TEXT_COLUMNS:
+        mode = ddf[col].mode().compute().iloc[0]
+        ddf[col] = ddf[col].fillna(mode)
+
+    ddf["sex"] = ddf["sex"].map({"female": 0, "male": 1}, meta=("sex", "int64"))
+    ddf["smoker"] = ddf["smoker"].map({"no": 0, "yes": 1}, meta=("smoker", "int64"))
+    ddf = ddf.categorize(columns=["region"])
+    ddf = dd.get_dummies(ddf, columns=["region"], dtype="int64")
+
+    # After mode/category discovery, keep scaling lazy until the final compute.
+    for col in SCALE_COLUMNS:
+        ddf[col] = (ddf[col] - ddf[col].mean()) / ddf[col].std(ddof=1)
+    df_scaled = ddf[FEATURE_COLUMNS + ["charges"]].compute()
+    X = df_scaled[FEATURE_COLUMNS].to_numpy(dtype="float64")
+    y = df_scaled["charges"].to_numpy(dtype="float64")
+    return X, y
 
 
 def main():
@@ -87,7 +112,7 @@ def main():
     pipelines = {
         "pandas": pandas_insurance,
         "polars": polars_insurance,
-       
+        "dask": dask_insurance,
     }
     X, y = pipelines[args.lib]()
 
