@@ -4,19 +4,17 @@ Target length: 2–4 pages. Suggested writing order: 3 → 4 → 5 → 6 → 1 �
 Check every sentence with a number: does it state the condition (this laptop, these versions, full stage, n = 10)?
 -->
 
-# <!-- Title: what was replicated, on what, at what scale? -->
+# A laptop replication of DataFrame energy on Insurance and MovieLens-1M
 
-<!-- Author, affiliation, date, repository link. -->
+Le Tuan Nguyen · Computer Science, University at Buffalo · 25 October 2026
+
+[Repository](https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib)
 
 ## 1. What I replicated
 
-<!--
-- Which paper (authors, venue, arXiv ID)?
-- Which two claims (C1, C2), and where in the paper (table, section, figure)?
-- Why is this a "small-scale replication" and not a reproduction? (team, hardware, versions)
-- What is the main result, in one sentence?
-- Budget: about half a page. Write this section near the end.
--->
+I tested two CPU-energy results from [Kumar, Imran, and Kosar's GREENS '26 paper](https://arxiv.org/pdf/2511.08644) (arXiv:2511.08644). C1 is the Random Forest comparison on Insurance (Table 1, Section 4.1, Figure 5): Pandas and Polars use nearly equal energy, while Dask uses more and runs longest. C2 is the collaborative-filtering comparison on MovieLens-1M (Table 1, Section 4.3, Figure 3a): Polars < Pandas < Dask in CPU energy.
+
+I ran the three DataFrame backends with a common downstream model for each dataset on my laptop. This is a small-scale **replication**, not an exact reproduction: I am a different researcher using different hardware, newer library versions, and model choices the paper does not specify. My full-stage Insurance result preserves Dask's disadvantage but separates Pandas from Polars, so C1 is partially reproduced. On ML-1M, Dask again uses the most energy, but Pandas and Polars have no clear energy difference; that pattern falls outside my pre-registered C2 outcome categories. I compare directions and relative gaps, not absolute joules.
 
 ## 2. Setup and differences from the paper
 
