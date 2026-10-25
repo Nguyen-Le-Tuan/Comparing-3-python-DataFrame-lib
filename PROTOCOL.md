@@ -192,4 +192,4 @@ Pipeline code is written with AI assistance, one step at a time, then reviewed, 
 
 | Date | Change | Reason |
 | --- | --- | --- |
-| | | |
+| 2026-10-25 | Analysis conventions set in `scripts/analyze_results.py` (described in `results/analysis/method.md`), after the full run: percentile bootstrap interval for the median; quartiles with linear interpolation; 10% trimmed mean drops the lowest and highest of the 10 values; CV = sample standard deviation / mean net energy; data share and training estimate use stage medians, not paired run differences; peak memory reported in MiB (kB / 1024) instead of MB. | These conventions fill in details not specified by the frozen protocol. The script reports measurements and derived statistics; I interpret C1 and C2 separately. |
