@@ -102,12 +102,100 @@ def dask_insurance():
     return X, y
 
 
+def pandas_movielens():
+    import pandas as pd
+
+    base = "data/raw/ml-1m"
+    ratings = pd.read_csv(
+        f"{base}/ratings.dat",
+        sep="::", engine="python", header=None, encoding="latin-1",
+        names=["UserID", "MovieID", "Rating", "Timestamp"],
+    )
+    users = pd.read_csv(
+        f"{base}/users.dat",
+        sep="::", engine="python", header=None, encoding="latin-1",
+        names=["UserID", "Gender", "Age", "Occupation", "Zip-code"],
+        dtype={"Zip-code": "string"},
+    )
+    movies = pd.read_csv(
+        f"{base}/movies.dat",
+        sep="::", engine="python", header=None, encoding="latin-1",
+        names=["MovieID", "Title", "Genres"],
+    )
+
+    print("Input shapes:", ratings.shape, users.shape, movies.shape)
+
+    if ratings.duplicated(["UserID", "MovieID"]).any():
+        raise ValueError("Duplicate user–movie rating; do not aggregate silently")
+
+    joined = (
+        ratings
+        .merge(users, on="UserID", how="inner", validate="many_to_one")
+        .merge(movies, on="MovieID", how="inner", validate="many_to_one")
+    )
+    if len(joined) != len(ratings):
+        raise ValueError("A join dropped ratings")
+    print("Joined shape:", joined.shape)
+
+    matrix_df = joined.pivot(
+        index="UserID", columns="MovieID", values="Rating"
+    )
+    matrix_df = matrix_df.sort_index().sort_index(axis=1).fillna(0.0)
+
+    X = matrix_df.to_numpy(dtype="float64")
+    user_ids = matrix_df.index.to_numpy(dtype="int64")
+    movie_ids = matrix_df.columns.to_numpy(dtype="int64")
+
+    if X.shape != (6040, 3706):
+        raise ValueError(f"Unexpected ML-1M matrix shape: {X.shape}")
+
+    return X, user_ids, movie_ids
+
+
+def run_movielens(stage):
+    import hashlib
+    import numpy as np
+
+    X, user_ids, movie_ids = pandas_movielens()
+    batch_size = 64
+    batches = [
+        X[start:start + batch_size]
+        for start in range(0, len(X), batch_size)
+    ]
+    x_sum = sum(batch.sum(dtype=np.float64) for batch in batches)
+
+    user_hash = hashlib.sha256(
+        np.asarray(user_ids, dtype="<i8").tobytes()
+    ).hexdigest()
+    movie_hash = hashlib.sha256(
+        np.asarray(movie_ids, dtype="<i8").tobytes()
+    ).hexdigest()
+
+    print("X shape:", X.shape, "dtype:", X.dtype)
+    print("Number of batches:", len(batches))
+    print("Nonzero ratings:", np.count_nonzero(X))
+    print(f"X sum: {x_sum:.10f}")
+    print("UserID order SHA-256:", user_hash)
+    print("MovieID order SHA-256:", movie_hash)
+
+    if stage == "full":
+        raise NotImplementedError("Add ML-1M SVD in the next step")
+
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--lib", choices=["pandas", "polars", "dask"], required=True)
-    parser.add_argument("--data", choices=["insurance"], required=True)
+    parser.add_argument("--data", choices=["insurance","ml-1m"], required=True)
     parser.add_argument("--stage", choices=["data", "full"], required=True)
     args = parser.parse_args()
+
+    if args.data == "ml-1m":
+        if args.lib != "pandas":
+            parser.error("ML-1M currently supports pandas only")
+        run_movielens(args.stage)
+        return
+
 
     pipelines = {
         "pandas": pandas_insurance,
