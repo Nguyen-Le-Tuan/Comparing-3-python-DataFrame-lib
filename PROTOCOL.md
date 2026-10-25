@@ -55,7 +55,7 @@ Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the pap
 4. Take the numeric dataframe and standardize `age`, `bmi` and `children` (subtract the mean, divide by the sample standard deviation with ddof = 1), producing a scaled dataframe. The target `charges` is not scaled.
 5. Take the scaled dataframe and convert it to NumPy arrays: `X` with 9 feature columns in a fixed order (`age`, `bmi`, `children`, `sex`, `smoker`, `region_northeast`, `region_northwest`, `region_southeast`, `region_southwest`) and `y` = `charges`. Then slice `X` and `y` into mini-batches of 64 rows in file order (21 batches; the last one has 58 rows).
 
-**MovieLens-1M (C2)**, to be written in full before the first C2 run (Step 5):
+**MovieLens-1M (C2)**:
 
 1. Load `ratings.dat` (1,000,209 × 4), `users.dat` (6,040 × 5) and `movies.dat` (3,883 × 3), using the `::` separator → three dataframes.
 2. Join ratings to users on `UserID` and to movies on `MovieID`, validating many-to-one joins and preserving all 1,000,209 ratings → one joined dataframe.
@@ -66,10 +66,11 @@ Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the pap
 **Rules for both datasets**
 
 - **Output checksum:** at the end, the program prints the shapes of the output arrays and the sum of all their elements. The sum is computed over the mini-batches, so every batch is actually used. All three libraries must give the same shapes, the same feature-column order and sums that differ by less than 1e-6 before any energy comparison.
-- “For ML-1M, compare the ordered UserID and MovieID axes as well as the matrix checksum; unlike Insurance, this pipeline has no y array.
+- "For ML-1M, compare the ordered UserID and MovieID axes as well as the matrix checksum; unlike Insurance, this pipeline has no y array".
 - **Library-specific choices** (fixed for all runs):
-  - Pandas: eager, `pd.read_csv` with default settings.
-  - Polars: lazy, `pl.scan_csv` and expressions, with a single `.collect()` before the NumPy conversion, because the paper credits Polars' lazy expressions for its efficiency.
+  - Pandas: eager, `pd.read_csv` with default settings. 
+  - Polars: lazy, `pl.scan_csv` and expressions, with a single `.collect()` before the NumPy conversion, because the paper credits Polars' lazy expressions for its efficiency. 
+  For ML-1M, Polars scans and joins lazily, collects the joined rows once, then performs the dynamic user–movie pivot eagerly in Polars before NumPy conversion. The rated MovieID columns are not known before scanning, so this is not a fully lazy pivot.
   - Dask: `dd.read_csv` with the default block size and the default threaded scheduler; the number of partitions is printed at runtime. Categorical columns are made "known" with `.categorize()` before one-hot encoding, because Dask needs every category in advance.
 - **Randomness:** mini-batches are taken in file order without shuffling, so the data stage has no randomness. The only random parts are the train/test split and the model, both with seed 42.
 - **Two stages per configuration:** `--stage data` runs only the dataframe part; `--stage full` runs the dataframe part and then trains the downstream model. Training energy is estimated as *full* − *data*.
