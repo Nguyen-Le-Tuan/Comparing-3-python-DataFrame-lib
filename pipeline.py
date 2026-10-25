@@ -251,7 +251,87 @@ def polars_movielens():
     return X, user_ids, movie_ids
 
 
+def dask_movielens():
+    import dask
+    import dask.dataframe as dd
 
+    base = "data/raw/ml-1m"
+
+    ratings = dd.read_csv(
+        f"{base}/ratings.dat",
+        sep="::", engine="python", header=None, encoding="latin-1",
+        names=["UserID", "MovieID", "Rating", "Timestamp"],
+        dtype={
+            "UserID": "int64",
+            "MovieID": "int64",
+            "Rating": "int64",
+            "Timestamp": "int64",
+        },
+    )
+    users = dd.read_csv(
+        f"{base}/users.dat",
+        sep="::", engine="python", header=None, encoding="latin-1",
+        names=["UserID", "Gender", "Age", "Occupation", "Zip-code"],
+        dtype={
+            "UserID": "int64",
+            "Age": "int64",
+            "Occupation": "int64",
+            "Zip-code": "string",
+        },
+    )
+    movies = dd.read_csv(
+        f"{base}/movies.dat",
+        sep="::", engine="python", header=None, encoding="latin-1",
+        names=["MovieID", "Title", "Genres"],
+        dtype={"MovieID": "int64"},
+    )
+    print(
+        "Dask input partitions:",
+        ratings.npartitions, users.npartitions, movies.npartitions,
+    )
+
+    joined = (
+        ratings
+        .merge(users, on="UserID", how="inner")
+        .merge(movies, on="MovieID", how="inner")
+    )
+    print("Dask joined partitions:", joined.npartitions)
+
+    # Dask không có merge(validate=...). Hai phép kiểm tra này phát hiện
+    # dòng bị mất, join nhân dòng, hoặc cặp user–movie bị trùng.
+    joined_count, unique_pair_count = dask.compute(
+        joined.shape[0],
+        joined[["UserID", "MovieID"]].drop_duplicates().shape[0],
+    )
+    if joined_count != 1_000_209:
+        raise ValueError(f"Unexpected joined row count: {joined_count}")
+    if unique_pair_count != joined_count:
+        raise ValueError("Duplicate user–movie rating; do not aggregate silently")
+    print("Joined shape:", (joined_count, len(joined.columns)))
+
+    # Categorize thực thi một phần công việc để biết toàn bộ MovieID.
+    # Đây không phải một pipeline hoàn toàn lazy tới compute cuối cùng.
+    joined = joined.categorize(columns=["MovieID"])
+
+    wide = dd.pivot_table(
+        joined,
+        index="UserID",
+        columns="MovieID",
+        values="Rating",
+        aggfunc="first",
+    ).compute()
+
+    # Sau compute, wide là pandas DataFrame. Sort ID dạng số,
+    # thay NaN bằng 0 và đổi sang cùng dtype như hai backend trước.
+    wide = wide.sort_index(axis=0).sort_index(axis=1).fillna(0.0)
+    X = wide.to_numpy(dtype="float64")
+    user_ids = wide.index.to_numpy(dtype="int64")
+    movie_ids = wide.columns.to_numpy(dtype="int64")
+
+    if X.shape != (6040, 3706):
+        raise ValueError(f"Unexpected ML-1M matrix shape: {X.shape}")
+
+    return X, user_ids, movie_ids
 
 def run_movielens(lib, stage):
     import hashlib
