@@ -340,6 +340,7 @@ def run_movielens(lib, stage):
     pipelines = {
         "pandas": pandas_movielens,
         "polars": polars_movielens,
+        "dask": dask_movielens,
     }
     X, user_ids, movie_ids = pipelines[lib]()
 
@@ -381,8 +382,6 @@ def main():
     args = parser.parse_args()
 
     if args.data == "ml-1m":
-        if args.lib == "dask":
-            parser.error("ML-1M Dask is reserved for step 5c")
         run_movielens(args.lib, args.stage)
         return
 
