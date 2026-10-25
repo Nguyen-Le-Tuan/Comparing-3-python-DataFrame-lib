@@ -70,12 +70,11 @@ Before measuring, I predicted that Pandas would perform best on small Insurance 
 
 ## 4. Mismatches with the paper
 
-<!--
-- What is the largest gap (Dask +55.7% vs ~14%)? What is the second (Pandas < Polars on Insurance)?
-- What does the data-stage share (data / full) suggest about where Dask's extra energy goes?
-- Which explanations are possible (versions, data size, Dask overhead, P/E cores, pkg vs cores+ram)?
-- For each explanation: what experiment would test it? Have I run it? (If not: "may", not "because".)
--->
+The direction of Dask's Insurance result matches the paper, but its local energy gap from Pandas is 55.7%, not about 14%. Pandas and Polars are nearly tied in the paper's Random Forest row, while Pandas uses 9.4% less energy here. On ML-1M, the paper's large Polars advantage over Pandas is absent in my energy measurements, even though Polars remains faster.
+
+The data-stage share is higher for Dask than for the other two libraries on both datasets: 59.1% on Insurance and 87.9% on ML-1M. This points to data processing as a place to investigate Dask's extra full-stage energy. It does not prove that scheduling is the cause. The `data` and `full` stages were measured in separate processes, and their median ratio is not a within-run phase measurement.
+
+Several differences may contribute. Current library versions could behave differently from the paper's 2022 versions; a same-laptop comparison with the older stack would test that. The 1,338-row Insurance file may change fixed overhead relative to the paper's reported 1,000 rows; repeating the data stage at controlled row counts would test whether Dask's relative cost shrinks with size. CPU scheduling across performance and efficiency cores could matter; CPU-affinity runs would test it. Finally, a machine exposing both core and DRAM energy could test how much the different energy domains change the ranking. I have not run these follow-up experiments.
 
 ## 5. Limitations
 
