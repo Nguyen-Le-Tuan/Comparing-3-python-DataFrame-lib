@@ -66,6 +66,7 @@ Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the pap
 **Rules for both datasets**
 
 - **Output checksum:** at the end, the program prints the shapes of the output arrays and the sum of all their elements. The sum is computed over the mini-batches, so every batch is actually used. All three libraries must give the same shapes, the same feature-column order and sums that differ by less than 1e-6 before any energy comparison.
+- “For ML-1M, compare the ordered UserID and MovieID axes as well as the matrix checksum; unlike Insurance, this pipeline has no y array.
 - **Library-specific choices** (fixed for all runs):
   - Pandas: eager, `pd.read_csv` with default settings.
   - Polars: lazy, `pl.scan_csv` and expressions, with a single `.collect()` before the NumPy conversion, because the paper credits Polars' lazy expressions for its efficiency.
