@@ -18,14 +18,11 @@ I ran the three DataFrame backends with a common downstream model for each datas
 
 ## 2. Setup and differences from the paper
 
-<!--
-- Hardware and software: which rows of PROTOCOL.md Section 10 does a reader need?
-- What did I measure (net CPU package energy, runtime), and how is "net" computed? Which idle baseline: 5.139 W (session) vs 4.776 W (validation, Oct 19)?
-- How many runs, warm-ups, order, pauses? (PROTOCOL.md Section 7)
-- How does this differ from the paper's method (energy-cores + energy-ram vs energy-pkg; 5 runs vs 10; 2022 vs 2026 versions; 1,000 vs 1,338 rows)?
-- Decision rule: when do two libraries "differ"? (PROTOCOL.md Section 8)
-- Was the protocol frozen before the full run? Where is it?
--->
+I used an Intel i5-12500H laptop (4 performance cores, 8 efficiency cores, 16 threads) with 16 GB RAM and Ubuntu 26.04.1. The environment used Python 3.12.14, Pandas 3.0.6, Polars 2.0.0, and Dask 2026.8.0. The paper used a 16-core/32-thread workstation with 128 GB RAM and 2022-era library versions. My Insurance file has 1,338 rows rather than the paper's reported 1,000. The ML-1M input has 1,000,209 ratings. The paper says it generated Parquet copies for Polars where applicable, while my backends read the original text inputs. Each backend produced matching pipeline checksums before measurement. Insurance used the same 100-tree Random Forest and 80/20 split across backends; ML-1M used the same 50-component TruncatedSVD. Those downstream choices are specified in [the protocol](../PROTOCOL.md), not in the paper.
+
+The [full session](../results/raw/full-20261025-135703-JICxLk/) covered 12 configurations: three libraries, two datasets, and `data`/`full` stages. It retained 12 warm-ups and 120 measured runs (ten per configuration), each in a fresh process, with randomized order and 40-second pauses. The runner recorded AC power, a balanced profile, and disabled Wi-Fi; my session note records that I closed the other apps. This differs from the paper's five measured runs. I measured package energy with `perf stat` and used its elapsed time as runtime. For each run, net energy = measured package joules − 5.139437 W × runtime in seconds. The 5.139437 W value is the median idle power from this session's five 30-second baselines. The earlier 4.776 W validation baseline was not reused. The paper summed core and DRAM energy, which my laptop cannot measure in the same way.
+
+The analysis computes medians, IQRs, and 10% trimmed means across each set of ten runs. The 95% intervals around medians use 10,000 bootstrap resamples with seed 42. Two libraries count as different only when those intervals do not overlap. Measurement validation passed (0.38% sleep-test error; 1.854 energy ratio for a doubled CPU loop), and the largest observed energy CV was 1.50%, below the 10% stop threshold. The method and outcome rules were committed before the full run in `4badf06`, but I did not change the protocol's status from `ACTIVE` to `FROZEN` until the post-run commit `5881ae5`. That status step was late; the committed rules in Sections 8 and 9 did not change between those commits.
 
 ## 3. Results
 
