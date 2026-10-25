@@ -1,9 +1,3 @@
-<!--
-Skeleton only: headings and guiding questions. Delete each comment once the section is written.
-Target length: 2–4 pages. Suggested writing order: 3 → 4 → 5 → 6 → 1 → 2 → 7, then read aloud.
-Check every sentence with a number: does it state the condition (this laptop, these versions, full stage, n = 10)?
--->
-
 # A laptop replication of DataFrame energy on Insurance and MovieLens-1M
 
 Le Tuan Nguyen · Computer Science, University at Buffalo · 25 October 2026
@@ -18,11 +12,11 @@ I ran the three DataFrame backends with a common downstream model for each datas
 
 ## 2. Setup and differences from the paper
 
-I used an Intel i5-12500H laptop (4 performance cores, 8 efficiency cores, 16 threads) with 16 GB RAM and Ubuntu 26.04.1. The environment used Python 3.12.14, Pandas 3.0.6, Polars 2.0.0, and Dask 2026.8.0. The paper used a 16-core/32-thread workstation with 128 GB RAM and 2022-era library versions. My Insurance file has 1,338 rows rather than the paper's reported 1,000. The ML-1M input has 1,000,209 ratings. The paper says it generated Parquet copies for Polars where applicable, while my backends read the original text inputs. Each backend produced matching pipeline checksums before measurement. Insurance used the same 100-tree Random Forest and 80/20 split across backends; ML-1M used the same 50-component TruncatedSVD. Those downstream choices are specified in [the protocol](../PROTOCOL.md), not in the paper.
+I used an Intel i5-12500H laptop (4 performance cores, 8 efficiency cores, 16 threads), 16 GB RAM, Ubuntu 26.04.1, Python 3.12.14, Pandas 3.0.6, Polars 2.0.0, and Dask 2026.8.0. The paper used a 16-core/32-thread workstation, 128 GB RAM, and 2022-era libraries. My Insurance file has 1,338 rows rather than the paper's reported 1,000; ML-1M has 1,000,209 ratings. The paper generated Parquet copies for Polars where applicable, while my backends read the original text inputs. All three backends produced matching checksums. Insurance used one 100-tree Random Forest with an 80/20 split; ML-1M used a 50-component TruncatedSVD. These downstream choices appear in [the protocol](../PROTOCOL.md), not in the paper.
 
-The [full session](../results/raw/full-20261025-135703-JICxLk/) covered 12 configurations: three libraries, two datasets, and `data`/`full` stages. It retained 12 warm-ups and 120 measured runs (ten per configuration), each in a fresh process, with randomized order and 40-second pauses. The runner recorded AC power, a balanced profile, and disabled Wi-Fi; my session note records that I closed the other apps. This differs from the paper's five measured runs. I measured package energy with `perf stat` and used its elapsed time as runtime. For each run, net energy = measured package joules − 5.139437 W × runtime in seconds. The 5.139437 W value is the median idle power from this session's five 30-second baselines. The earlier 4.776 W validation baseline was not reused. The paper summed core and DRAM energy, which my laptop cannot measure in the same way.
+The [full session](../results/raw/full-20261025-135703-JICxLk/) covered 12 configurations: three libraries, two datasets, and `data`/`full` stages. It kept 12 warm-ups and 120 measured runs (ten per configuration), with fresh processes, randomized order, and 40-second pauses. The runner recorded AC power, a balanced profile, and disabled Wi-Fi; I closed the other apps. For each run, `perf stat` supplied package energy and elapsed time. Net energy = measured package joules − 5.139437 W × runtime in seconds. That idle power came from this session's five 30-second baselines; I did not reuse the earlier 4.776 W validation baseline. The paper used five measured runs and summed core and DRAM energy.
 
-The analysis computes medians, IQRs, and 10% trimmed means across each set of ten runs. The 95% intervals around medians use 10,000 bootstrap resamples with seed 42. Two libraries count as different only when those intervals do not overlap. Measurement validation passed (0.38% sleep-test error; 1.854 energy ratio for a doubled CPU loop), and the largest observed energy CV was 1.50%, below the 10% stop threshold. The method and outcome rules were committed before the full run in `4badf06`, but I did not change the protocol's status from `ACTIVE` to `FROZEN` until the post-run commit `5881ae5`. That status step was late; the committed rules in Sections 8 and 9 did not change between those commits.
+The analysis computes median, IQR, and 10% trimmed mean per configuration. Median intervals use 10,000 bootstrap resamples (seed 42); non-overlap is the decision rule. Validation passed (0.38% sleep-test error; 1.854 doubled-loop energy ratio), and the largest energy CV was 1.50%, below the 10% stop threshold. The method and outcome rules were committed before the run in `4badf06`, but I changed the protocol status from `ACTIVE` to `FROZEN` only afterward, in `5881ae5`. That status step was late; Sections 8 and 9 did not change between those commits.
 
 ## 3. Results
 
@@ -49,15 +43,13 @@ For Random Forest on Insurance, the paper's Table 1 reports almost equal CPU ene
 
 ### 3.2 C2: MovieLens-1M + TruncatedSVD
 
-For collaborative filtering on ML-1M, the paper reports Polars < Pandas < Dask in CPU energy (1,437.00, 3,328.32, and 3,748.08 J). My full-stage point medians are Pandas 76.238 J, Polars 76.632 J, and Dask 197.827 J. Pandas and Polars differ by only 0.52%, and their energy intervals overlap. Under the pre-registered decision rule, there is **no clear energy difference** between them; Dask is clearly higher than both.
+For collaborative filtering on ML-1M, the paper reports Polars < Pandas < Dask in CPU energy (1,437.00, 3,328.32, and 3,748.08 J). My full-stage medians are Pandas 76.238 J, Polars 76.632 J, and Dask 197.827 J. The Pandas–Polars gap is 0.52% and their energy intervals overlap: **no clear difference** under my rule. Dask is clearly higher than both.
 
-I use reading **D** of the C2 outcome rule: **not covered by the pre-registered criteria**. The result is not “Reproduced,” because Polars is not clearly below Pandas. “Partially reproduced” requires Polars to be lowest *and* Pandas–Dask to be unclear or reversed, but Pandas is clearly below Dask. Calling it “Not reproduced” from the 0.52% point-median reversal would ignore the overlapping intervals. I retain the original rule and record this gap in Protocol Section 13 and Section 5 below.
-
-Polars is clearly faster than Pandas here: 2.381 s versus 3.744 s, with non-overlapping runtime intervals. That speed advantage does not establish an energy advantage. The C2 outcome rule concerns energy, not runtime.
+I choose reading **D**: **not covered by the pre-registered criteria**. “Reproduced” requires Polars clearly below Pandas. “Partially reproduced” requires Polars lowest and Pandas–Dask unclear or reversed, but Pandas is clearly below Dask. “Not reproduced” based only on the 0.52% point-median reversal would disregard the overlapping intervals. I leave the rule intact and log the gap in Protocol Section 13. Polars is faster than Pandas (2.381 versus 3.744 s, non-overlapping runtime intervals), but C2's outcome rule concerns energy.
 
 ### 3.3 Not tested
 
-I did not run the paper's SVR, XGBoost, or TabNet models on Insurance; NCF on ML-1M; or ResNet and Mask R-CNN on COCO. This study was limited to one classical model on Insurance and one matrix-factorization model on ML-1M so the full set of measurements would fit a laptop and the project schedule. I also did not measure GPU or DRAM energy, because these two chosen pipelines run on the CPU and this laptop does not expose a DRAM RAPL counter. None of those omitted cases receives a replication verdict.
+I did not run SVR, XGBoost, or TabNet on Insurance; NCF on ML-1M; or ResNet and Mask R-CNN on COCO. The scope was one model per dataset within a laptop and time budget. I did not measure GPU or DRAM energy: the chosen pipelines run on the CPU, and this laptop has no DRAM RAPL counter. I assign no verdict to omitted cases.
 
 ### 3.4 My pre-registered hypothesis
 
@@ -65,19 +57,19 @@ Before measuring, I predicted that Pandas would perform best on small Insurance 
 
 ## 4. Mismatches with the paper
 
-The direction of Dask's Insurance result matches the paper, but its local energy gap from Pandas is 55.7%, not about 14%. Pandas and Polars are nearly tied in the paper's Random Forest row, while Pandas uses 9.4% less energy here. On ML-1M, the paper's large Polars advantage over Pandas is absent in my energy measurements, even though Polars remains faster.
+On Insurance, Dask's local energy gap from Pandas is 55.7%, versus about 14% in the paper. Pandas uses 9.4% less than Polars locally, rather than nearly the same amount. The paper's large Polars energy advantage on ML-1M is also absent, although Polars remains faster.
 
-The data-stage share is higher for Dask than for the other two libraries on both datasets: 59.1% on Insurance and 87.9% on ML-1M. This points to data processing as a place to investigate Dask's extra full-stage energy. It does not prove that scheduling is the cause. The `data` and `full` stages were measured in separate processes, and their median ratio is not a within-run phase measurement.
+Dask's data-stage share is 59.1% on Insurance and 87.9% on ML-1M, higher than either other library. This makes data processing a useful place to investigate, but it does not prove scheduling caused the gap: `data` and `full` are separate runs, not a within-run phase measurement.
 
-Several differences may contribute. Current library versions could behave differently from the paper's 2022 versions; a same-laptop comparison with the older stack would test that. The 1,338-row Insurance file may change fixed overhead relative to the paper's reported 1,000 rows; repeating the data stage at controlled row counts would test whether Dask's relative cost shrinks with size. CPU scheduling across performance and efficiency cores could matter; CPU-affinity runs would test it. Finally, a machine exposing both core and DRAM energy could test how much the different energy domains change the ranking. I have not run these follow-up experiments.
+Possible causes and tests are specific. An older-stack run on this laptop would probe version effects; controlled row counts would probe fixed Dask overhead and the Insurance size mismatch. Running Polars with both text and Parquet inputs would probe the paper's different input format. CPU-affinity runs would probe hybrid-core scheduling. A machine with both core and DRAM counters would probe the energy-domain difference. I have run none of these follow-ups.
 
 ## 5. Limitations
 
-This is a comparison of three pipelines on one laptop, not a measurement of each library in isolation. RAPL package energy includes activity outside the Python process. Subtracting an idle baseline and closing other apps reduce that influence but cannot remove it completely. The laptop has no DRAM energy counter, so its net package-energy values cannot be compared directly with the paper's core-plus-DRAM joules. Different library versions, the larger Insurance file, and my chosen Random Forest and TruncatedSVD implementations also limit the comparison with the original workloads. CPU temperature was recorded, but clock throttling was not measured directly.
+RAPL package energy includes activity outside Python. The idle subtraction and closed apps reduce but cannot eliminate that influence. Without a DRAM counter, my joules cannot be compared directly with the paper's core-plus-DRAM values. Software versions, input format and size, and my selected downstream models also differ. I recorded CPU temperature but did not directly measure throttling.
 
-Ten runs per configuration give a local estimate, not a general performance guarantee. The protocol fixed median/IQR reporting, the 10,000-resample bootstrap decision rule, and the 10% CV stop threshold before the full run. The exact percentile interval, quartile interpolation, trimmed-mean convention, and sample-SD convention for CV were specified after the run and logged in Protocol Section 13. Overlapping intervals mean “no clear difference” under my rule, not proof that two libraries consume identical energy.
+Ten runs per configuration give a local estimate. The protocol committed median/IQR reporting, a 10,000-resample bootstrap decision rule, and a 10% CV stop threshold before measurement. The exact percentile, quartile, trimmed-mean, and sample-SD conventions were set afterward and logged in Protocol Section 13. Overlapping intervals mean “no clear difference” under my rule, not equal energy. The late `FROZEN` status change is disclosed in Section 2.
 
-The C2 outcome categories have a gap when Pandas and Polars are indistinguishable by that rule while Dask is clearly higher. I therefore report “not covered by the pre-registered criteria,” rather than changing Section 9 after seeing the data. These measurements do not establish what would happen for the paper's other models, COCO, another machine, or the older software stack.
+The C2 categories omit the pattern of unclear Pandas–Polars energy and clearly higher Dask. Reading D preserves the original categories without forcing a verdict. Nothing here establishes outcomes for the paper's other models, COCO, another machine, or the older stack.
 
 ## 6. Next experiment
 
