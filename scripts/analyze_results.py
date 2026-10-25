@@ -35,6 +35,7 @@ SUMMARY_FIELDS = (
 )
 
 
+# Represent one validated measured run with the metrics used in summaries.
 @dataclass(frozen=True)
 class MeasuredRun:
     library: str
@@ -46,6 +47,7 @@ class MeasuredRun:
     peak_rss_kb: int
 
 
+# Parse the session and output paths used by the analysis command.
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -59,6 +61,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+# Read and validate the session-specific idle package power.
 def read_idle_power(session_dir: Path) -> float:
     path = session_dir / "idle/idle_power_w.txt"
     try:
@@ -70,6 +73,7 @@ def read_idle_power(session_dir: Path) -> float:
     return value
 
 
+# Load a CSV while enforcing the schema required by the caller.
 def read_csv_rows(path: Path, required_fields: set[str]) -> list[dict[str, str]]:
     try:
         with path.open(newline="", encoding="utf-8") as source:
@@ -85,6 +89,7 @@ def read_csv_rows(path: Path, required_fields: set[str]) -> list[dict[str, str]]
     return rows
 
 
+# Validate the complete session and convert successful runs to typed records.
 def audit_session(session_dir: Path) -> tuple[float, list[MeasuredRun]]:
     status_path = session_dir / "session_status.txt"
     try:
@@ -106,6 +111,7 @@ def audit_session(session_dir: Path) -> tuple[float, list[MeasuredRun]]:
     measured_keys: set[tuple[int, str, str, str]] = set()
     measured: list[MeasuredRun] = []
     for sequence, (planned, row) in enumerate(zip(schedule, runs, strict=True), start=1):
+        # Compare the recorded row with the pre-generated schedule before using its metrics.
         if any(planned[field] != row[field] for field in IDENTITY_FIELDS):
             raise ValueError(f"Schedule mismatch at sequence {sequence}")
         if int(row["sequence"]) != sequence:
@@ -144,6 +150,7 @@ def audit_session(session_dir: Path) -> tuple[float, list[MeasuredRun]]:
                 raise ValueError(f"Duplicate warm-up: {configuration}")
             warmups.add(configuration)
         elif row["kind"] == "measured" and 1 <= round_number <= 10:
+            # Store net package energy after subtracting the measured idle baseline.
             key = (round_number, *configuration)
             if key in measured_keys:
                 raise ValueError(f"Duplicate measured run: {key}")
@@ -169,26 +176,31 @@ def audit_session(session_dir: Path) -> tuple[float, list[MeasuredRun]]:
     return idle_power_w, measured
 
 
+# Return the first and third quartiles using NumPy's linear interpolation.
 def quartiles(values: list[float]) -> tuple[float, float]:
     q1, q3 = np.quantile(values, (0.25, 0.75), method="linear")
     return float(q1), float(q3)
 
 
+# Compute the ten-run mean after removing one observation from each tail.
 def trimmed_mean_10pct(values: list[float]) -> float:
     if len(values) != 10:
         raise ValueError("The 10% trimmed mean requires 10 measured runs")
     return fmean(sorted(values)[1:-1])
 
 
+# Estimate a reproducible percentile confidence interval for the median.
 def bootstrap_median_ci(values: list[float]) -> tuple[float, float]:
     samples = np.asarray(values, dtype=float)
     rng = np.random.default_rng(42)
+    # Resample rows with replacement so each bootstrap sample preserves the original size.
     indices = rng.integers(0, len(samples), size=(10_000, len(samples)))
     medians = np.median(samples[indices], axis=1)
     low, high = np.quantile(medians, (0.025, 0.975), method="linear")
     return float(low), float(high)
 
 
+# Aggregate energy, runtime, memory, and uncertainty statistics per configuration.
 def summarize_measured_runs(measured: list[MeasuredRun]) -> list[dict[str, str | int | float]]:
     grouped: dict[tuple[str, str, str], list[MeasuredRun]] = {}
     for run in measured:
@@ -197,6 +209,7 @@ def summarize_measured_runs(measured: list[MeasuredRun]) -> list[dict[str, str |
 
     rows: list[dict[str, str | int | float]] = []
     for library, dataset, stage in CONFIGURATIONS:
+        # Keep configuration order stable so CSV, Markdown, and figure outputs align.
         group = grouped.get((library, dataset, stage), [])
         if len(group) != 10:
             raise ValueError(f"Expected 10 measured runs for {library}/{dataset}/{stage}")
@@ -236,6 +249,7 @@ def summarize_measured_runs(measured: list[MeasuredRun]) -> list[dict[str, str |
     return rows
 
 
+# Write machine-readable summary statistics for downstream analysis.
 def write_summary(rows: list[dict[str, str | int | float]], output_dir: Path) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / "summary.csv"
@@ -246,6 +260,7 @@ def write_summary(rows: list[dict[str, str | int | float]], output_dir: Path) ->
     return path
 
 
+# Write a concise Markdown comparison of data and full pipeline stages.
 def write_report_table(rows: list[dict[str, str | int | float]], output_dir: Path) -> Path:
     by_key = {
         (row["dataset"], row["library"], row["stage"]): row for row in rows
@@ -283,6 +298,7 @@ def write_report_table(rows: list[dict[str, str | int | float]], output_dir: Pat
     return path
 
 
+# Select a readable axis increment and rounded upper bound for the SVG chart.
 def axis_scale(high: float) -> tuple[float, float]:
     rough_step = high / 4
     power = 10 ** math.floor(math.log10(rough_step))
@@ -290,6 +306,7 @@ def axis_scale(high: float) -> tuple[float, float]:
     return step, math.ceil(high / step) * step
 
 
+# Render full-stage medians and bootstrap intervals as a self-contained SVG.
 def write_figure(rows: list[dict[str, str | int | float]], output_dir: Path) -> Path:
     full_rows = {
         (row["dataset"], row["library"]): row
@@ -303,6 +320,7 @@ def write_figure(rows: list[dict[str, str | int | float]], output_dir: Path) -> 
         '<text x="600" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#4b5563">Median of 10 runs; whiskers show 95% bootstrap CI. Each panel has its own joule scale.</text>',
     ]
     for panel_index, dataset in enumerate(DATASETS):
+        # Each dataset receives an independent scale so small values remain legible.
         panel_x = 25 + panel_index * 600
         plot_x = panel_x + 115
         plot_width = 350
@@ -327,6 +345,7 @@ def write_figure(rows: list[dict[str, str | int | float]], output_dir: Path) -> 
                 f'<text x="{x:.2f}" y="369" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">{tick:g}</text>'
             )
         for row_index, library in enumerate(LIBRARIES):
+            # Draw the interval first, then the median marker on top for clarity.
             row = full_rows[(dataset, library)]
             y = 168 + row_index * 70
             low = float(row["ci95_low_net_j"])
@@ -353,6 +372,7 @@ def write_figure(rows: list[dict[str, str | int | float]], output_dir: Path) -> 
     return path
 
 
+# Run the audit, produce all derived outputs, and report their locations.
 def main() -> None:
     args = parse_args()
     try:
