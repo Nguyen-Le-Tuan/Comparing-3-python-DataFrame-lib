@@ -15,4 +15,4 @@ Beside the opened GUI apps above, I also had many processes running under the ba
 3. JetBrain toolbox
 4. Bluetooth
 
-I closed all of them before running to get the most accurate results. 
+I closed all of them (except the Terminal to run the full benchmark) before running to get the most accurate results. 
