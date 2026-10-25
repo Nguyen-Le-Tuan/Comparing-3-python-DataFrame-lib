@@ -44,6 +44,39 @@ def pandas_insurance():
     return X, y
 
 
+def polars_insurance():
+    import polars as pl
+
+    lazy = pl.scan_csv(DATA_PATH)
+
+    # Keep imputation, encoding, and scaling lazy until one final collect.
+    lazy = lazy.with_columns(
+        [pl.col(col).fill_null(pl.col(col).mean()) for col in NUMERIC_COLUMNS]
+        + [pl.col(col).fill_null(pl.col(col).mode().first()) for col in TEXT_COLUMNS]
+    )
+    lazy = lazy.with_columns(
+        pl.col("sex").replace_strict({"female": 0, "male": 1}).alias("sex"),
+        pl.col("smoker").replace_strict({"no": 0, "yes": 1}).alias("smoker"),
+        *[
+            (pl.col("region") == region).cast(pl.Int64).alias(f"region_{region}")
+            for region in REGIONS
+        ],
+    ).drop("region")
+    lazy = lazy.with_columns(
+        [
+            ((pl.col(col) - pl.col(col).mean()) / pl.col(col).std(ddof=1)).alias(col)
+            for col in SCALE_COLUMNS
+        ]
+    ).select(FEATURE_COLUMNS + ["charges"])
+
+    df_scaled = lazy.collect()
+    X = df_scaled.select(FEATURE_COLUMNS).to_numpy().astype("float64", copy=False)
+    y = df_scaled["charges"].to_numpy().astype("float64", copy=False)
+    return X, y
+
+
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--lib", choices=["pandas", "polars", "dask"], required=True)
@@ -53,7 +86,8 @@ def main():
 
     pipelines = {
         "pandas": pandas_insurance,
-        
+        "polars": polars_insurance,
+       
     }
     X, y = pipelines[args.lib]()
 
