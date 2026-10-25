@@ -86,11 +86,7 @@ The C2 outcome categories have a gap when Pandas and Polars are indistinguishabl
 
 ## 6. Next experiment
 
-<!--
-- If I could run only one more experiment, which one, and which explanation from Section 4 would it test?
-- What result would support that explanation, and what result would reject it?
-- Could this become the specific question for the email?
--->
+I would test whether Dask's high data-stage energy on small inputs is mostly fixed startup and scheduling cost. I would run the same Insurance `data` pipeline at controlled row counts (1,338, 13,380, and 133,800) by repeating the original rows, keeping the columns and preprocessing fixed. A new measurement session would use its own idle baseline, randomized order across configurations, fresh processes, one warm-up, and ten measured runs per configuration. If Dask's energy ratio to Pandas shrinks as the data grows, that would support a fixed-cost explanation. If the ratio stays high or grows, it would weaken that explanation. I have not run this experiment; it is a concrete question to raise with the paper's authors.
 
 ## 7. Reproducibility and use of AI
 
