@@ -1,0 +1,7 @@
+Dask partitions: 1
+Feature order: ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast', 'region_northwest', 'region_southeast', 'region_southwest']
+X shape: (1338, 9) dtype: float64
+y shape: (1338,) dtype: float64
+X sum: 2288.0000000000
+y sum: 17755824.9907590002
+Test R²: 0.8643208445906077

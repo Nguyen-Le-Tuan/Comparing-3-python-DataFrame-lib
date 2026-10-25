@@ -3,7 +3,7 @@
 | Field | Value |
 | --- | --- |
 | Author | Le Tuan Nguyen (University at Buffalo, CS) |
-| Status | ACTIVE — freeze the protocol after reviewing the pilot and before the full measurement session. |
+| Status | FROZEN |
 | Last updated | Oct 25, 2026 |
 | Study type | Small-scale **replication**:personal laptop, updated library |
 | Repository | https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib |

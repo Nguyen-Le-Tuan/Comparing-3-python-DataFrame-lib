@@ -1,0 +1,10 @@
+Dask input partitions: 1 1 1
+Dask joined partitions: 1
+Joined shape: (1000209, 10)
+X shape: (6040, 3706) dtype: float64
+Number of batches: 95
+Nonzero ratings: 1000209
+X sum: 3582313.0000000000
+UserID order SHA-256: 778f9345757ada755e448c9333f347a68fdfd7654ff7fc1cfa8d230398106103
+MovieID order SHA-256: e28d14fcbf71098b6196f208ffe97401262c7312caf73893f8994bce5a0ac4c0
+SVD output shape: (6040, 50)
