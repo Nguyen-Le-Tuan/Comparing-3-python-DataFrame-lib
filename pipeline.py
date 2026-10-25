@@ -253,11 +253,16 @@ def polars_movielens():
 
 
 
-def run_movielens(stage):
+def run_movielens(lib, stage):
     import hashlib
     import numpy as np
 
-    X, user_ids, movie_ids = pandas_movielens()
+    pipelines = {
+        "pandas": pandas_movielens,
+        "polars": polars_movielens,
+    }
+    X, user_ids, movie_ids = pipelines[lib]()
+
     batch_size = 64
     batches = [
         X[start:start + batch_size]
