@@ -1,0 +1,10 @@
+mode=pilot
+seed=42
+pause_seconds=40
+python=Python 3.12.14
+perf=perf version 7.0.14
+openblas_threads=1
+omp_threads=1
+mkl_threads=1
+python_dont_write_bytecode=1
+git_commit=b13e0a63e9c3580c816900ccef45d524a9d226e6
