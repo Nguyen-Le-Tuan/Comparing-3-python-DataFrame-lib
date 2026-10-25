@@ -152,6 +152,107 @@ def pandas_movielens():
     return X, user_ids, movie_ids
 
 
+def polars_movielens():
+    import numpy as np
+    import polars as pl
+
+    base = "data/raw/ml-1m"
+
+    def scan_dat(filename, column_names, encoding="utf8"):
+        # Unit separator không xuất hiện trong ba file ML-1M hiện tại.
+        # Do đó mỗi dòng được scan thành một cột "raw".
+        return (
+            pl.scan_csv(
+                f"{base}/{filename}",
+                has_header=False,
+                separator="\x1f",
+                quote_char=None,
+                new_columns=["raw"],
+                encoding=encoding,
+            )
+            .select(
+                pl.col("raw")
+                .str.split_exact("::", len(column_names) - 1)
+                .struct.rename_fields(column_names)
+                .alias("fields")
+            )
+            .unnest("fields")
+        )
+
+    ratings = scan_dat(
+        "ratings.dat", ["UserID", "MovieID", "Rating", "Timestamp"]
+    ).with_columns(
+        pl.col("UserID").cast(pl.Int64),
+        pl.col("MovieID").cast(pl.Int64),
+        pl.col("Rating").cast(pl.Int64),
+        pl.col("Timestamp").cast(pl.Int64),
+    )
+
+    users = scan_dat(
+        "users.dat",
+        ["UserID", "Gender", "Age", "Occupation", "Zip-code"],
+    ).with_columns(
+        pl.col("UserID").cast(pl.Int64),
+        pl.col("Age").cast(pl.Int64),
+        pl.col("Occupation").cast(pl.Int64),
+    )
+
+    movies = scan_dat(
+        "movies.dat",
+        ["MovieID", "Title", "Genres"],
+        encoding="utf8-lossy",
+    ).with_columns(
+        pl.col("MovieID").cast(pl.Int64),
+    )
+
+    joined_lazy = (
+        ratings
+        .join(users, on="UserID", how="inner", validate="m:1")
+        .join(movies, on="MovieID", how="inner", validate="m:1")
+    )
+
+    # Một lần collect: scan, parse và hai join được thực thi ở đây.
+    joined = joined_lazy.collect()
+    if joined.height != 1_000_209:
+        raise ValueError(f"A join dropped ratings: {joined.height}")
+    print("Joined shape:", joined.shape)
+
+    if joined.select(
+        pl.struct("UserID", "MovieID").is_duplicated().any()
+    ).item():
+        raise ValueError("Duplicate user–movie rating; do not aggregate silently")
+
+    # Pivot eager: số MovieID được đánh giá chỉ biết sau khi đọc dữ liệu.
+    wide = joined.pivot(
+        on="MovieID",
+        index="UserID",
+        values="Rating",
+        aggregate_function=None,
+    )
+
+    # Tên cột pivot là chuỗi; sort trực tiếp có thể cho 1, 10, 100, 2.
+    # Vì vậy phải đổi sang int để sắp xếp theo MovieID thật.
+    movie_ids = sorted(int(col) for col in wide.columns if col != "UserID")
+    movie_columns = [str(movie_id) for movie_id in movie_ids]
+    wide = wide.sort("UserID").select(["UserID"] + movie_columns)
+
+    user_ids = wide["UserID"].to_numpy().astype("int64", copy=False)
+    X = (
+        wide.select(movie_columns)
+        .fill_null(0.0)
+        .to_numpy()
+        .astype("float64", copy=False)
+    )
+    movie_ids = np.asarray(movie_ids, dtype="int64")
+
+    if X.shape != (6040, 3706):
+        raise ValueError(f"Unexpected ML-1M matrix shape: {X.shape}")
+
+    return X, user_ids, movie_ids
+
+
+
+
 def run_movielens(stage):
     import hashlib
     import numpy as np
