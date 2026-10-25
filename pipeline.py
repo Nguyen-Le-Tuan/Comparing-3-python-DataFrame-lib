@@ -179,7 +179,11 @@ def run_movielens(stage):
     print("MovieID order SHA-256:", movie_hash)
 
     if stage == "full":
-        raise NotImplementedError("Add ML-1M SVD in the next step")
+        from sklearn.decomposition import TruncatedSVD
+
+        model = TruncatedSVD(n_components=50, random_state=42)
+        user_factors = model.fit_transform(X)
+        print("SVD output shape:", user_factors.shape)
 
 
 
