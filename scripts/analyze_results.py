@@ -9,7 +9,9 @@ import math
 from dataclasses import dataclass
 from itertools import product
 from pathlib import Path
-from statistics import median
+from statistics import fmean, median, stdev
+
+import numpy as np
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +25,13 @@ RUN_FIELDS = set(IDENTITY_FIELDS) | {
     "run_id", "exit_code", "energy_pkg_j", "energy_cores_j",
     "elapsed_s", "max_rss_kb", "status",
 }
+SUMMARY_FIELDS = (
+    "dataset", "library", "stage", "n", "median_net_j", "q1_net_j",
+    "q3_net_j", "iqr_net_j", "trimmed_mean_net_j", "ci95_low_net_j",
+    "ci95_high_net_j", "cv_net_pct", "median_runtime_s", "q1_runtime_s",
+    "q3_runtime_s", "iqr_runtime_s", "ci95_low_runtime_s",
+    "ci95_high_runtime_s", "median_peak_rss_mib",
+)
 
 
 @dataclass(frozen=True)
@@ -41,6 +50,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "session_dir", type=Path, nargs="?", default=DEFAULT_SESSION,
         help="Full measurement session directory.",
+    )
+    parser.add_argument(
+        "--output-dir", type=Path, default=REPO_ROOT / "results/analysis",
+        help="Directory for derived analysis files.",
     )
     return parser.parse_args()
 
@@ -155,12 +168,94 @@ def audit_session(session_dir: Path) -> tuple[float, list[MeasuredRun]]:
     return idle_power_w, measured
 
 
+def quartiles(values: list[float]) -> tuple[float, float]:
+    q1, q3 = np.quantile(values, (0.25, 0.75), method="linear")
+    return float(q1), float(q3)
+
+
+def trimmed_mean_10pct(values: list[float]) -> float:
+    if len(values) != 10:
+        raise ValueError("The 10% trimmed mean requires 10 measured runs")
+    return fmean(sorted(values)[1:-1])
+
+
+def bootstrap_median_ci(values: list[float]) -> tuple[float, float]:
+    samples = np.asarray(values, dtype=float)
+    rng = np.random.default_rng(42)
+    indices = rng.integers(0, len(samples), size=(10_000, len(samples)))
+    medians = np.median(samples[indices], axis=1)
+    low, high = np.quantile(medians, (0.025, 0.975), method="linear")
+    return float(low), float(high)
+
+
+def summarize_measured_runs(measured: list[MeasuredRun]) -> list[dict[str, str | int | float]]:
+    grouped: dict[tuple[str, str, str], list[MeasuredRun]] = {}
+    for run in measured:
+        key = (run.library, run.dataset, run.stage)
+        grouped.setdefault(key, []).append(run)
+
+    rows: list[dict[str, str | int | float]] = []
+    for library, dataset, stage in CONFIGURATIONS:
+        group = grouped.get((library, dataset, stage), [])
+        if len(group) != 10:
+            raise ValueError(f"Expected 10 measured runs for {library}/{dataset}/{stage}")
+        energy = [run.net_energy_j for run in group]
+        runtime = [run.elapsed_s for run in group]
+        mean_energy = fmean(energy)
+        if mean_energy <= 0:
+            raise ValueError(f"Non-positive mean net energy for {library}/{dataset}/{stage}")
+        cv_pct = 100 * stdev(energy) / mean_energy
+        if cv_pct > 10:
+            raise ValueError(f"Net energy CV exceeds 10% for {library}/{dataset}/{stage}")
+        q1_energy, q3_energy = quartiles(energy)
+        q1_runtime, q3_runtime = quartiles(runtime)
+        low_energy, high_energy = bootstrap_median_ci(energy)
+        low_runtime, high_runtime = bootstrap_median_ci(runtime)
+        rows.append({
+            "dataset": dataset,
+            "library": library,
+            "stage": stage,
+            "n": len(group),
+            "median_net_j": median(energy),
+            "q1_net_j": q1_energy,
+            "q3_net_j": q3_energy,
+            "iqr_net_j": q3_energy - q1_energy,
+            "trimmed_mean_net_j": trimmed_mean_10pct(energy),
+            "ci95_low_net_j": low_energy,
+            "ci95_high_net_j": high_energy,
+            "cv_net_pct": cv_pct,
+            "median_runtime_s": median(runtime),
+            "q1_runtime_s": q1_runtime,
+            "q3_runtime_s": q3_runtime,
+            "iqr_runtime_s": q3_runtime - q1_runtime,
+            "ci95_low_runtime_s": low_runtime,
+            "ci95_high_runtime_s": high_runtime,
+            "median_peak_rss_mib": median(run.peak_rss_kb / 1024 for run in group),
+        })
+    return rows
+
+
+def write_summary(rows: list[dict[str, str | int | float]], output_dir: Path) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / "summary.csv"
+    with path.open("w", newline="", encoding="utf-8") as destination:
+        writer = csv.DictWriter(destination, fieldnames=SUMMARY_FIELDS, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    return path
+
+
 def main() -> None:
     args = parse_args()
     try:
         idle_power_w, measured = audit_session(args.session_dir)
     except ValueError as error:
         raise SystemExit(str(error)) from error
+    rows = summarize_measured_runs(measured)
+    output_dir = args.output_dir.resolve()
+    if output_dir == args.session_dir.resolve() or args.session_dir.resolve() in output_dir.parents:
+        raise SystemExit("The output directory must be outside the raw session")
+    summary_path = write_summary(rows, output_dir)
     manual_group = [
         run.net_energy_j for run in measured
         if (run.library, run.dataset, run.stage) == ("pandas", "insurance", "full")
@@ -168,6 +263,7 @@ def main() -> None:
     print(f"Session audit: 12 warm-ups and {len(measured)} measured runs complete")
     print(f"Idle package power: {idle_power_w:.6f} W")
     print(f"Pandas / Insurance / full median: {median(manual_group):.7f} J")
+    print(f"Wrote {len(rows)} configurations to {summary_path}")
 
 
 if __name__ == "__main__":
