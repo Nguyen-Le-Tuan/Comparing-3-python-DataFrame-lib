@@ -78,12 +78,11 @@ Several differences may contribute. Current library versions could behave differ
 
 ## 5. Limitations
 
-<!--
-- Which items from PROTOCOL.md Section 11 actually change how the results should be read?
-- What does the C2 criterion gap mean for the verdict?
-- What do these results NOT tell us (other datasets, models, machines, versions)?
-- Which analysis conventions were set after the run (PROTOCOL.md Section 13)?
--->
+This is a comparison of three pipelines on one laptop, not a measurement of each library in isolation. RAPL package energy includes activity outside the Python process. Subtracting an idle baseline and closing other apps reduce that influence but cannot remove it completely. The laptop has no DRAM energy counter, so its net package-energy values cannot be compared directly with the paper's core-plus-DRAM joules. Different library versions, the larger Insurance file, and my chosen Random Forest and TruncatedSVD implementations also limit the comparison with the original workloads. CPU temperature was recorded, but clock throttling was not measured directly.
+
+Ten runs per configuration give a local estimate, not a general performance guarantee. The protocol fixed median/IQR reporting, the 10,000-resample bootstrap decision rule, and the 10% CV stop threshold before the full run. The exact percentile interval, quartile interpolation, trimmed-mean convention, and sample-SD convention for CV were specified after the run and logged in Protocol Section 13. Overlapping intervals mean “no clear difference” under my rule, not proof that two libraries consume identical energy.
+
+The C2 outcome categories have a gap when Pandas and Polars are indistinguishable by that rule while Dask is clearly higher. I therefore report “not covered by the pre-registered criteria,” rather than changing Section 9 after seeing the data. These measurements do not establish what would happen for the paper's other models, COCO, another machine, or the older software stack.
 
 ## 6. Next experiment
 
