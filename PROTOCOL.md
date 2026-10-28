@@ -194,3 +194,73 @@ Pipeline code is written with AI assistance, one step at a time, then reviewed, 
 | --- | --- | --- |
 | 2026-10-25 | Analysis conventions set in `scripts/analyze_results.py` (described in `results/analysis/method.md`), after the full run: percentile bootstrap interval for the median; quartiles with linear interpolation; 10% trimmed mean drops the lowest and highest of the 10 values; CV = sample standard deviation / mean net energy; data share and training estimate use stage medians, not paired run differences; peak memory reported in MiB (kB / 1024) instead of MB. | These conventions fill in details not specified by the frozen protocol. The script reports measurements and derived statistics; I interpret C1 and C2 separately. |
 | 2026-10-25 | For C2, I report the outcome as "not covered by the pre-registered criteria" when Pandas and Polars have overlapping energy CIs while Dask is clearly higher. I leave the original Section 9 categories unchanged. | Section 9 does not specify what "Polars is the lowest" means when the Pandas–Polars difference is unclear. Its partial-outcome row also requires Pandas–Dask to be unclear or reversed, which is not observed. Assigning a standard label would force this result into a row whose conditions do not fit. |
+| 2026-10-28 | Scope extended to SVR, XGBoost and TabNet on Insurance and NCF on ML-1M (Section 14). TabNet, listed as "Not tested" in Section 2, is now in scope; NCF and the optional GPU work are now required. C1, C2 and their reported outcomes are unchanged. | Author's decision on Oct 28, 2026 to prioritize a complete comparison over the original email date. The new claims, hypotheses, model settings and outcome criteria are written in Section 14 before any measurement of these models. |
+
+## 14. Scope extension (amendment, 2026-10-28)
+
+| Field | Value |
+| --- | --- |
+| Status | DRAFT. To be set to FROZEN, with the date and commit, before the second measurement session |
+| Applies to | New claims C3–C6 only. Sections 1–12 and the C1/C2 results stay as frozen on Oct 25, 2026 |
+
+### 14.1 Reason
+
+On Oct 28, 2026, after the C1/C2 session, I decided to measure every Insurance and ML-1M model in the paper's Table 1 before writing to the authors. COCO stays out of scope (Section 14.9).
+
+### 14.2 Paper values (Table 1)
+
+Transcribed from Table 1 and checked against the arXiv HTML version. As in Section 8, I compare directions and relative gaps, not absolute joules.
+
+| Model | Dataset | Backend | Runtime (s) | CPU energy (J) | GPU energy (J) |
+| --- | --- | --- | ---: | ---: | ---: |
+| SVR | Insurance | Pandas | 0.160 | 87.706 | 8.65 |
+| SVR | Insurance | Polars | 0.168 | 87.712 | 7.50 |
+| SVR | Insurance | Dask | 0.364 | 106.572 | 12.14 |
+| XGBoost | Insurance | Pandas | 0.204 | 96.336 | 8.67 |
+| XGBoost | Insurance | Polars | 0.192 | 96.218 | 8.65 |
+| XGBoost | Insurance | Dask | 0.410 | 115.654 | 15.02 |
+| TabNet | Insurance | Pandas | 1.688 | 447.914 | 106.42 |
+| TabNet | Insurance | Polars | 1.826 | 245.066 | 113.21 |
+| TabNet | Insurance | Dask | 1.844 | 334.002 | 109.98 |
+| NCF | ML-1M | Pandas | 17.916 | 1,801.422 | 339.39 |
+| NCF | ML-1M | Polars | 2.526 | 497.992 | 142.76 |
+| NCF | ML-1M | Dask | 64.871 | 6,313.152 | 2,139.67 |
+
+The paper does not state hyperparameters, epochs, batch size, architecture or training device for these four models. Section 4.1 says TabNet requires a GPU; Section 3.2.2 lists NCF, but not TabNet, among the GPU experiments; Table 1 also reports GPU energy for SVR and XGBoost without naming their device.
+
+### 14.3 Claims
+
+- **C3 (Insurance, SVR):** _To be written by the author before measurement._
+- **C4 (Insurance, XGBoost):** _To be written by the author before measurement._
+- **C5 (Insurance, TabNet):** _To be written by the author before measurement._
+- **C6 (ML-1M, NCF):** _To be written by the author before measurement._
+
+### 14.4 Hypotheses before measurement
+
+_To be written by the author before measurement. Not edited after the second session starts._
+
+### 14.5 Models and settings
+
+The data stage in Section 4 is unchanged. Insurance models use the same 80/20 split with `random_state=42` as C1. Decisions still open, to be fixed here before the pilot:
+
+- SVR: kernel and other hyperparameters; whether the target `charges` is scaled.
+- XGBoost: hyperparameters, number of threads, `random_state`.
+- TabNet: hyperparameters, number of epochs, batch size, device (CPU or GPU).
+- NCF: input derived from the ML-1M rating matrix `X` of Section 4; architecture, embedding size, loss, epochs, batch size, device.
+
+### 14.6 Configurations in the second session
+
+_To be decided by the author before measurement:_ which `--stage data` configurations are re-measured in the same session; whether Random Forest and TruncatedSVD are re-run as within-session reference points; the resulting number of configurations, warm-ups and measured runs (one warm-up and ten measured runs per configuration, as in Section 7).
+
+### 14.7 GPU energy measurement
+
+_To be decided by the author before measurement:_ NVML method (cumulative energy counter or fixed-interval power sampling), GPU idle baseline, and a validation test that must pass before measuring, as Section 7 requires for CPU energy. CPU energy remains net `power/energy-pkg/` as defined in Section 6.
+
+### 14.8 Outcome criteria for C3–C6
+
+_To be written by the author before measurement,_ using the decision rule in Section 8. Each criterion must state the outcome when the 95% intervals of two libraries overlap (the case Section 9 left open for C2; see Section 13).
+
+### 14.9 Still not tested
+
+- ResNet and Mask R-CNN on COCO: training them exceeds this laptop's 4 GB of GPU memory and about 14 GB of usable RAM.
+- DRAM energy: this CPU exposes no DRAM RAPL counter.
