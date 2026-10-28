@@ -1,6 +1,6 @@
 # DataFrame energy replication on a laptop
 
-This repository tests two results from [Kumar, Imran, and Kosar's paper](https://arxiv.org/pdf/2511.08644): Insurance + Random Forest (C1) and MovieLens-1M + collaborative filtering (C2). It compares Pandas, Polars, and Dask on one laptop. This is a small-scale replication, not an exact reproduction of the paper's hardware, software, or energy metric. The [protocol](PROTOCOL.md) fixes the workload and decision rules; the [report](report/REPORT.md) gives the interpretation. The scope is being extended to SVR, XGBoost and TabNet on Insurance and NCF on ML-1M ([Protocol Section 14](PROTOCOL.md#14-scope-extension-amendment-2026-10-28)); results for those models are pending.
+This repository tests two results from [Kumar, Imran, and Kosar's paper](https://arxiv.org/pdf/2511.08644): Insurance + Random Forest (C1) and MovieLens-1M + collaborative filtering (C2). It compares Pandas, Polars, and Dask on one laptop. This is a small-scale replication, not an exact reproduction of the paper's hardware, software, or energy metric. The [protocol](PROTOCOL.md) fixes the workload and decision rules; the [report](report/REPORT.md) gives the interpretation. The scope is being extended ([protocol v2](PROTOCOL.md)) to SVR, XGBoost and TabNet on Insurance, NCF on ML-1M, GPU energy, and a version comparison with the paper's library versions; results for these are pending.
 
 ## Setup
 

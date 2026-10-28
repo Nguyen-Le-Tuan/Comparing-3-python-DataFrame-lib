@@ -3,10 +3,12 @@
 | Field | Value |
 | --- | --- |
 | Author | Le Tuan Nguyen (University at Buffalo, CS) |
-| Status | FROZEN |
-| Last updated | Oct 25, 2026 |
+| Status | **v1 FROZEN** (C1–C2): content committed before the first session in `4badf06`, status set in `5881ae5` · **v2 DRAFT** (C3–C6 and version comparison): to be FROZEN before the second session |
+| Last updated | Oct 28, 2026 |
 | Study type | Small-scale **replication**:personal laptop, updated library |
 | Repository | https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib |
+
+**How to read this document.** Version 1 (Oct 25, 2026) covers C1 and C2. Version 2 (Oct 28, 2026) extends the same study to the remaining Insurance and ML-1M models and adds a version comparison. Text added in v2 is marked **[v2]**; v1 text that v2 replaces is struck through, not deleted. Section 13 lists every change made after the v1 freeze.
 
 ## 0. Original Paper information
 
@@ -23,8 +25,30 @@ Gợi ý C2: ML-1M + CF: Polars < Pandas < Dask (1.437 / 3.328 / 3.748 J). -->
 
 - **Claim C1:** Testing the energy consumption of Pandas, Polars and Dask on the Insurance Dataset. The paper reported that by using *Random Forest*, Pandas and Polars use similar CPU energy (146.8 J) while Dask uses more 14% (167.4 J); however, on SVR and XGBoost, Dask is even higher (20-22%).
 - **Claim C2:** Testing on the MovieLens 1M will result in energy uses: Polars < Pandas < Dask.
+- **Claim C3 [v2] (Insurance, SVR):** _To be written by the author before measurement._
+- **Claim C4 [v2] (Insurance, XGBoost):** _To be written by the author before measurement._
+- **Claim C5 [v2] (Insurance, TabNet):** _To be written by the author before measurement._
+- **Claim C6 [v2] (ML-1M, NCF):** _To be written by the author before measurement._
 - **Where in the paper:** Table 1; Section 4.1 and Figure 5 (Insurance); Section 4.3 and Figure 3a (ML-1M)
 - **My hypothesis before running:** Because the Insurance dataset is in tabular format and only has 1k rows while the MovieLens is 1M samples, I assume that Pandas will perform the best in the Insurance Dataset while the Polars will be the best in the ML-1M. I have these assumptions because I already knew that Pandas is still advantageous on small data while Polars (which written in Rust) will outperform Pandas on larger data (from several GB to hundred GB).  <!-- Bạn đoán kết quả trên laptop sẽ thế nào, và vì sao. Viết trước khi chạy, không sửa sau. -->
+- **My hypothesis for C3–C6 and the version comparison [v2]:** _To be written by the author before the second session; not edited after it starts._
+
+**Paper values for C3–C6 [v2]** (Table 1, checked against the arXiv HTML version; compared by direction and relative gap, not absolute joules):
+
+| Model | Dataset | Backend | Runtime (s) | CPU energy (J) | GPU energy (J) |
+| --- | --- | --- | ---: | ---: | ---: |
+| SVR | Insurance | Pandas | 0.160 | 87.706 | 8.65 |
+| SVR | Insurance | Polars | 0.168 | 87.712 | 7.50 |
+| SVR | Insurance | Dask | 0.364 | 106.572 | 12.14 |
+| XGBoost | Insurance | Pandas | 0.204 | 96.336 | 8.67 |
+| XGBoost | Insurance | Polars | 0.192 | 96.218 | 8.65 |
+| XGBoost | Insurance | Dask | 0.410 | 115.654 | 15.02 |
+| TabNet | Insurance | Pandas | 1.688 | 447.914 | 106.42 |
+| TabNet | Insurance | Polars | 1.826 | 245.066 | 113.21 |
+| TabNet | Insurance | Dask | 1.844 | 334.002 | 109.98 |
+| NCF | ML-1M | Pandas | 17.916 | 1,801.422 | 339.39 |
+| NCF | ML-1M | Polars | 2.526 | 497.992 | 142.76 |
+| NCF | ML-1M | Dask | 64.871 | 6,313.152 | 2,139.67 |
 
 ## 2. Scope
 
@@ -32,8 +56,12 @@ In this replication, I check two results from Table 1 of the paper on two datase
 
 - **Required (C1):** Insurance with Random Forest.
 - **Secondary (C2):** MovieLens-1M with Collaborative Filtering (CF), measured in the same full session as C1.
-- **Deciding later:** Support Vector Regression (SVR) and XGBoost on Insurance; a small Neural Collaborative Filtering (NCF) model on the GPU.
-- **Not tested:** TabNet; ResNet and Mask R-CNN on COCO, because training them needs far more GPU memory and time than my laptop (4 GB VRAM, about 14 GB of usable RAM) and my schedule allow; DRAM energy, because my CPU does not expose a DRAM energy counter.
+- ~~**Deciding later:** Support Vector Regression (SVR) and XGBoost on Insurance; a small Neural Collaborative Filtering (NCF) model on the GPU.~~
+- ~~**Not tested:** TabNet; ResNet and Mask R-CNN on COCO, because training them needs far more GPU memory and time than my laptop (4 GB VRAM, about 14 GB of usable RAM) and my schedule allow; DRAM energy, because my CPU does not expose a DRAM energy counter.~~
+- **Required [v2] (C3–C5):** Insurance with SVR, XGBoost and TabNet.
+- **Required [v2] (C6):** MovieLens-1M with Neural Collaborative Filtering (NCF), with GPU energy measured.
+- **Required [v2] (version comparison):** Insurance run in a Python 3.8 environment with the paper's library versions (Pandas 1.4.2, Polars 0.10.18, Dask 2022.2.0), to separate the effect of library versions from that of hardware. Configurations to be fixed in Section 5 before measurement.
+- **Not tested [v2]:** ResNet and Mask R-CNN on COCO, because training them exceeds this laptop's 4 GB of GPU memory and about 14 GB of usable RAM; DRAM energy, because my CPU does not expose a DRAM energy counter.
 
 ## 3. Data
 
@@ -47,7 +75,7 @@ In this replication, I check two results from Table 1 of the paper on two datase
 
 Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the paper). All three libraries must do exactly these steps.
 
-**Insurance (C1)**
+**Insurance (C1; C3–C5 [v2])**
 
 1. Load `insurance.csv` into a dataframe (expect 1,338 rows × 7 columns: `age`, `sex`, `bmi`, `children`, `smoker`, `region`, `charges`).
 2. Take the raw dataframe and impute missing values (numeric columns: the column mean; text columns: the most frequent value), producing a complete dataframe. Insurance has no missing cells, so this step changes nothing, but it still runs so that every library does the same work as in the paper. I use the mean instead of the median because Dask only computes an approximate median.
@@ -55,7 +83,7 @@ Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the pap
 4. Take the numeric dataframe and standardize `age`, `bmi` and `children` (subtract the mean, divide by the sample standard deviation with ddof = 1), producing a scaled dataframe. The target `charges` is not scaled.
 5. Take the scaled dataframe and convert it to NumPy arrays: `X` with 9 feature columns in a fixed order (`age`, `bmi`, `children`, `sex`, `smoker`, `region_northeast`, `region_northwest`, `region_southeast`, `region_southwest`) and `y` = `charges`. Then slice `X` and `y` into mini-batches of 64 rows in file order (21 batches; the last one has 58 rows).
 
-**MovieLens-1M (C2)**:
+**MovieLens-1M (C2; C6 [v2])**:
 
 1. Load `ratings.dat` (1,000,209 × 4), `users.dat` (6,040 × 5) and `movies.dat` (3,883 × 3), using the `::` separator → three dataframes.
 2. Join ratings to users on `UserID` and to movies on `MovieID`, validating many-to-one joins and preserving all 1,000,209 ratings → one joined dataframe.
@@ -78,13 +106,19 @@ For ML-1M, Dask reads :: with the Python CSV engine and default block size, join
 - **Downstream models** (the paper does not report its hyperparameters, so these are my choices):
   - Insurance: scikit-learn `RandomForestRegressor` with default hyperparameters (100 trees, one CPU core) and `random_state=42`, trained on 80% of the rows (`train_test_split` with `test_size=0.2`, `random_state=42`: 1,070 training rows, 268 test rows). Random Forest trains on the whole training array; the mini-batch step is kept only to follow the paper. The test R² is printed as a sanity check.
   - MovieLens-1M: CF as a factorization of the user × movie matrix with `TruncatedSVD(n_components=50, random_state=42)`.
-  - NCF (optional, GPU): defined later, only if Step 7 is done.
+  - ~~NCF (optional, GPU): defined later, only if Step 7 is done.~~
+  - **[v2]** The data stage above is unchanged for C3–C6. Insurance models use the same 80/20 split with `random_state=42` as Random Forest. Settings to be fixed by the author before the pilot:
+    - SVR (C3): kernel and other hyperparameters; whether the target `charges` is scaled.
+    - XGBoost (C4): hyperparameters, number of threads, `random_state`.
+    - TabNet (C5): hyperparameters, number of epochs, batch size, device (CPU or GPU).
+    - NCF (C6): input derived from the rating matrix `X` above; architecture, embedding size, loss, epochs, batch size, device.
 
 ## 5. Comparisons
 
 - **Baseline:** Pandas.
 - **Compared:** Polars, Dask.
-- **Configurations:** 3 libraries × 2 datasets × 2 stages = 12 configurations.
+- **Configurations (session 1, v1):** 3 libraries × 2 datasets × 2 stages = 12 configurations.
+- **Configurations (session 2) [v2]:** _To be decided by the author before measurement:_ the new `--stage full` configurations for C3–C6; which `--stage data` configurations are re-measured in the same session; whether Random Forest and TruncatedSVD are re-run as within-session reference points; the version-comparison configurations; and the resulting numbers of warm-ups and measured runs (one warm-up and ten measured runs per configuration, as in Section 7).
 
 ## 6. Metrics and how they are measured
 
@@ -96,7 +130,7 @@ For ML-1M, Dask reads :: with the Python CSV engine and default block size, join
 | Net CPU package energy | J | package energy − session idle package power × runtime; core energy is reported separately and is not substituted for package energy |
 | Training energy (derived) | J | median net package energy of `--stage full` minus median net package energy of `--stage data` for the same library and dataset; this is an estimate, not a separately metered training phase |
 | Peak memory | kB (convert to MB in analysis) | maximum resident set size from `/usr/bin/time -v` |
-| GPU energy | Not measured in C1/C2 | A GPU measurement method must be defined before any optional NCF experiment; the Step 6 script does not sample GPU power |
+| GPU energy | J | ~~Not measured in C1/C2. A GPU measurement method must be defined before any optional NCF experiment; the Step 6 script does not sample GPU power~~ **[v2]** Measured in session 2 with NVML: method (cumulative energy counter or fixed-interval power sampling) and GPU idle baseline to be fixed by the author before measurement; CPU energy stays net `power/energy-pkg/` |
 | Disk I/O / usage | Not measured | The Step 6 script does not record per-run disk I/O or disk footprint; storage hardware is reported in Section 10, not treated as a workload metric |
 
 The pre-registered measurement runner is `scripts/run_measurements.sh`. It calls `perf stat` and `/usr/bin/time -v` around each fresh pipeline process, records both RAPL domains, and checks the pipeline output. It sets `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, and `PYTHONDONTWRITEBYTECODE=1` for every run. The script is launched once for the full session:
@@ -106,6 +140,8 @@ sudo ./scripts/run_measurements.sh
 ```
 
 An optional preflight pilot uses `sudo ./scripts/run_measurements.sh --pilot pandas insurance data`. Its results are stored separately and excluded from the final analysis. No pilot or full run had been performed when this protocol update was written.
+
+**[v2]** For session 2, the runner, pipeline and analysis script are extended for C3–C6, GPU energy and the version comparison. The changes are listed here before the v2 freeze.
 
 ## 7. Procedure
 
@@ -127,6 +163,8 @@ Before the full session, review the optional pilot output and this protocol. If 
 6. **Raw data and failures:** A unique directory under `results/raw/full-.../` stores the schedule, input SHA-256 values, Git state, pre/post CPU/network/power state, idle baseline, `runs.csv`, and each run's `perf.csv`, `time.txt`, stdout, and stderr. Warm-ups and failed attempts remain in the raw data. The script stops on a failed run and marks the session `INCOMPLETE`; such a session is not used as the final 120-run dataset. A pilot is stored under `results/raw/pilot-.../` and excluded from final analysis. No result is selectively deleted after inspection.
 7. **Session-specific report (after the full run):** Add a brief `session_notes.md` inside that `results/raw/full-.../` directory. Manually state whether the browser, IDE, and other avoidable apps were closed; whether AC and Airplane mode were maintained; and any interruptions, updates, thermal concerns, or reruns. Refer to `cpu_state_before.txt`, `cpu_state_after.txt`, `idle/`, and `runs.csv` for observed machine settings and readings instead of copying the current app-open state into this protocol.
 
+**Session 2 [v2].** The second session follows steps 1–7 above with its own idle baseline. Before it starts: the new models pass the smoke test in step 4 (same checksums across libraries, every model runs in `--stage full`); the version-comparison environment passes the same smoke test; a GPU measurement validation test, to be defined by the author with its pass limit, passes; and a pilot of the new configurations is run and excluded from analysis. Then the v2 status above is set to FROZEN and committed.
+
 ## 8. Analysis plan
 
 For each configuration (library × dataset × stage), I report the median and the interquartile range (IQR) of net energy and runtime over the 10 measured runs. I use the median because one run may be unusually slow when a background process wakes up. I also report the trimmed mean, because the paper uses it.
@@ -135,6 +173,7 @@ For each configuration (library × dataset × stage), I report the median and th
 - **Comparison with the paper:** my laptop and library versions differ from the paper's, so I compare the **direction** of the results (which library uses more energy, and by roughly what percentage), not the absolute joules. Table 1 reports end-to-end numbers, so this comparison uses `--stage full`.
 - **Ranking on my laptop:** I also rank Pandas, Polars and Dask by median net energy and report my ranking next to the paper's.
 - **Decomposition:** the share of the data stage in the end-to-end energy, *data* / *full*.
+- **[v2]** The same rules apply to C3–C6 and to the version comparison. Results from different sessions are compared only by direction and ratio, because each session has its own idle baseline.
 
 ## 9. Outcome criteria
 
@@ -153,6 +192,8 @@ Written before the comparative pipeline measurements. Each claim is judged on `-
 - the three libraries give different checksums or a different feature-column order (smoke test in Section 7);
 - the coefficient of variation (standard deviation / mean) of net energy within one configuration is above 10%.
 
+**Outcome criteria for C3–C6 and the version comparison [v2]:** _To be written by the author before the second session,_ using the decision rule in Section 8. Each criterion must state the outcome when the 95% intervals of two libraries overlap (the case left open for C2; see Section 13). The stop-and-fix rules above also apply to session 2, together with the GPU validation test in Section 7.
+
 My hypothesis in Section 1 is checked separately in the report; it does not change these outcomes.
 
 ## 10. Environment
@@ -168,6 +209,7 @@ My hypothesis in Section 1 is checked separately in the report; it does not chan
 | Python | 3.12.14 (via uv) |
 | Library versions | Locked in `requirements.lock`; summary: Pandas 3.0.6, Polars 2.0.0, Dask 2026.8.0, pyarrow 26.0.0, numpy 2.5.4, scikit-learn 1.9.1. |
 | RAPL domains available | package, core, uncore, psys; **no DRAM** |
+| Version-comparison environment [v2] | Python 3.8 with Pandas 1.4.2, Polars 0.10.18, Dask 2022.2.0; exact versions recorded once installed |
 
 ## 11. Known differences from the paper and threats to validity
 
@@ -181,86 +223,20 @@ My hypothesis in Section 1 is checked separately in the report; it does not chan
 - The one-thread BLAS/OpenMP settings and this laptop's power policy may change timings relative to the paper, but they remain fixed across all local configurations.
 - Inconsistencies in the paper: it states both "five runs, trimmed mean and 95% CI" and "mean of four measured runs"; the Insurance row count differs from the cited dataset.
 - The paper does not report hyperparameters, the train/test split or the CF algorithm; the choices in Section 4 are ours.
+- **[v2]** The paper does not state hyperparameters, epochs, batch size, architecture or training device for SVR, XGBoost, TabNet or NCF. Section 4.1 says TabNet requires a GPU, but Section 3.2.2 lists only ResNet, Mask R-CNN and NCF as GPU experiments; Table 1 also reports GPU energy for SVR and XGBoost without naming their device.
+- **[v2]** The decision to add C3–C6 and the version comparison was made after the C1/C2 results were known. The new claims, hypotheses and criteria are written before any measurement of the new models.
 
 ## 12. Use of AI assistance
 
-Pipeline code is written with AI assistance, one step at a time, then reviewed, run and annotated by the author. Sections 2, 4, 7, 8 and 9 of this protocol and the scripts in scripts/ were drafted with AI assistance from the author’s decisions and terminal commands, then reviewed by the author. The claims, hypothesis, data choices and all measurements are the author’s own.
+Pipeline code is written with AI assistance, one step at a time, then reviewed, run and annotated by the author. Sections 2, 4, 7, 8 and 9 of this protocol and the scripts in scripts/ were drafted with AI assistance from the author’s decisions and terminal commands, then reviewed by the author. The claims, hypothesis, data choices and all measurements are the author’s own. **[v2]** The v2 structure of this document (merging the extension into Sections 1–12) was drafted with AI assistance at the author's direction; the v2 claims, hypotheses, settings and criteria are written by the author.
 
-## 13. Deviations log
+## 13. Version history and changes after the v1 freeze
 
-<!-- Sau khi FROZEN, mọi thay đổi ghi ở đây: ngày, thay đổi gì, vì sao. Không sửa ngầm các mục trên. -->
+Every change after the v1 freeze is listed here with its date and reason. Earlier versions remain in the Git history.
 
 | Date | Change | Reason |
 | --- | --- | --- |
 | 2026-10-25 | Analysis conventions set in `scripts/analyze_results.py` (described in `results/analysis/method.md`), after the full run: percentile bootstrap interval for the median; quartiles with linear interpolation; 10% trimmed mean drops the lowest and highest of the 10 values; CV = sample standard deviation / mean net energy; data share and training estimate use stage medians, not paired run differences; peak memory reported in MiB (kB / 1024) instead of MB. | These conventions fill in details not specified by the frozen protocol. The script reports measurements and derived statistics; I interpret C1 and C2 separately. |
 | 2026-10-25 | For C2, I report the outcome as "not covered by the pre-registered criteria" when Pandas and Polars have overlapping energy CIs while Dask is clearly higher. I leave the original Section 9 categories unchanged. | Section 9 does not specify what "Polars is the lowest" means when the Pandas–Polars difference is unclear. Its partial-outcome row also requires Pandas–Dask to be unclear or reversed, which is not observed. Assigning a standard label would force this result into a row whose conditions do not fit. |
-| 2026-10-28 | Scope extended to SVR, XGBoost and TabNet on Insurance and NCF on ML-1M (Section 14). TabNet, listed as "Not tested" in Section 2, is now in scope; NCF and the optional GPU work are now required. C1, C2 and their reported outcomes are unchanged. | Author's decision on Oct 28, 2026 to prioritize a complete comparison over the original email date. The new claims, hypotheses, model settings and outcome criteria are written in Section 14 before any measurement of these models. |
-
-## 14. Scope extension (amendment, 2026-10-28)
-
-| Field | Value |
-| --- | --- |
-| Status | DRAFT. To be set to FROZEN, with the date and commit, before the second measurement session |
-| Applies to | New claims C3–C6 only. Sections 1–12 and the C1/C2 results stay as frozen on Oct 25, 2026 |
-
-### 14.1 Reason
-
-On Oct 28, 2026, after the C1/C2 session, I decided to measure every Insurance and ML-1M model in the paper's Table 1 before writing to the authors. COCO stays out of scope (Section 14.9).
-
-### 14.2 Paper values (Table 1)
-
-Transcribed from Table 1 and checked against the arXiv HTML version. As in Section 8, I compare directions and relative gaps, not absolute joules.
-
-| Model | Dataset | Backend | Runtime (s) | CPU energy (J) | GPU energy (J) |
-| --- | --- | --- | ---: | ---: | ---: |
-| SVR | Insurance | Pandas | 0.160 | 87.706 | 8.65 |
-| SVR | Insurance | Polars | 0.168 | 87.712 | 7.50 |
-| SVR | Insurance | Dask | 0.364 | 106.572 | 12.14 |
-| XGBoost | Insurance | Pandas | 0.204 | 96.336 | 8.67 |
-| XGBoost | Insurance | Polars | 0.192 | 96.218 | 8.65 |
-| XGBoost | Insurance | Dask | 0.410 | 115.654 | 15.02 |
-| TabNet | Insurance | Pandas | 1.688 | 447.914 | 106.42 |
-| TabNet | Insurance | Polars | 1.826 | 245.066 | 113.21 |
-| TabNet | Insurance | Dask | 1.844 | 334.002 | 109.98 |
-| NCF | ML-1M | Pandas | 17.916 | 1,801.422 | 339.39 |
-| NCF | ML-1M | Polars | 2.526 | 497.992 | 142.76 |
-| NCF | ML-1M | Dask | 64.871 | 6,313.152 | 2,139.67 |
-
-The paper does not state hyperparameters, epochs, batch size, architecture or training device for these four models. Section 4.1 says TabNet requires a GPU; Section 3.2.2 lists NCF, but not TabNet, among the GPU experiments; Table 1 also reports GPU energy for SVR and XGBoost without naming their device.
-
-### 14.3 Claims
-
-- **C3 (Insurance, SVR):** _To be written by the author before measurement._
-- **C4 (Insurance, XGBoost):** _To be written by the author before measurement._
-- **C5 (Insurance, TabNet):** _To be written by the author before measurement._
-- **C6 (ML-1M, NCF):** _To be written by the author before measurement._
-
-### 14.4 Hypotheses before measurement
-
-_To be written by the author before measurement. Not edited after the second session starts._
-
-### 14.5 Models and settings
-
-The data stage in Section 4 is unchanged. Insurance models use the same 80/20 split with `random_state=42` as C1. Decisions still open, to be fixed here before the pilot:
-
-- SVR: kernel and other hyperparameters; whether the target `charges` is scaled.
-- XGBoost: hyperparameters, number of threads, `random_state`.
-- TabNet: hyperparameters, number of epochs, batch size, device (CPU or GPU).
-- NCF: input derived from the ML-1M rating matrix `X` of Section 4; architecture, embedding size, loss, epochs, batch size, device.
-
-### 14.6 Configurations in the second session
-
-_To be decided by the author before measurement:_ which `--stage data` configurations are re-measured in the same session; whether Random Forest and TruncatedSVD are re-run as within-session reference points; the resulting number of configurations, warm-ups and measured runs (one warm-up and ten measured runs per configuration, as in Section 7).
-
-### 14.7 GPU energy measurement
-
-_To be decided by the author before measurement:_ NVML method (cumulative energy counter or fixed-interval power sampling), GPU idle baseline, and a validation test that must pass before measuring, as Section 7 requires for CPU energy. CPU energy remains net `power/energy-pkg/` as defined in Section 6.
-
-### 14.8 Outcome criteria for C3–C6
-
-_To be written by the author before measurement,_ using the decision rule in Section 8. Each criterion must state the outcome when the 95% intervals of two libraries overlap (the case Section 9 left open for C2; see Section 13).
-
-### 14.9 Still not tested
-
-- ResNet and Mask R-CNN on COCO: training them exceeds this laptop's 4 GB of GPU memory and about 14 GB of usable RAM.
-- DRAM energy: this CPU exposes no DRAM RAPL counter.
+| 2026-10-28 | v2 started: scope extended to SVR, XGBoost and TabNet on Insurance (C3–C5), NCF on ML-1M (C6), GPU energy and a version comparison with the paper's library versions. TabNet, listed as "Not tested" in v1, is now in scope; NCF and the optional GPU work are now required. C1, C2 and their reported outcomes are unchanged. First recorded as a separate Section 14 (commit `7fde5a3`). | Author's decision on Oct 28, 2026 to prioritize a complete comparison over the original email date. The new claims, hypotheses, model settings and outcome criteria are written before any measurement of these models. |
+| 2026-10-28 | Document restructured: the former Section 14 was merged into Sections 1–12 with **[v2]** marks; superseded v1 text is struck through, not deleted. | So the protocol reads in one linear order. |
