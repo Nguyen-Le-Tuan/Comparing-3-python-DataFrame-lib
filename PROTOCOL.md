@@ -5,7 +5,7 @@
 | Author | Le Tuan Nguyen (University at Buffalo, CS) |
 | Study type | Small-scale **replication**: personal laptop, current library versions |
 | Session 1 (C1–C2) | Registered before measurement in commit `4badf06`; status set to FROZEN in `5881ae5`; measured Oct 25, 2026 |
-| Session 2 (C3–C6, version comparison) | Registered Oct 28, 2026, before measurement; frozen before the session starts |
+| Session 2 (C3–C6, version comparison) | DRAFT, updated Oct 28, 2026; claims, hypotheses, settings and criteria are incomplete; freeze and record the commit before official measurement |
 | Repository | https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib |
 
 ## 0. Original paper
@@ -62,7 +62,7 @@ I check six results from Table 1 on two datasets, Insurance and MovieLens-1M, in
 | C4 | Insurance | XGBoost | 2 |
 | C5 | Insurance | TabNet | 2 |
 | C6 | MovieLens-1M | Neural collaborative filtering (NCF), GPU energy measured | 2 |
-| Version comparison | Insurance | Python 3.8 with the paper's versions (Pandas 1.4.2, Polars 0.10.18, Dask 2022.2.0), to separate library-version effects from hardware effects | 2 |
+| Version comparison | Insurance | Python 3.8 with the paper's versions (Pandas 1.4.2, Polars 0.10.18, Dask 2022.2.0), compared with the current environment on the same laptop; Python and dependency changes are part of the software-stack comparison | 2 |
 
 **Not tested:** ResNet and Mask R-CNN on COCO, because training them exceeds this laptop's 4 GB of GPU memory and about 14 GB of usable RAM; DRAM energy, because the CPU exposes no DRAM energy counter.
 
@@ -115,6 +115,15 @@ Based on *Algorithm 1: Unified Data Processing Pipeline* (Section 3.1 of the pap
 - **Baseline:** Pandas. **Compared:** Polars, Dask.
 - **Session 1:** 3 libraries × 2 datasets × 2 stages = 12 configurations.
 - **Session 2:** _to be fixed before session 2: the full-stage configurations for C3–C6, which data-stage configurations are re-measured, whether Random Forest and TruncatedSVD are re-run as reference points, and the version-comparison configurations._
+
+**Implementation checklist, updated Oct 28, 2026.** Session 2 remains DRAFT. Code development and functional smoke tests may proceed now; model settings must be recorded before the corresponding pilot, and claims, hypotheses, measurement methods and criteria must be completed before collecting comparative energy results. Pilot output is excluded from final analysis.
+
+- [ ] **Oct 28 — define C3:** write the author's SVR hypothesis and the paper claim in Section 1; fix kernel, `C`, `epsilon`, `gamma` and target scaling in Section 4. If target scaling is used, fit its statistics on training targets only and inverse-transform predictions for evaluation. Keep the existing Insurance preprocessing and 80/20 split.
+- [ ] **Oct 28 — implement SVR:** add `--model` selection with dataset/model validation and keep existing commands working. Use one shared training function after the three backends produce their arrays. Fit the same model on the same training rows, report test R² and RMSE, and save smoke-test evidence for all three libraries. Completion means matching input checksums and split indices, finite predictions and metrics, and successful `data` and `full` runs; this is not an energy verdict.
+- [ ] **Next — implement XGBoost, then TabNet and NCF:** record each model's settings before its pilot; for NCF, define observed interactions, ID mapping, train/test split, loss and any negative sampling. Unrated cells are not automatically training targets of zero. Lock new dependencies and record actual CPU/GPU execution.
+- [ ] **Extend measurement and analysis:** identify configurations by session, software environment, library, dataset, model and stage; retain each environment's Python executable and dependency lock. Select data-stage baselines from the same session and environment. Validate GPU measurement and prevent new model results from being grouped together or mixed with session 1.
+- [ ] **Prepare version comparison:** use a separate Python 3.8 environment, record all resolved dependencies, and verify matching preprocessing outputs. Fix the Insurance model(s), parameters and run schedule in advance; differences cannot be attributed to a single library version when Python and other dependencies also change.
+- [ ] **Before official measurement:** finish Sections 1, 4–7 and 9, pass the functional checks and measurement validation, review the excluded pilot, then freeze and record the protocol/code commit. Write session-2 raw and analysis outputs to separate directories.
 
 ## 6. Metrics and how they are measured
 
