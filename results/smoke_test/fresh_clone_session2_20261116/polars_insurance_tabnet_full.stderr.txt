@@ -1,0 +1,2 @@
+/home/nguyenletuan/Desktop/session2-fresh-Ag6f6I/repo/.venv/lib/python3.12/site-packages/pytorch_tabnet/abstract_model.py:687: UserWarning: No early stopping will be performed, last training weights will be used.
+  warnings.warn(wrn_msg)
