@@ -51,8 +51,15 @@ def numeric(value: str, label: str, *, positive: bool = False) -> float:
 def audit(session: Path) -> dict[tuple[str, str, str, str, str], list[dict[str, float]]]:
     if (session / "session_status.txt").read_text(encoding="utf-8").strip() != "COMPLETE":
         raise ValueError("Session is incomplete")
-    required = ("requirements-current.lock", "requirements-legacy.lock", "environment.txt",
-                "gpu_samples.csv", "gpu_windows.csv", "gpu_validation.txt", "input_sha256.txt")
+    # Sessions already measured retain their two original lock snapshots.
+    # New sessions store the shared Python-marked lock as one file.
+    has_shared_lock = (session / "requirements.lock").is_file()
+    has_historical_locks = all((session / name).is_file() for name in
+                               ("requirements-current.lock", "requirements-legacy.lock"))
+    if not (has_shared_lock or has_historical_locks):
+        raise ValueError("Missing session dependency lock evidence")
+    required = ("environment.txt", "gpu_samples.csv", "gpu_windows.csv",
+                "gpu_validation.txt", "input_sha256.txt")
     if any(not (session / name).is_file() for name in required):
         raise ValueError("Missing session environment or GPU evidence")
     if "status=PASS" not in (session / "gpu_validation.txt").read_text(encoding="utf-8").splitlines():

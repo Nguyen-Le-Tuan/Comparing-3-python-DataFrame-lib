@@ -84,7 +84,7 @@ PY_CURRENT="$REPO_ROOT/.venv/bin/python"
 PY_LEGACY="$REPO_ROOT/.venv-legacy/bin/python"
 [[ -x $PY_CURRENT && -x $PY_LEGACY ]] || die 'Both Python environments must exist.'
 for input_file in \
-  pipeline.py models.py PROTOCOL.md requirements.lock requirements-legacy.lock \
+  pipeline.py models.py PROTOCOL.md requirements.lock \
   data/raw/insurance.csv \
   data/raw/ml-1m/ratings.dat data/raw/ml-1m/users.dat data/raw/ml-1m/movies.dat; do
   [[ -f $input_file ]] || die "Missing input: $input_file"
@@ -213,15 +213,14 @@ fi
   printf 'python_dont_write_bytecode=%s\n' "$PYTHONDONTWRITEBYTECODE"
   printf 'git_commit=%s\n' "$(git -c safe.directory="$REPO_ROOT" rev-parse HEAD)"
 } > "$SESSION_DIR/environment.txt"
-cp requirements.lock "$SESSION_DIR/requirements-current.lock"
-cp requirements-legacy.lock "$SESSION_DIR/requirements-legacy.lock"
+cp requirements.lock "$SESSION_DIR/requirements.lock"
 if [[ $MODE == full ]]; then
   cp "$GPU_VALIDATION" "$SESSION_DIR/gpu_validation.txt"
 fi
 git -c safe.directory="$REPO_ROOT" status --short > "$SESSION_DIR/git_status_before.txt"
 sha256sum scripts/run_session2.sh scripts/gpu_power.py scripts/validate_gpu.py \
   scripts/analyze_session2.py pipeline.py models.py PROTOCOL.md \
-  requirements.lock requirements-legacy.lock \
+  requirements.lock \
   data/raw/insurance.csv data/raw/ml-1m/*.dat > "$SESSION_DIR/input_sha256.txt"
 
 # Emit the exact process order before measuring anything. Each measured round

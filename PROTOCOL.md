@@ -115,7 +115,7 @@ The pipeline follows *Algorithm 1: Unified Data Processing Pipeline* (Section 3.
     - Architecture and fit: PyTorch user and movie embeddings of size 32 each (`num_embeddings=6040` and `3706`); concatenate the two vectors, then apply `Linear(64, 64)` → ReLU → `Linear(64, 32)` → ReLU → `Linear(32, 16)` → ReLU → `Linear(16, 1)` to produce one logit per pair. Train with `BCEWithLogitsLoss(reduction="mean")` and Adam (`lr=0.001`, `weight_decay=0`) for exactly 5 epochs, `batch_size=4096`, shuffled training batches, `drop_last=False`, `num_workers=0`, and no early stopping. Test with the fixed held-out positives and negatives; print test binary cross-entropy and ROC AUC. The paper does not disclose its NCF architecture, so this is my own implicit-feedback NCF with an MLP interaction function.
     - Device and repeatability: train and infer on `cuda:0` on the RTX 3050; stop if CUDA is unavailable, and synchronize CUDA before the measured process exits. For TabNet and NCF, seed Python, NumPy and PyTorch with 42 immediately before model setup, use a seeded PyTorch data-loader generator for NCF shuffling, disable cuDNN benchmarking, and require deterministic PyTorch algorithms. Set `CUBLAS_WORKSPACE_CONFIG=:4096:2` before importing PyTorch. A deterministic-kernel failure stops the pilot; devices and algorithms are never switched silently. Print the actual device, split counts and hashes of the ordered positive and sampled-negative pair arrays in every full run so that all three backends can be checked against the same workload. The 64-user-row slices in the data stage do not set the NCF training batch size.
 
-The [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_api.html), [pytorch-tabnet parameters](https://github.com/dreamquark-ai/tabnet#model-parameters), [NCF paper](https://arxiv.org/abs/1708.05031) and [PyTorch reproducibility guidance](https://docs.pytorch.org/docs/stable/notes/randomness.html) document the APIs and the model family. Exact package builds are recorded in `requirements.lock` and `requirements-legacy.lock`.
+The [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_api.html), [pytorch-tabnet parameters](https://github.com/dreamquark-ai/tabnet#model-parameters), [NCF paper](https://arxiv.org/abs/1708.05031) and [PyTorch reproducibility guidance](https://docs.pytorch.org/docs/stable/notes/randomness.html) document the APIs and the model family. Exact package builds for both Python environments are recorded in `requirements.lock` with Python-version markers; the two original lock snapshots remain with the session-2 raw results.
 
 ## 5. Comparisons
 
@@ -237,7 +237,7 @@ The hypotheses in Section 1 are checked separately in the report; they do not ch
 | perf | 7.0.14 |
 | Python | 3.12.14 (via uv) |
 | Library versions | Locked in `requirements.lock`: Pandas 3.0.6, Polars 2.0.0, Dask 2026.8.0, pyarrow 26.0.0, numpy 2.5.4, scikit-learn 1.9.1, XGBoost 3.4.1, PyTorch 2.15.0, pytorch-tabnet 4.1.0 and nvidia-ml-py 13.615.71 |
-| Version-comparison environment | Python 3.8.12 with Pandas 1.4.2, Polars 0.10.18 and Dask 2022.2.0; exact transitive dependencies in `requirements-legacy.lock` |
+| Version-comparison environment | Python 3.8.12 with Pandas 1.4.2, Polars 0.10.18 and Dask 2022.2.0; exact transitive dependencies in the Python 3.8 entries of `requirements.lock` |
 | RAPL domains | package, core, uncore, psys; **no DRAM** |
 
 ## 11. Known differences from the paper and threats to validity
