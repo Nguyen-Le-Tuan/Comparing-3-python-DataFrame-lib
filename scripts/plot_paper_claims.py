@@ -93,8 +93,8 @@ def panel(fig, box, title, values, domain):
                 fontsize=10, color="#111827")
 
 
-def figure(claim, rows, output):
-    domains = ("cpu", "gpu") if claim == "C6" else ("cpu",)
+def figure(claim, rows, output, domains=None):
+    domains = domains or (("cpu", "gpu") if claim == "C6" else ("cpu",))
     wide = len(domains) == 2
     fig = plt.figure(figsize=(12 if wide else 8, 4.25), facecolor="white")
     fig.text(0.5, 0.93, f"{claim} · {TITLES[claim]}", ha="center",
@@ -128,6 +128,10 @@ def main():
     for claim, rows in values.items():
         figure(claim, rows, args.output_dir / f"claim_{claim}_paper")
         print(f"Wrote claim_{claim}_paper.svg and .png")
+    for domain in ("cpu", "gpu"):
+        figure("C6", values["C6"], args.output_dir / f"claim_C6_{domain}_paper",
+               (domain,))
+        print(f"Wrote claim_C6_{domain}_paper.svg and .png")
 
 
 if __name__ == "__main__":

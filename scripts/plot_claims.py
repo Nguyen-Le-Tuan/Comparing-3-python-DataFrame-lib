@@ -150,6 +150,14 @@ def main() -> None:
         figure(title, subtitle, panels, args.output_dir / f"claim_C{index}")
         print(f"Wrote claim_C{index}.svg and claim_C{index}.png")
 
+    # A two-panel image becomes too small when paired with the paper on GitHub.
+    # Export each C6 energy domain separately for the report comparison.
+    for domain, panel_spec in zip(("cpu", "gpu"), specs[-1][2]):
+        figure(f"C6 · MovieLens-1M / NCF · {domain.upper()}",
+               "Session 2 · full stage · median of 10 runs; whiskers: 95% bootstrap CI",
+               [panel_spec], args.output_dir / f"claim_C6_{domain}")
+        print(f"Wrote claim_C6_{domain}.svg and .png")
+
 
 if __name__ == "__main__":
     main()
