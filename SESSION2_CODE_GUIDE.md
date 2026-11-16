@@ -25,7 +25,7 @@ The exact settings and the meaning of sampled negatives are in [Protocol Section
 | `scripts/smoke_legacy.py` | Runs Insurance data and Random Forest in both environments; verifies matching inputs and split indices. |
 | `scripts/gpu_power.py` | Samples NVML board watts every 100 ms; later integrates each run's ±2 s window and subtracts idle GPU power. |
 | `scripts/validate_gpu.py` | Controlled two-load GPU meter check with pass limits fixed in Section 7. It passed on Nov 15 after adding a 40 s cooldown. |
-| `scripts/run_session2.sh` | Separate draft runner for 30 configurations, 30 warm-ups and 300 measured runs. It requires an explicit `--full` and a passing GPU validation file. **Not run.** |
+| `scripts/run_session2.sh` | Separate runner for 30 configurations, 30 warm-ups and 300 measured runs. It requires an explicit `--full` and a passing GPU validation file. Excluded pilots ran; the official schedule has not. |
 | `scripts/analyze_session2.py` | Audits a complete session-2 directory, joins CPU and GPU raw values, and computes medians and confidence intervals within each environment/model. Never reads session-1 runs by default. |
 
 To repeat functional checks without measuring energy:
@@ -39,4 +39,4 @@ The first smoke-test evidence is in `results/smoke_test/session2/`, and the firs
 
 ## What is still pending
 
-The new GPU meter passed its controlled validation on Nov 15; the failed first attempt and passing second attempt are both retained under `results/validation/`. The repeated CPU validation passed on Nov 16 with kernel `7.0.0-42-generic`; its evidence is in `results/validation-20261116-001345/`. The session-2 runner and analysis have passed syntax checks, a schedule-count check, and a synthetic raw-session audit. Excluded TabNet and NCF pilots ran on Nov 16; an offline TabNet repeat resolved the anomalous idle baseline, although the cause of the first reading is unknown. No official session-2 benchmark has run. Freeze the protocol/code commit before any official measurement.
+The new GPU meter passed its controlled validation on Nov 15; the failed first attempt and passing second attempt are both retained under `results/validation/`. The repeated CPU validation passed on Nov 16 with kernel `7.0.0-42-generic`; its evidence is in `results/validation-20261116-001345/`. The session-2 runner and analysis have passed syntax checks, a schedule-count check, and a synthetic raw-session audit. Excluded TabNet and NCF pilots ran on Nov 16; an offline TabNet repeat had a normal idle baseline, although the cause of the first high reading is unknown. The protocol and code are frozen at Git tag `session2-frozen-20261116`. No official session-2 benchmark has run; it requires a prepared environment and explicit author approval.

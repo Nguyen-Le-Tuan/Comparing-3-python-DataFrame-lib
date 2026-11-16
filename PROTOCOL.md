@@ -5,7 +5,7 @@
 | Author | Le Tuan Nguyen (University at Buffalo, CS) |
 | Study type | Small-scale replication on a personal laptop with current library versions |
 | Session 1 (C1–C2) | Registered before measurement in commit `4badf06`; status set to FROZEN in `5881ae5`; measured Oct 25, 2026 |
-| Session 2 (C3–C6, version comparison) | DRAFT, updated Nov 16, 2026. Model smoke tests, GPU validation and repeated CPU validation passed. Excluded TabNet and NCF pilots have been reviewed; protocol freeze remains |
+| Session 2 (C3–C6, version comparison) | FROZEN on Nov 16, 2026 at Git tag `session2-frozen-20261116`, before any official session-2 measurement. Model smoke tests, GPU validation and repeated CPU validation passed; excluded TabNet and NCF pilots were reviewed |
 | Repository | https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib |
 
 ## 0. Original paper
@@ -126,14 +126,14 @@ The [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_
   - Python 3.8 with the paper's versions, 6 configurations: Insurance, Random Forest, `data` and `full` stages, compared with the matching current-environment runs of the same session.
   - GPU power is sampled in every run and judged only for C6.
 
-**Implementation checklist, updated Nov 15, 2026.** Session 2 remains DRAFT. Code development and functional smoke tests may proceed now; model settings must be recorded before the corresponding pilot, and claims, hypotheses, measurement methods and criteria must be completed before collecting comparative energy results. Pilot output is excluded from final analysis.
+**Implementation checklist, updated Nov 16, 2026.** Session 2 is FROZEN at tag `session2-frozen-20261116`. Model settings, claims, hypotheses, measurement methods and criteria were recorded before any official comparative energy results. Pilot output is excluded from final analysis.
 
 - [x] **Define C3 (Nov 15):** write the author's SVR hypothesis and the paper claim in Section 1; fix kernel, `C`, `epsilon`, `gamma` and target scaling in Section 4. If target scaling is used, fit its statistics on training targets only and inverse-transform predictions for evaluation. Keep the existing Insurance preprocessing and 80/20 split.
 - [x] **Implement SVR (Nov 15):** add `--model` selection with dataset/model validation and keep existing commands working. Use one shared training function after the three backends produce their arrays. Fit the same model on the same training rows, report test R² and RMSE, and save smoke-test evidence for all three libraries. Completion means matching input checksums and split indices, finite predictions and metrics, and successful `data` and `full` runs; this is not an energy verdict.
 - [x] **Implement XGBoost, then TabNet and NCF (Nov 15):** record each model's settings before its pilot; for NCF, define observed interactions, ID mapping, train/test split, loss and any negative sampling. Unrated cells are not automatically training targets of zero. Lock new dependencies and record actual CPU/GPU execution. Functional smoke evidence is in `results/smoke_test/session2/`.
-- [ ] **Validate measurement and analysis before official use:** `scripts/run_session2.sh`, `scripts/gpu_power.py` and `scripts/analyze_session2.py` identify configurations by session, software environment, library, dataset, model and stage; record both Python executable paths, copy each dependency lock and use data-stage baselines from the same session/environment. Static and synthetic checks, GPU validation and repeated CPU validation for kernel `7.0.0-42-generic` passed. A pilot remains pending. No session-2 benchmark has been run.
+- [x] **Validate measurement and analysis before official use:** `scripts/run_session2.sh`, `scripts/gpu_power.py` and `scripts/analyze_session2.py` identify configurations by session, software environment, library, dataset, model and stage; record both Python executable paths, copy each dependency lock and schedule data-stage baselines in the same session/environment. Static and synthetic checks, GPU validation and repeated CPU validation for kernel `7.0.0-42-generic` passed. Excluded TabNet and NCF pilots completed and were reviewed. No official session-2 benchmark has been run.
 - [x] **Prepare version comparison (Nov 15):** use a separate Python 3.8 environment, record all resolved dependencies, and verify matching preprocessing outputs. Fix the Insurance model(s), parameters and run schedule in advance; differences cannot be attributed to a single library version when Python and other dependencies also change. Functional evidence is in `results/smoke_test/session2_legacy/`.
-- [ ] **Before official measurement:** finish Sections 1, 4–7 and 9, pass the functional checks and measurement validation, review the excluded pilot, then freeze and record the protocol/code commit. Write session-2 raw and analysis outputs to separate directories.
+- [x] **Before official measurement:** finish Sections 1, 4–7 and 9, pass the functional checks and measurement validation, review the excluded pilots, then freeze the protocol/code at tag `session2-frozen-20261116`. The runner and analyzer write session-2 raw and analysis outputs to separate directories. The official measurement itself remains pending.
 
 ## 6. Metrics and how they are measured
 
@@ -156,13 +156,13 @@ The [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_
 - **Net GPU energy** = integral of power over the window − idle power × window length. It is recorded for every run but judged only for C6.
 - **Validity:** a GPU result is accepted only if the GPU validation test (Section 7) passes. NVML board power is not the paper's V100 measurement, so GPU energy is compared by direction only.
 
-The session-1 measurement runner is `scripts/run_measurements.sh`; session 2 uses the separate, draft `scripts/run_session2.sh`. They call `perf stat` and `/usr/bin/time -v` around each fresh pipeline process, record both RAPL domains, and check the pipeline output. They set `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1` and `PYTHONDONTWRITEBYTECODE=1` for every run. The command below is for the completed session-1 method only:
+The session-1 measurement runner is `scripts/run_measurements.sh`; session 2 uses the separate `scripts/run_session2.sh`. They call `perf stat` and `/usr/bin/time -v` around each fresh pipeline process, record both RAPL domains, and check the pipeline output. They set `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1` and `PYTHONDONTWRITEBYTECODE=1` for every run. The command below is for the completed session-1 method only:
 
 ```bash
 sudo ./scripts/run_measurements.sh
 ```
 
-A session-1 pilot uses `sudo ./scripts/run_measurements.sh --pilot pandas insurance data`; its results are stored separately and never analyzed. The session-2 runner requires `--full --gpu-validation <passing-file>` for an official run, or `--pilot <environment> <library> <dataset> <model> <stage>` for an excluded pilot. Neither has been run yet; `scripts/analyze_session2.py` audits only a complete session-2 raw directory.
+A session-1 pilot uses `sudo ./scripts/run_measurements.sh --pilot pandas insurance data`; its results are stored separately and never analyzed. The session-2 runner requires `--full --gpu-validation <passing-file>` for an official run, or `--pilot <environment> <library> <dataset> <model> <stage>` for an excluded pilot. Excluded session-2 pilots have run; the official session-2 measurement has not. `scripts/analyze_session2.py` audits only a complete session-2 raw directory.
 
 ## 7. Procedure
 

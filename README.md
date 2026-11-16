@@ -43,7 +43,7 @@ uv pip sync requirements-legacy.lock --python .venv-legacy/bin/python
 .venv/bin/python scripts/smoke_legacy.py
 ```
 
-Session-2 measurement code is in `scripts/run_session2.sh`; GPU power logging and offline integration are in `scripts/gpu_power.py`, the controlled GPU meter check is in `scripts/validate_gpu.py`, and session-2 raw-data auditing is in `scripts/analyze_session2.py`. These are separate from the session-1 runner and analyzer. They have not been used to collect or analyze a session-2 benchmark. The session-2 runner requires an explicit `--full` flag and a passing GPU validation file; do not use it before reviewing and freezing the protocol.
+Session-2 measurement code is in `scripts/run_session2.sh`; GPU power logging and offline integration are in `scripts/gpu_power.py`, the controlled GPU meter check is in `scripts/validate_gpu.py`, and session-2 raw-data auditing is in `scripts/analyze_session2.py`. These are separate from the session-1 runner and analyzer. Excluded pilots have run, but no official session-2 benchmark has been collected or analyzed. The protocol and code are frozen at tag `session2-frozen-20261116`. The official runner requires an explicit `--full` flag, a passing GPU validation file, a prepared environment and author approval.
 
 The three backends must produce matching shapes, feature/axis order, and checksums before energy results are compared. See Protocol Sections 4 and 7 for the expected outputs and all twelve configurations.
 
