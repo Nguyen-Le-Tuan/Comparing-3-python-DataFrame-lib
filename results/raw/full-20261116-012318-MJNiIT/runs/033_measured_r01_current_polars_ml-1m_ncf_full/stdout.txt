@@ -1,0 +1,15 @@
+Model: ncf
+Joined shape: (1000209, 10)
+X shape: (6040, 3706) dtype: float64
+Number of batches: 95
+Nonzero ratings: 1000209
+X sum: 3582313.0000000000
+UserID order SHA-256: 778f9345757ada755e448c9333f347a68fdfd7654ff7fc1cfa8d230398106103
+MovieID order SHA-256: e28d14fcbf71098b6196f208ffe97401262c7312caf73893f8994bce5a0ac4c0
+train positive pairs: 802553 SHA-256: 43c88abe961e1beaa84e0d5387c964704f60302fa9cb757596cf3a1c2418bb2f
+test positive pairs: 197656 SHA-256: e99292b421303708310e61929556599881ab953749c56d0e5ecc74c9cd6ba766
+train negative pairs: 802553 SHA-256: dbc2114670d567bcec38bacf4c56156009c222e0ec6a492c1ca87ff7b772b6d3
+test negative pairs: 197656 SHA-256: 026a5141ffeb96d469689396042808f8426c80b2e4db2845fe2a1668ae3079fc
+Model device: cuda:0
+Test BCE: 0.4750833213
+Test ROC AUC: 0.8506442400

@@ -1,0 +1,668 @@
+2026-11-16T01:23:18-05:00 Starting full session; seed=42; pause=40s
+2026-11-16T01:23:21-05:00 Idle baseline 1/5
+2026-11-16T01:24:31-05:00 Idle baseline 2/5
+2026-11-16T01:25:42-05:00 Idle baseline 3/5
+2026-11-16T01:26:52-05:00 Idle baseline 4/5
+2026-11-16T01:28:02-05:00 Idle baseline 5/5
+2026-11-16T01:29:12-05:00 Idle power: 5.524278 W
+2026-11-16T01:29:12-05:00 START 001_warmup_r00_legacy_polars_insurance_rf_data temp=35.0C
+2026-11-16T01:29:13-05:00 END 001_warmup_r00_legacy_polars_insurance_rf_data status=OK pkg_J=9.090000 elapsed_s=0.524091036 rss_kB=106476
+2026-11-16T01:29:53-05:00 START 002_warmup_r00_current_polars_ml-1m_svd_full temp=37.0C
+2026-11-16T01:29:56-05:00 END 002_warmup_r00_current_polars_ml-1m_svd_full status=OK pkg_J=90.960000 elapsed_s=2.728446488 rss_kB=1031744
+2026-11-16T01:30:36-05:00 START 003_warmup_r00_current_polars_insurance_rf_full temp=40.0C
+2026-11-16T01:30:37-05:00 END 003_warmup_r00_current_polars_insurance_rf_full status=OK pkg_J=24.590000 elapsed_s=1.086312431 rss_kB=253768
+2026-11-16T01:31:17-05:00 START 004_warmup_r00_current_dask_insurance_rf_data temp=37.0C
+2026-11-16T01:31:18-05:00 END 004_warmup_r00_current_dask_insurance_rf_data status=OK pkg_J=21.700000 elapsed_s=1.004345752 rss_kB=168036
+2026-11-16T01:31:58-05:00 START 005_warmup_r00_current_dask_insurance_xgboost_full temp=34.0C
+2026-11-16T01:32:00-05:00 END 005_warmup_r00_current_dask_insurance_xgboost_full status=OK pkg_J=34.130000 elapsed_s=1.540704789 rss_kB=388968
+2026-11-16T01:32:40-05:00 START 006_warmup_r00_current_pandas_insurance_rf_data temp=37.0C
+2026-11-16T01:32:40-05:00 END 006_warmup_r00_current_pandas_insurance_rf_data status=OK pkg_J=5.410000 elapsed_s=0.229960354 rss_kB=110676
+2026-11-16T01:33:20-05:00 START 007_warmup_r00_current_pandas_ml-1m_ncf_full temp=36.0C
+2026-11-16T01:34:02-05:00 END 007_warmup_r00_current_pandas_ml-1m_ncf_full status=OK pkg_J=981.950000 elapsed_s=41.772535313 rss_kB=1918952
+2026-11-16T01:34:42-05:00 START 008_warmup_r00_current_polars_insurance_xgboost_full temp=41.0C
+2026-11-16T01:34:43-05:00 END 008_warmup_r00_current_polars_insurance_xgboost_full status=OK pkg_J=23.370000 elapsed_s=1.005064967 rss_kB=409076
+2026-11-16T01:35:24-05:00 START 009_warmup_r00_current_polars_insurance_svr_full temp=37.0C
+2026-11-16T01:35:25-05:00 END 009_warmup_r00_current_polars_insurance_svr_full status=OK pkg_J=20.330000 elapsed_s=0.866260811 rss_kB=239276
+2026-11-16T01:36:05-05:00 START 010_warmup_r00_current_polars_ml-1m_ncf_full temp=38.0C
+2026-11-16T01:36:45-05:00 END 010_warmup_r00_current_polars_ml-1m_ncf_full status=OK pkg_J=967.530000 elapsed_s=40.733721749 rss_kB=1910976
+2026-11-16T01:37:26-05:00 START 011_warmup_r00_legacy_pandas_insurance_rf_data temp=38.0C
+2026-11-16T01:37:26-05:00 END 011_warmup_r00_legacy_pandas_insurance_rf_data status=OK pkg_J=5.610000 elapsed_s=0.277411298 rss_kB=88836
+2026-11-16T01:38:06-05:00 START 012_warmup_r00_current_dask_ml-1m_ncf_full temp=42.0C
+2026-11-16T01:38:57-05:00 END 012_warmup_r00_current_dask_ml-1m_ncf_full status=OK pkg_J=1185.560000 elapsed_s=50.452276101 rss_kB=2153444
+2026-11-16T01:39:37-05:00 START 013_warmup_r00_legacy_dask_insurance_rf_data temp=39.0C
+2026-11-16T01:39:37-05:00 END 013_warmup_r00_legacy_dask_insurance_rf_data status=OK pkg_J=12.140000 elapsed_s=0.557547496 rss_kB=117040
+2026-11-16T01:40:17-05:00 START 014_warmup_r00_current_dask_insurance_svr_full temp=43.0C
+2026-11-16T01:40:19-05:00 END 014_warmup_r00_current_dask_insurance_svr_full status=OK pkg_J=31.040000 elapsed_s=1.294286616 rss_kB=222316
+2026-11-16T01:40:59-05:00 START 015_warmup_r00_current_polars_insurance_rf_data temp=40.0C
+2026-11-16T01:40:59-05:00 END 015_warmup_r00_current_polars_insurance_rf_data status=OK pkg_J=3.680000 elapsed_s=0.148271969 rss_kB=94032
+2026-11-16T01:41:39-05:00 START 016_warmup_r00_current_dask_ml-1m_svd_data temp=36.0C
+2026-11-16T01:41:50-05:00 END 016_warmup_r00_current_dask_ml-1m_svd_data status=OK pkg_J=256.680000 elapsed_s=10.376420787 rss_kB=1746340
+2026-11-16T01:42:30-05:00 START 017_warmup_r00_current_pandas_insurance_svr_full temp=38.0C
+2026-11-16T01:42:31-05:00 END 017_warmup_r00_current_pandas_insurance_svr_full status=OK pkg_J=18.130000 elapsed_s=0.769390619 rss_kB=191132
+2026-11-16T01:43:11-05:00 START 018_warmup_r00_current_polars_insurance_tabnet_full temp=36.0C
+2026-11-16T01:43:15-05:00 END 018_warmup_r00_current_polars_insurance_tabnet_full status=OK pkg_J=99.550000 elapsed_s=4.327446660 rss_kB=2020748
+2026-11-16T01:43:55-05:00 START 019_warmup_r00_legacy_polars_insurance_rf_full temp=37.0C
+2026-11-16T01:43:56-05:00 END 019_warmup_r00_legacy_polars_insurance_rf_full status=OK pkg_J=16.190000 elapsed_s=0.765031462 rss_kB=173944
+2026-11-16T01:44:36-05:00 START 020_warmup_r00_current_pandas_insurance_xgboost_full temp=40.0C
+2026-11-16T01:44:37-05:00 END 020_warmup_r00_current_pandas_insurance_xgboost_full status=OK pkg_J=20.850000 elapsed_s=0.915595693 rss_kB=359556
+2026-11-16T01:45:17-05:00 START 021_warmup_r00_current_polars_ml-1m_svd_data temp=40.0C
+2026-11-16T01:45:18-05:00 END 021_warmup_r00_current_polars_ml-1m_svd_data status=OK pkg_J=50.660000 elapsed_s=0.876518192 rss_kB=1014024
+2026-11-16T01:45:58-05:00 START 022_warmup_r00_legacy_dask_insurance_rf_full temp=36.0C
+2026-11-16T01:45:59-05:00 END 022_warmup_r00_legacy_dask_insurance_rf_full status=OK pkg_J=18.240000 elapsed_s=0.764449015 rss_kB=167388
+2026-11-16T01:46:39-05:00 START 023_warmup_r00_current_pandas_ml-1m_svd_full temp=35.0C
+2026-11-16T01:46:43-05:00 END 023_warmup_r00_current_pandas_ml-1m_svd_full status=OK pkg_J=97.130000 elapsed_s=3.758076004 rss_kB=706600
+2026-11-16T01:47:23-05:00 START 024_warmup_r00_current_dask_ml-1m_svd_full temp=36.0C
+2026-11-16T01:47:35-05:00 END 024_warmup_r00_current_dask_ml-1m_svd_full status=OK pkg_J=284.880000 elapsed_s=11.499683218 rss_kB=1747044
+2026-11-16T01:48:15-05:00 START 025_warmup_r00_current_pandas_ml-1m_svd_data temp=37.0C
+2026-11-16T01:48:18-05:00 END 025_warmup_r00_current_pandas_ml-1m_svd_data status=OK pkg_J=63.460000 elapsed_s=2.481772883 rss_kB=706588
+2026-11-16T01:48:58-05:00 START 026_warmup_r00_legacy_pandas_insurance_rf_full temp=37.0C
+2026-11-16T01:48:58-05:00 END 026_warmup_r00_legacy_pandas_insurance_rf_full status=OK pkg_J=13.830000 elapsed_s=0.556856594 rss_kB=155832
+2026-11-16T01:49:38-05:00 START 027_warmup_r00_current_dask_insurance_tabnet_full temp=35.0C
+2026-11-16T01:49:43-05:00 END 027_warmup_r00_current_dask_insurance_tabnet_full status=OK pkg_J=108.790000 elapsed_s=4.730831964 rss_kB=2002988
+2026-11-16T01:50:23-05:00 START 028_warmup_r00_current_pandas_insurance_rf_full temp=36.0C
+2026-11-16T01:50:24-05:00 END 028_warmup_r00_current_pandas_insurance_rf_full status=OK pkg_J=22.060000 elapsed_s=0.918577489 rss_kB=204984
+2026-11-16T01:51:04-05:00 START 029_warmup_r00_current_pandas_insurance_tabnet_full temp=37.0C
+2026-11-16T01:51:09-05:00 END 029_warmup_r00_current_pandas_insurance_tabnet_full status=OK pkg_J=96.660000 elapsed_s=4.196996200 rss_kB=1972504
+2026-11-16T01:51:49-05:00 START 030_warmup_r00_current_dask_insurance_rf_full temp=35.0C
+2026-11-16T01:51:50-05:00 END 030_warmup_r00_current_dask_insurance_rf_full status=OK pkg_J=34.520000 elapsed_s=1.444751138 rss_kB=236696
+2026-11-16T01:52:31-05:00 START 031_measured_r01_current_polars_ml-1m_svd_full temp=37.0C
+2026-11-16T01:52:33-05:00 END 031_measured_r01_current_polars_ml-1m_svd_full status=OK pkg_J=88.900000 elapsed_s=2.392579617 rss_kB=1076916
+2026-11-16T01:53:13-05:00 START 032_measured_r01_current_dask_insurance_tabnet_full temp=38.0C
+2026-11-16T01:53:18-05:00 END 032_measured_r01_current_dask_insurance_tabnet_full status=OK pkg_J=109.360000 elapsed_s=4.707257999 rss_kB=2003728
+2026-11-16T01:53:58-05:00 START 033_measured_r01_current_polars_ml-1m_ncf_full temp=37.0C
+2026-11-16T01:54:39-05:00 END 033_measured_r01_current_polars_ml-1m_ncf_full status=OK pkg_J=967.560000 elapsed_s=41.045174225 rss_kB=1910908
+2026-11-16T01:55:19-05:00 START 034_measured_r01_current_polars_insurance_svr_full temp=39.0C
+2026-11-16T01:55:20-05:00 END 034_measured_r01_current_polars_insurance_svr_full status=OK pkg_J=20.350000 elapsed_s=0.851906433 rss_kB=239048
+2026-11-16T01:56:00-05:00 START 035_measured_r01_current_polars_insurance_rf_data temp=40.0C
+2026-11-16T01:56:00-05:00 END 035_measured_r01_current_polars_insurance_rf_data status=OK pkg_J=3.530000 elapsed_s=0.143656983 rss_kB=93876
+2026-11-16T01:56:41-05:00 START 036_measured_r01_current_dask_insurance_rf_full temp=40.0C
+2026-11-16T01:56:42-05:00 END 036_measured_r01_current_dask_insurance_rf_full status=OK pkg_J=35.540000 elapsed_s=1.456492383 rss_kB=235308
+2026-11-16T01:57:22-05:00 START 037_measured_r01_current_polars_ml-1m_svd_data temp=36.0C
+2026-11-16T01:57:23-05:00 END 037_measured_r01_current_polars_ml-1m_svd_data status=OK pkg_J=50.310000 elapsed_s=0.911374357 rss_kB=1065628
+2026-11-16T01:58:03-05:00 START 038_measured_r01_current_pandas_ml-1m_svd_data temp=34.0C
+2026-11-16T01:58:06-05:00 END 038_measured_r01_current_pandas_ml-1m_svd_data status=OK pkg_J=64.100000 elapsed_s=2.487325352 rss_kB=706788
+2026-11-16T01:58:46-05:00 START 039_measured_r01_current_dask_insurance_rf_data temp=37.0C
+2026-11-16T01:58:47-05:00 END 039_measured_r01_current_dask_insurance_rf_data status=OK pkg_J=20.550000 elapsed_s=0.867192800 rss_kB=166504
+2026-11-16T01:59:27-05:00 START 040_measured_r01_legacy_polars_insurance_rf_data temp=34.0C
+2026-11-16T01:59:27-05:00 END 040_measured_r01_legacy_polars_insurance_rf_data status=OK pkg_J=5.840000 elapsed_s=0.241011384 rss_kB=106760
+2026-11-16T02:00:08-05:00 START 041_measured_r01_legacy_pandas_insurance_rf_data temp=37.0C
+2026-11-16T02:00:08-05:00 END 041_measured_r01_legacy_pandas_insurance_rf_data status=OK pkg_J=4.950000 elapsed_s=0.208069974 rss_kB=88716
+2026-11-16T02:00:48-05:00 START 042_measured_r01_current_polars_insurance_xgboost_full temp=41.0C
+2026-11-16T02:00:49-05:00 END 042_measured_r01_current_polars_insurance_xgboost_full status=OK pkg_J=23.010000 elapsed_s=1.001094908 rss_kB=408384
+2026-11-16T02:01:29-05:00 START 043_measured_r01_current_dask_ml-1m_svd_data temp=42.0C
+2026-11-16T02:01:40-05:00 END 043_measured_r01_current_dask_ml-1m_svd_data status=OK pkg_J=256.540000 elapsed_s=10.469193770 rss_kB=1771460
+2026-11-16T02:02:20-05:00 START 044_measured_r01_current_pandas_insurance_svr_full temp=35.0C
+2026-11-16T02:02:21-05:00 END 044_measured_r01_current_pandas_insurance_svr_full status=OK pkg_J=18.110000 elapsed_s=0.767623104 rss_kB=190932
+2026-11-16T02:03:01-05:00 START 045_measured_r01_legacy_dask_insurance_rf_data temp=38.0C
+2026-11-16T02:03:01-05:00 END 045_measured_r01_legacy_dask_insurance_rf_data status=OK pkg_J=10.480000 elapsed_s=0.441403730 rss_kB=116620
+2026-11-16T02:03:41-05:00 START 046_measured_r01_current_pandas_insurance_xgboost_full temp=39.0C
+2026-11-16T02:03:42-05:00 END 046_measured_r01_current_pandas_insurance_xgboost_full status=OK pkg_J=21.180000 elapsed_s=0.920778449 rss_kB=359344
+2026-11-16T02:04:23-05:00 START 047_measured_r01_current_pandas_insurance_tabnet_full temp=37.0C
+2026-11-16T02:04:27-05:00 END 047_measured_r01_current_pandas_insurance_tabnet_full status=OK pkg_J=96.060000 elapsed_s=4.214053024 rss_kB=1972632
+2026-11-16T02:05:07-05:00 START 048_measured_r01_current_dask_insurance_svr_full temp=36.0C
+2026-11-16T02:05:08-05:00 END 048_measured_r01_current_dask_insurance_svr_full status=OK pkg_J=31.110000 elapsed_s=1.296851802 rss_kB=222168
+2026-11-16T02:05:48-05:00 START 049_measured_r01_current_pandas_insurance_rf_data temp=40.0C
+2026-11-16T02:05:49-05:00 END 049_measured_r01_current_pandas_insurance_rf_data status=OK pkg_J=5.400000 elapsed_s=0.229482386 rss_kB=110752
+2026-11-16T02:06:29-05:00 START 050_measured_r01_current_pandas_ml-1m_svd_full temp=35.0C
+2026-11-16T02:06:33-05:00 END 050_measured_r01_current_pandas_ml-1m_svd_full status=OK pkg_J=99.010000 elapsed_s=3.921849381 rss_kB=706376
+2026-11-16T02:07:13-05:00 START 051_measured_r01_legacy_dask_insurance_rf_full temp=35.0C
+2026-11-16T02:07:14-05:00 END 051_measured_r01_legacy_dask_insurance_rf_full status=OK pkg_J=18.160000 elapsed_s=0.755104014 rss_kB=167708
+2026-11-16T02:07:54-05:00 START 052_measured_r01_current_polars_insurance_rf_full temp=37.0C
+2026-11-16T02:07:55-05:00 END 052_measured_r01_current_polars_insurance_rf_full status=OK pkg_J=24.230000 elapsed_s=1.014772610 rss_kB=254232
+2026-11-16T02:08:35-05:00 START 053_measured_r01_current_polars_insurance_tabnet_full temp=38.0C
+2026-11-16T02:08:40-05:00 END 053_measured_r01_current_polars_insurance_tabnet_full status=OK pkg_J=99.070000 elapsed_s=4.317735815 rss_kB=2019984
+2026-11-16T02:09:20-05:00 START 054_measured_r01_current_dask_insurance_xgboost_full temp=38.0C
+2026-11-16T02:09:21-05:00 END 054_measured_r01_current_dask_insurance_xgboost_full status=OK pkg_J=33.420000 elapsed_s=1.445610085 rss_kB=388140
+2026-11-16T02:10:01-05:00 START 055_measured_r01_current_pandas_ml-1m_ncf_full temp=40.0C
+2026-11-16T02:10:43-05:00 END 055_measured_r01_current_pandas_ml-1m_ncf_full status=OK pkg_J=970.560000 elapsed_s=41.156978350 rss_kB=1918512
+2026-11-16T02:11:23-05:00 START 056_measured_r01_current_dask_ml-1m_svd_full temp=39.0C
+2026-11-16T02:11:34-05:00 END 056_measured_r01_current_dask_ml-1m_svd_full status=OK pkg_J=274.310000 elapsed_s=10.881461006 rss_kB=1738192
+2026-11-16T02:12:14-05:00 START 057_measured_r01_current_pandas_insurance_rf_full temp=35.0C
+2026-11-16T02:12:15-05:00 END 057_measured_r01_current_pandas_insurance_rf_full status=OK pkg_J=21.880000 elapsed_s=0.923335362 rss_kB=205272
+2026-11-16T02:12:55-05:00 START 058_measured_r01_current_dask_ml-1m_ncf_full temp=38.0C
+2026-11-16T02:13:43-05:00 END 058_measured_r01_current_dask_ml-1m_ncf_full status=OK pkg_J=1158.440000 elapsed_s=48.469715808 rss_kB=2054952
+2026-11-16T02:14:24-05:00 START 059_measured_r01_legacy_pandas_insurance_rf_full temp=39.0C
+2026-11-16T02:14:24-05:00 END 059_measured_r01_legacy_pandas_insurance_rf_full status=OK pkg_J=13.810000 elapsed_s=0.557686718 rss_kB=156036
+2026-11-16T02:15:04-05:00 START 060_measured_r01_legacy_polars_insurance_rf_full temp=44.0C
+2026-11-16T02:15:05-05:00 END 060_measured_r01_legacy_polars_insurance_rf_full status=OK pkg_J=14.410000 elapsed_s=0.593486733 rss_kB=173020
+2026-11-16T02:15:45-05:00 START 061_measured_r02_current_polars_insurance_tabnet_full temp=38.0C
+2026-11-16T02:15:49-05:00 END 061_measured_r02_current_polars_insurance_tabnet_full status=OK pkg_J=100.540000 elapsed_s=4.306724057 rss_kB=2020792
+2026-11-16T02:16:30-05:00 START 062_measured_r02_current_polars_ml-1m_svd_full temp=37.0C
+2026-11-16T02:16:32-05:00 END 062_measured_r02_current_polars_ml-1m_svd_full status=OK pkg_J=90.230000 elapsed_s=2.386346124 rss_kB=1044660
+2026-11-16T02:17:12-05:00 START 063_measured_r02_current_dask_ml-1m_svd_full temp=37.0C
+2026-11-16T02:17:23-05:00 END 063_measured_r02_current_dask_ml-1m_svd_full status=OK pkg_J=278.180000 elapsed_s=11.145015098 rss_kB=1745460
+2026-11-16T02:18:04-05:00 START 064_measured_r02_current_dask_insurance_svr_full temp=39.0C
+2026-11-16T02:18:05-05:00 END 064_measured_r02_current_dask_insurance_svr_full status=OK pkg_J=31.370000 elapsed_s=1.304038545 rss_kB=219820
+2026-11-16T02:18:45-05:00 START 065_measured_r02_current_pandas_insurance_rf_full temp=36.0C
+2026-11-16T02:18:46-05:00 END 065_measured_r02_current_pandas_insurance_rf_full status=OK pkg_J=22.170000 elapsed_s=0.923866626 rss_kB=205160
+2026-11-16T02:19:26-05:00 START 066_measured_r02_current_polars_ml-1m_ncf_full temp=35.0C
+2026-11-16T02:20:07-05:00 END 066_measured_r02_current_polars_ml-1m_ncf_full status=OK pkg_J=961.080000 elapsed_s=40.626425991 rss_kB=1910436
+2026-11-16T02:20:47-05:00 START 067_measured_r02_legacy_pandas_insurance_rf_full temp=39.0C
+2026-11-16T02:20:48-05:00 END 067_measured_r02_legacy_pandas_insurance_rf_full status=OK pkg_J=13.510000 elapsed_s=0.555287537 rss_kB=156328
+2026-11-16T02:21:28-05:00 START 068_measured_r02_current_polars_insurance_rf_data temp=35.0C
+2026-11-16T02:21:28-05:00 END 068_measured_r02_current_polars_insurance_rf_data status=OK pkg_J=3.490000 elapsed_s=0.147379215 rss_kB=93696
+2026-11-16T02:22:08-05:00 START 069_measured_r02_current_dask_ml-1m_svd_data temp=38.0C
+2026-11-16T02:22:18-05:00 END 069_measured_r02_current_dask_ml-1m_svd_data status=OK pkg_J=239.750000 elapsed_s=9.651992422 rss_kB=1768736
+2026-11-16T02:22:58-05:00 START 070_measured_r02_legacy_dask_insurance_rf_data temp=35.0C
+2026-11-16T02:22:58-05:00 END 070_measured_r02_legacy_dask_insurance_rf_data status=OK pkg_J=10.600000 elapsed_s=0.451811190 rss_kB=116792
+2026-11-16T02:23:39-05:00 START 071_measured_r02_current_dask_ml-1m_ncf_full temp=35.0C
+2026-11-16T02:24:27-05:00 END 071_measured_r02_current_dask_ml-1m_ncf_full status=OK pkg_J=1126.040000 elapsed_s=48.431662601 rss_kB=2214468
+2026-11-16T02:25:07-05:00 START 072_measured_r02_current_pandas_ml-1m_ncf_full temp=38.0C
+2026-11-16T02:25:49-05:00 END 072_measured_r02_current_pandas_ml-1m_ncf_full status=OK pkg_J=985.000000 elapsed_s=41.462218774 rss_kB=1919704
+2026-11-16T02:26:29-05:00 START 073_measured_r02_current_polars_insurance_rf_full temp=38.0C
+2026-11-16T02:26:30-05:00 END 073_measured_r02_current_polars_insurance_rf_full status=OK pkg_J=24.160000 elapsed_s=1.014109417 rss_kB=254668
+2026-11-16T02:27:10-05:00 START 074_measured_r02_current_polars_ml-1m_svd_data temp=38.0C
+2026-11-16T02:27:11-05:00 END 074_measured_r02_current_polars_ml-1m_svd_data status=OK pkg_J=50.710000 elapsed_s=0.900940870 rss_kB=1044984
+2026-11-16T02:27:51-05:00 START 075_measured_r02_current_pandas_ml-1m_svd_full temp=39.0C
+2026-11-16T02:27:55-05:00 END 075_measured_r02_current_pandas_ml-1m_svd_full status=OK pkg_J=97.360000 elapsed_s=3.780682082 rss_kB=706428
+2026-11-16T02:28:35-05:00 START 076_measured_r02_current_polars_insurance_xgboost_full temp=38.0C
+2026-11-16T02:28:36-05:00 END 076_measured_r02_current_polars_insurance_xgboost_full status=OK pkg_J=22.880000 elapsed_s=1.002759219 rss_kB=409188
+2026-11-16T02:29:16-05:00 START 077_measured_r02_current_pandas_insurance_tabnet_full temp=37.0C
+2026-11-16T02:29:21-05:00 END 077_measured_r02_current_pandas_insurance_tabnet_full status=OK pkg_J=97.750000 elapsed_s=4.231966851 rss_kB=1972404
+2026-11-16T02:30:01-05:00 START 078_measured_r02_legacy_dask_insurance_rf_full temp=36.0C
+2026-11-16T02:30:02-05:00 END 078_measured_r02_legacy_dask_insurance_rf_full status=OK pkg_J=18.300000 elapsed_s=0.757869308 rss_kB=167792
+2026-11-16T02:30:42-05:00 START 079_measured_r02_current_dask_insurance_tabnet_full temp=37.0C
+2026-11-16T02:30:46-05:00 END 079_measured_r02_current_dask_insurance_tabnet_full status=OK pkg_J=107.930000 elapsed_s=4.700906619 rss_kB=2002384
+2026-11-16T02:31:27-05:00 START 080_measured_r02_legacy_pandas_insurance_rf_data temp=36.0C
+2026-11-16T02:31:27-05:00 END 080_measured_r02_legacy_pandas_insurance_rf_data status=OK pkg_J=5.010000 elapsed_s=0.220593221 rss_kB=88668
+2026-11-16T02:32:07-05:00 START 081_measured_r02_current_pandas_ml-1m_svd_data temp=37.0C
+2026-11-16T02:32:10-05:00 END 081_measured_r02_current_pandas_ml-1m_svd_data status=OK pkg_J=63.040000 elapsed_s=2.473497075 rss_kB=706800
+2026-11-16T02:32:50-05:00 START 082_measured_r02_current_pandas_insurance_svr_full temp=38.0C
+2026-11-16T02:32:51-05:00 END 082_measured_r02_current_pandas_insurance_svr_full status=OK pkg_J=18.890000 elapsed_s=0.770126349 rss_kB=190632
+2026-11-16T02:33:31-05:00 START 083_measured_r02_current_pandas_insurance_xgboost_full temp=38.0C
+2026-11-16T02:33:32-05:00 END 083_measured_r02_current_pandas_insurance_xgboost_full status=OK pkg_J=20.750000 elapsed_s=0.917619813 rss_kB=359500
+2026-11-16T02:34:12-05:00 START 084_measured_r02_current_dask_insurance_xgboost_full temp=42.0C
+2026-11-16T02:34:13-05:00 END 084_measured_r02_current_dask_insurance_xgboost_full status=OK pkg_J=33.520000 elapsed_s=1.449925440 rss_kB=390996
+2026-11-16T02:34:53-05:00 START 085_measured_r02_current_pandas_insurance_rf_data temp=38.0C
+2026-11-16T02:34:54-05:00 END 085_measured_r02_current_pandas_insurance_rf_data status=OK pkg_J=5.450000 elapsed_s=0.231271653 rss_kB=111020
+2026-11-16T02:35:34-05:00 START 086_measured_r02_legacy_polars_insurance_rf_full temp=38.0C
+2026-11-16T02:35:34-05:00 END 086_measured_r02_legacy_polars_insurance_rf_full status=OK pkg_J=14.570000 elapsed_s=0.592064778 rss_kB=172804
+2026-11-16T02:36:15-05:00 START 087_measured_r02_current_polars_insurance_svr_full temp=34.0C
+2026-11-16T02:36:16-05:00 END 087_measured_r02_current_polars_insurance_svr_full status=OK pkg_J=20.090000 elapsed_s=0.854191154 rss_kB=238816
+2026-11-16T02:36:56-05:00 START 088_measured_r02_legacy_polars_insurance_rf_data temp=36.0C
+2026-11-16T02:36:56-05:00 END 088_measured_r02_legacy_polars_insurance_rf_data status=OK pkg_J=5.910000 elapsed_s=0.246506503 rss_kB=106156
+2026-11-16T02:37:36-05:00 START 089_measured_r02_current_dask_insurance_rf_full temp=39.0C
+2026-11-16T02:37:38-05:00 END 089_measured_r02_current_dask_insurance_rf_full status=OK pkg_J=34.560000 elapsed_s=1.442545854 rss_kB=235280
+2026-11-16T02:38:18-05:00 START 090_measured_r02_current_dask_insurance_rf_data temp=37.0C
+2026-11-16T02:38:19-05:00 END 090_measured_r02_current_dask_insurance_rf_data status=OK pkg_J=21.690000 elapsed_s=0.877388936 rss_kB=168012
+2026-11-16T02:38:59-05:00 START 091_measured_r03_legacy_dask_insurance_rf_full temp=35.0C
+2026-11-16T02:39:00-05:00 END 091_measured_r03_legacy_dask_insurance_rf_full status=OK pkg_J=18.050000 elapsed_s=0.756366790 rss_kB=167684
+2026-11-16T02:39:40-05:00 START 092_measured_r03_current_dask_insurance_rf_data temp=36.0C
+2026-11-16T02:39:41-05:00 END 092_measured_r03_current_dask_insurance_rf_data status=OK pkg_J=20.500000 elapsed_s=0.873260291 rss_kB=165812
+2026-11-16T02:40:21-05:00 START 093_measured_r03_current_pandas_insurance_rf_full temp=43.0C
+2026-11-16T02:40:22-05:00 END 093_measured_r03_current_pandas_insurance_rf_full status=OK pkg_J=22.260000 elapsed_s=0.926504966 rss_kB=204896
+2026-11-16T02:41:02-05:00 START 094_measured_r03_current_pandas_insurance_xgboost_full temp=39.0C
+2026-11-16T02:41:03-05:00 END 094_measured_r03_current_pandas_insurance_xgboost_full status=OK pkg_J=20.750000 elapsed_s=0.915411484 rss_kB=359796
+2026-11-16T02:41:43-05:00 START 095_measured_r03_current_polars_insurance_tabnet_full temp=35.0C
+2026-11-16T02:41:47-05:00 END 095_measured_r03_current_polars_insurance_tabnet_full status=OK pkg_J=98.900000 elapsed_s=4.331671762 rss_kB=2019944
+2026-11-16T02:42:28-05:00 START 096_measured_r03_current_polars_insurance_svr_full temp=35.0C
+2026-11-16T02:42:29-05:00 END 096_measured_r03_current_polars_insurance_svr_full status=OK pkg_J=20.870000 elapsed_s=0.843617619 rss_kB=238884
+2026-11-16T02:43:09-05:00 START 097_measured_r03_current_polars_insurance_rf_data temp=38.0C
+2026-11-16T02:43:09-05:00 END 097_measured_r03_current_polars_insurance_rf_data status=OK pkg_J=3.560000 elapsed_s=0.146135716 rss_kB=93388
+2026-11-16T02:43:49-05:00 START 098_measured_r03_current_pandas_insurance_rf_data temp=42.0C
+2026-11-16T02:43:49-05:00 END 098_measured_r03_current_pandas_insurance_rf_data status=OK pkg_J=5.590000 elapsed_s=0.232222426 rss_kB=110688
+2026-11-16T02:44:29-05:00 START 099_measured_r03_legacy_polars_insurance_rf_full temp=40.0C
+2026-11-16T02:44:30-05:00 END 099_measured_r03_legacy_polars_insurance_rf_full status=OK pkg_J=14.660000 elapsed_s=0.584191478 rss_kB=173488
+2026-11-16T02:45:10-05:00 START 100_measured_r03_current_polars_ml-1m_ncf_full temp=51.0C
+2026-11-16T02:45:51-05:00 END 100_measured_r03_current_polars_ml-1m_ncf_full status=OK pkg_J=955.650000 elapsed_s=40.272125482 rss_kB=1916424
+2026-11-16T02:46:32-05:00 START 101_measured_r03_legacy_dask_insurance_rf_data temp=39.0C
+2026-11-16T02:46:33-05:00 END 101_measured_r03_legacy_dask_insurance_rf_data status=OK pkg_J=10.890000 elapsed_s=0.446592429 rss_kB=116980
+2026-11-16T02:47:13-05:00 START 102_measured_r03_legacy_pandas_insurance_rf_data temp=39.0C
+2026-11-16T02:47:13-05:00 END 102_measured_r03_legacy_pandas_insurance_rf_data status=OK pkg_J=5.040000 elapsed_s=0.207643140 rss_kB=88812
+2026-11-16T02:47:53-05:00 START 103_measured_r03_current_pandas_insurance_tabnet_full temp=35.0C
+2026-11-16T02:47:58-05:00 END 103_measured_r03_current_pandas_insurance_tabnet_full status=OK pkg_J=96.940000 elapsed_s=4.186270107 rss_kB=1973184
+2026-11-16T02:48:38-05:00 START 104_measured_r03_current_dask_insurance_tabnet_full temp=38.0C
+2026-11-16T02:48:43-05:00 END 104_measured_r03_current_dask_insurance_tabnet_full status=OK pkg_J=108.060000 elapsed_s=4.721083628 rss_kB=2003364
+2026-11-16T02:49:23-05:00 START 105_measured_r03_current_pandas_ml-1m_svd_full temp=36.0C
+2026-11-16T02:49:27-05:00 END 105_measured_r03_current_pandas_ml-1m_svd_full status=OK pkg_J=95.640000 elapsed_s=3.784715307 rss_kB=706432
+2026-11-16T02:50:07-05:00 START 106_measured_r03_current_dask_ml-1m_svd_data temp=37.0C
+2026-11-16T02:50:17-05:00 END 106_measured_r03_current_dask_ml-1m_svd_data status=OK pkg_J=239.580000 elapsed_s=9.845323745 rss_kB=1771892
+2026-11-16T02:50:57-05:00 START 107_measured_r03_current_dask_ml-1m_ncf_full temp=38.0C
+2026-11-16T02:51:45-05:00 END 107_measured_r03_current_dask_ml-1m_ncf_full status=OK pkg_J=1133.890000 elapsed_s=48.548026023 rss_kB=2128704
+2026-11-16T02:52:25-05:00 START 108_measured_r03_legacy_polars_insurance_rf_data temp=39.0C
+2026-11-16T02:52:26-05:00 END 108_measured_r03_legacy_polars_insurance_rf_data status=OK pkg_J=6.530000 elapsed_s=0.256473532 rss_kB=106872
+2026-11-16T02:53:06-05:00 START 109_measured_r03_current_dask_ml-1m_svd_full temp=39.0C
+2026-11-16T02:53:17-05:00 END 109_measured_r03_current_dask_ml-1m_svd_full status=OK pkg_J=270.710000 elapsed_s=10.796518285 rss_kB=1742228
+2026-11-16T02:53:57-05:00 START 110_measured_r03_current_pandas_insurance_svr_full temp=38.0C
+2026-11-16T02:53:58-05:00 END 110_measured_r03_current_pandas_insurance_svr_full status=OK pkg_J=18.210000 elapsed_s=0.768477523 rss_kB=190820
+2026-11-16T02:54:38-05:00 START 111_measured_r03_current_polars_insurance_rf_full temp=36.0C
+2026-11-16T02:54:39-05:00 END 111_measured_r03_current_polars_insurance_rf_full status=OK pkg_J=24.770000 elapsed_s=1.009376025 rss_kB=254464
+2026-11-16T02:55:19-05:00 START 112_measured_r03_current_dask_insurance_svr_full temp=39.0C
+2026-11-16T02:55:20-05:00 END 112_measured_r03_current_dask_insurance_svr_full status=OK pkg_J=31.920000 elapsed_s=1.308032864 rss_kB=220816
+2026-11-16T02:56:01-05:00 START 113_measured_r03_current_pandas_ml-1m_svd_data temp=42.0C
+2026-11-16T02:56:03-05:00 END 113_measured_r03_current_pandas_ml-1m_svd_data status=OK pkg_J=62.920000 elapsed_s=2.506199026 rss_kB=706608
+2026-11-16T02:56:43-05:00 START 114_measured_r03_current_polars_ml-1m_svd_data temp=36.0C
+2026-11-16T02:56:44-05:00 END 114_measured_r03_current_polars_ml-1m_svd_data status=OK pkg_J=51.220000 elapsed_s=0.883392992 rss_kB=1040104
+2026-11-16T02:57:24-05:00 START 115_measured_r03_current_dask_insurance_xgboost_full temp=36.0C
+2026-11-16T02:57:26-05:00 END 115_measured_r03_current_dask_insurance_xgboost_full status=OK pkg_J=34.110000 elapsed_s=1.453496481 rss_kB=389012
+2026-11-16T02:58:06-05:00 START 116_measured_r03_current_dask_insurance_rf_full temp=37.0C
+2026-11-16T02:58:07-05:00 END 116_measured_r03_current_dask_insurance_rf_full status=OK pkg_J=35.580000 elapsed_s=1.449057875 rss_kB=235944
+2026-11-16T02:58:48-05:00 START 117_measured_r03_legacy_pandas_insurance_rf_full temp=35.0C
+2026-11-16T02:58:48-05:00 END 117_measured_r03_legacy_pandas_insurance_rf_full status=OK pkg_J=13.450000 elapsed_s=0.556303966 rss_kB=156188
+2026-11-16T02:59:28-05:00 START 118_measured_r03_current_polars_insurance_xgboost_full temp=34.0C
+2026-11-16T02:59:29-05:00 END 118_measured_r03_current_polars_insurance_xgboost_full status=OK pkg_J=23.390000 elapsed_s=1.000852810 rss_kB=408188
+2026-11-16T03:00:10-05:00 START 119_measured_r03_current_polars_ml-1m_svd_full temp=41.0C
+2026-11-16T03:00:12-05:00 END 119_measured_r03_current_polars_ml-1m_svd_full status=OK pkg_J=90.680000 elapsed_s=2.385644517 rss_kB=1050140
+2026-11-16T03:00:52-05:00 START 120_measured_r03_current_pandas_ml-1m_ncf_full temp=39.0C
+2026-11-16T03:01:34-05:00 END 120_measured_r03_current_pandas_ml-1m_ncf_full status=OK pkg_J=965.070000 elapsed_s=41.608801787 rss_kB=1919424
+2026-11-16T03:02:14-05:00 START 121_measured_r04_current_dask_ml-1m_ncf_full temp=39.0C
+2026-11-16T03:03:02-05:00 END 121_measured_r04_current_dask_ml-1m_ncf_full status=OK pkg_J=1139.140000 elapsed_s=48.001698275 rss_kB=2111892
+2026-11-16T03:03:42-05:00 START 122_measured_r04_legacy_polars_insurance_rf_data temp=38.0C
+2026-11-16T03:03:42-05:00 END 122_measured_r04_legacy_polars_insurance_rf_data status=OK pkg_J=6.000000 elapsed_s=0.247939055 rss_kB=106676
+2026-11-16T03:04:23-05:00 START 123_measured_r04_legacy_pandas_insurance_rf_data temp=36.0C
+2026-11-16T03:04:23-05:00 END 123_measured_r04_legacy_pandas_insurance_rf_data status=OK pkg_J=4.990000 elapsed_s=0.206481375 rss_kB=89300
+2026-11-16T03:05:03-05:00 START 124_measured_r04_current_pandas_ml-1m_ncf_full temp=37.0C
+2026-11-16T03:05:45-05:00 END 124_measured_r04_current_pandas_ml-1m_ncf_full status=OK pkg_J=995.280000 elapsed_s=41.980933539 rss_kB=1918388
+2026-11-16T03:06:25-05:00 START 125_measured_r04_current_dask_insurance_xgboost_full temp=38.0C
+2026-11-16T03:06:27-05:00 END 125_measured_r04_current_dask_insurance_xgboost_full status=OK pkg_J=33.450000 elapsed_s=1.442361806 rss_kB=389384
+2026-11-16T03:07:07-05:00 START 126_measured_r04_current_dask_insurance_rf_data temp=39.0C
+2026-11-16T03:07:08-05:00 END 126_measured_r04_current_dask_insurance_rf_data status=OK pkg_J=20.520000 elapsed_s=0.859066888 rss_kB=168416
+2026-11-16T03:07:48-05:00 START 127_measured_r04_current_pandas_insurance_tabnet_full temp=43.0C
+2026-11-16T03:07:52-05:00 END 127_measured_r04_current_pandas_insurance_tabnet_full status=OK pkg_J=98.790000 elapsed_s=4.223523684 rss_kB=1972820
+2026-11-16T03:08:32-05:00 START 128_measured_r04_current_polars_ml-1m_svd_full temp=37.0C
+2026-11-16T03:08:35-05:00 END 128_measured_r04_current_polars_ml-1m_svd_full status=OK pkg_J=89.190000 elapsed_s=2.395338215 rss_kB=1057204
+2026-11-16T03:09:15-05:00 START 129_measured_r04_current_pandas_insurance_rf_data temp=37.0C
+2026-11-16T03:09:15-05:00 END 129_measured_r04_current_pandas_insurance_rf_data status=OK pkg_J=5.600000 elapsed_s=0.230724607 rss_kB=110568
+2026-11-16T03:09:55-05:00 START 130_measured_r04_current_dask_insurance_rf_full temp=35.0C
+2026-11-16T03:09:57-05:00 END 130_measured_r04_current_dask_insurance_rf_full status=OK pkg_J=34.050000 elapsed_s=1.449608556 rss_kB=234820
+2026-11-16T03:10:37-05:00 START 131_measured_r04_current_polars_insurance_rf_full temp=36.0C
+2026-11-16T03:10:38-05:00 END 131_measured_r04_current_polars_insurance_rf_full status=OK pkg_J=23.740000 elapsed_s=1.013412510 rss_kB=254328
+2026-11-16T03:11:18-05:00 START 132_measured_r04_current_dask_ml-1m_svd_data temp=37.0C
+2026-11-16T03:11:27-05:00 END 132_measured_r04_current_dask_ml-1m_svd_data status=OK pkg_J=232.780000 elapsed_s=9.319734297 rss_kB=1727496
+2026-11-16T03:12:08-05:00 START 133_measured_r04_current_pandas_insurance_svr_full temp=46.0C
+2026-11-16T03:12:08-05:00 END 133_measured_r04_current_pandas_insurance_svr_full status=OK pkg_J=18.750000 elapsed_s=0.769609465 rss_kB=190616
+2026-11-16T03:12:49-05:00 START 134_measured_r04_current_pandas_insurance_rf_full temp=38.0C
+2026-11-16T03:12:50-05:00 END 134_measured_r04_current_pandas_insurance_rf_full status=OK pkg_J=21.670000 elapsed_s=0.925082899 rss_kB=205212
+2026-11-16T03:13:30-05:00 START 135_measured_r04_current_dask_insurance_svr_full temp=35.0C
+2026-11-16T03:13:31-05:00 END 135_measured_r04_current_dask_insurance_svr_full status=OK pkg_J=30.470000 elapsed_s=1.289204723 rss_kB=222240
+2026-11-16T03:14:11-05:00 START 136_measured_r04_current_pandas_insurance_xgboost_full temp=35.0C
+2026-11-16T03:14:12-05:00 END 136_measured_r04_current_pandas_insurance_xgboost_full status=OK pkg_J=20.840000 elapsed_s=0.916698433 rss_kB=359488
+2026-11-16T03:14:52-05:00 START 137_measured_r04_current_polars_ml-1m_ncf_full temp=36.0C
+2026-11-16T03:15:33-05:00 END 137_measured_r04_current_polars_ml-1m_ncf_full status=OK pkg_J=953.910000 elapsed_s=40.653548301 rss_kB=1916552
+2026-11-16T03:16:13-05:00 START 138_measured_r04_current_polars_insurance_rf_data temp=39.0C
+2026-11-16T03:16:13-05:00 END 138_measured_r04_current_polars_insurance_rf_data status=OK pkg_J=3.490000 elapsed_s=0.141003606 rss_kB=93296
+2026-11-16T03:16:54-05:00 START 139_measured_r04_current_pandas_ml-1m_svd_full temp=38.0C
+2026-11-16T03:16:57-05:00 END 139_measured_r04_current_pandas_ml-1m_svd_full status=OK pkg_J=97.370000 elapsed_s=3.771383648 rss_kB=706488
+2026-11-16T03:17:37-05:00 START 140_measured_r04_current_pandas_ml-1m_svd_data temp=37.0C
+2026-11-16T03:17:40-05:00 END 140_measured_r04_current_pandas_ml-1m_svd_data status=OK pkg_J=66.010000 elapsed_s=2.614503750 rss_kB=706876
+2026-11-16T03:18:20-05:00 START 141_measured_r04_current_polars_insurance_svr_full temp=36.0C
+2026-11-16T03:18:21-05:00 END 141_measured_r04_current_polars_insurance_svr_full status=OK pkg_J=22.080000 elapsed_s=0.861191964 rss_kB=239416
+2026-11-16T03:19:01-05:00 START 142_measured_r04_current_polars_insurance_xgboost_full temp=37.0C
+2026-11-16T03:19:02-05:00 END 142_measured_r04_current_polars_insurance_xgboost_full status=OK pkg_J=22.810000 elapsed_s=1.009319280 rss_kB=409096
+2026-11-16T03:19:43-05:00 START 143_measured_r04_current_dask_ml-1m_svd_full temp=38.0C
+2026-11-16T03:19:53-05:00 END 143_measured_r04_current_dask_ml-1m_svd_full status=OK pkg_J=271.560000 elapsed_s=10.760238688 rss_kB=1754760
+2026-11-16T03:20:34-05:00 START 144_measured_r04_current_polars_insurance_tabnet_full temp=38.0C
+2026-11-16T03:20:38-05:00 END 144_measured_r04_current_polars_insurance_tabnet_full status=OK pkg_J=99.260000 elapsed_s=4.339163369 rss_kB=2020648
+2026-11-16T03:21:18-05:00 START 145_measured_r04_legacy_polars_insurance_rf_full temp=36.0C
+2026-11-16T03:21:19-05:00 END 145_measured_r04_legacy_polars_insurance_rf_full status=OK pkg_J=14.510000 elapsed_s=0.592089896 rss_kB=172488
+2026-11-16T03:21:59-05:00 START 146_measured_r04_legacy_dask_insurance_rf_data temp=36.0C
+2026-11-16T03:21:59-05:00 END 146_measured_r04_legacy_dask_insurance_rf_data status=OK pkg_J=10.980000 elapsed_s=0.441336416 rss_kB=116780
+2026-11-16T03:22:39-05:00 START 147_measured_r04_legacy_pandas_insurance_rf_full temp=41.0C
+2026-11-16T03:22:40-05:00 END 147_measured_r04_legacy_pandas_insurance_rf_full status=OK pkg_J=13.590000 elapsed_s=0.560625397 rss_kB=156012
+2026-11-16T03:23:20-05:00 START 148_measured_r04_legacy_dask_insurance_rf_full temp=35.0C
+2026-11-16T03:23:21-05:00 END 148_measured_r04_legacy_dask_insurance_rf_full status=OK pkg_J=19.380000 elapsed_s=0.774519124 rss_kB=167576
+2026-11-16T03:24:01-05:00 START 149_measured_r04_current_polars_ml-1m_svd_data temp=40.0C
+2026-11-16T03:24:02-05:00 END 149_measured_r04_current_polars_ml-1m_svd_data status=OK pkg_J=51.510000 elapsed_s=0.911165277 rss_kB=1014568
+2026-11-16T03:24:42-05:00 START 150_measured_r04_current_dask_insurance_tabnet_full temp=38.0C
+2026-11-16T03:24:47-05:00 END 150_measured_r04_current_dask_insurance_tabnet_full status=OK pkg_J=108.600000 elapsed_s=4.671166789 rss_kB=2003148
+2026-11-16T03:25:27-05:00 START 151_measured_r05_legacy_polars_insurance_rf_data temp=36.0C
+2026-11-16T03:25:27-05:00 END 151_measured_r05_legacy_polars_insurance_rf_data status=OK pkg_J=5.940000 elapsed_s=0.240975720 rss_kB=106516
+2026-11-16T03:26:08-05:00 START 152_measured_r05_legacy_polars_insurance_rf_full temp=36.0C
+2026-11-16T03:26:08-05:00 END 152_measured_r05_legacy_polars_insurance_rf_full status=OK pkg_J=14.440000 elapsed_s=0.588766791 rss_kB=173488
+2026-11-16T03:26:48-05:00 START 153_measured_r05_current_polars_insurance_rf_data temp=39.0C
+2026-11-16T03:26:49-05:00 END 153_measured_r05_current_polars_insurance_rf_data status=OK pkg_J=3.590000 elapsed_s=0.148383796 rss_kB=93656
+2026-11-16T03:27:29-05:00 START 154_measured_r05_current_polars_ml-1m_svd_full temp=41.0C
+2026-11-16T03:27:31-05:00 END 154_measured_r05_current_polars_ml-1m_svd_full status=OK pkg_J=91.710000 elapsed_s=2.385080518 rss_kB=1052212
+2026-11-16T03:28:11-05:00 START 155_measured_r05_current_dask_insurance_xgboost_full temp=36.0C
+2026-11-16T03:28:13-05:00 END 155_measured_r05_current_dask_insurance_xgboost_full status=OK pkg_J=33.330000 elapsed_s=1.454814552 rss_kB=389744
+2026-11-16T03:28:53-05:00 START 156_measured_r05_current_polars_ml-1m_ncf_full temp=36.0C
+2026-11-16T03:29:33-05:00 END 156_measured_r05_current_polars_ml-1m_ncf_full status=OK pkg_J=954.060000 elapsed_s=40.383387532 rss_kB=1911484
+2026-11-16T03:30:14-05:00 START 157_measured_r05_current_pandas_insurance_rf_data temp=42.0C
+2026-11-16T03:30:14-05:00 END 157_measured_r05_current_pandas_insurance_rf_data status=OK pkg_J=5.510000 elapsed_s=0.231868592 rss_kB=110864
+2026-11-16T03:30:54-05:00 START 158_measured_r05_current_pandas_insurance_svr_full temp=38.0C
+2026-11-16T03:30:55-05:00 END 158_measured_r05_current_pandas_insurance_svr_full status=OK pkg_J=18.050000 elapsed_s=0.766555612 rss_kB=190772
+2026-11-16T03:31:35-05:00 START 159_measured_r05_current_pandas_insurance_xgboost_full temp=34.0C
+2026-11-16T03:31:36-05:00 END 159_measured_r05_current_pandas_insurance_xgboost_full status=OK pkg_J=20.810000 elapsed_s=0.914685930 rss_kB=359508
+2026-11-16T03:32:16-05:00 START 160_measured_r05_current_dask_ml-1m_ncf_full temp=36.0C
+2026-11-16T03:33:04-05:00 END 160_measured_r05_current_dask_ml-1m_ncf_full status=OK pkg_J=1132.070000 elapsed_s=48.214489170 rss_kB=2039640
+2026-11-16T03:33:44-05:00 START 161_measured_r05_current_pandas_ml-1m_svd_full temp=46.0C
+2026-11-16T03:33:48-05:00 END 161_measured_r05_current_pandas_ml-1m_svd_full status=OK pkg_J=98.040000 elapsed_s=3.765696240 rss_kB=706948
+2026-11-16T03:34:28-05:00 START 162_measured_r05_current_polars_insurance_xgboost_full temp=38.0C
+2026-11-16T03:34:29-05:00 END 162_measured_r05_current_polars_insurance_xgboost_full status=OK pkg_J=23.260000 elapsed_s=1.003499437 rss_kB=409076
+2026-11-16T03:35:10-05:00 START 163_measured_r05_current_polars_insurance_svr_full temp=42.0C
+2026-11-16T03:35:11-05:00 END 163_measured_r05_current_polars_insurance_svr_full status=OK pkg_J=21.230000 elapsed_s=0.854830982 rss_kB=238788
+2026-11-16T03:35:51-05:00 START 164_measured_r05_legacy_dask_insurance_rf_full temp=38.0C
+2026-11-16T03:35:51-05:00 END 164_measured_r05_legacy_dask_insurance_rf_full status=OK pkg_J=19.610000 elapsed_s=0.771824297 rss_kB=167428
+2026-11-16T03:36:32-05:00 START 165_measured_r05_current_pandas_ml-1m_svd_data temp=43.0C
+2026-11-16T03:36:34-05:00 END 165_measured_r05_current_pandas_ml-1m_svd_data status=OK pkg_J=62.630000 elapsed_s=2.462636172 rss_kB=706564
+2026-11-16T03:37:14-05:00 START 166_measured_r05_current_pandas_ml-1m_ncf_full temp=41.0C
+2026-11-16T03:37:55-05:00 END 166_measured_r05_current_pandas_ml-1m_ncf_full status=OK pkg_J=987.160000 elapsed_s=40.823075506 rss_kB=1919716
+2026-11-16T03:38:35-05:00 START 167_measured_r05_current_polars_insurance_tabnet_full temp=39.0C
+2026-11-16T03:38:40-05:00 END 167_measured_r05_current_polars_insurance_tabnet_full status=OK pkg_J=99.380000 elapsed_s=4.312256831 rss_kB=2020616
+2026-11-16T03:39:20-05:00 START 168_measured_r05_legacy_pandas_insurance_rf_data temp=42.0C
+2026-11-16T03:39:20-05:00 END 168_measured_r05_legacy_pandas_insurance_rf_data status=OK pkg_J=4.930000 elapsed_s=0.210290341 rss_kB=88968
+2026-11-16T03:40:00-05:00 START 169_measured_r05_current_dask_ml-1m_svd_full temp=36.0C
+2026-11-16T03:40:11-05:00 END 169_measured_r05_current_dask_ml-1m_svd_full status=OK pkg_J=265.530000 elapsed_s=10.726441746 rss_kB=1750036
+2026-11-16T03:40:51-05:00 START 170_measured_r05_current_polars_insurance_rf_full temp=38.0C
+2026-11-16T03:40:52-05:00 END 170_measured_r05_current_polars_insurance_rf_full status=OK pkg_J=25.590000 elapsed_s=1.010283284 rss_kB=254456
+2026-11-16T03:41:32-05:00 START 171_measured_r05_current_dask_insurance_rf_full temp=35.0C
+2026-11-16T03:41:34-05:00 END 171_measured_r05_current_dask_insurance_rf_full status=OK pkg_J=34.580000 elapsed_s=1.468699911 rss_kB=234800
+2026-11-16T03:42:14-05:00 START 172_measured_r05_legacy_pandas_insurance_rf_full temp=38.0C
+2026-11-16T03:42:15-05:00 END 172_measured_r05_legacy_pandas_insurance_rf_full status=OK pkg_J=13.810000 elapsed_s=0.568968875 rss_kB=155596
+2026-11-16T03:42:55-05:00 START 173_measured_r05_legacy_dask_insurance_rf_data temp=44.0C
+2026-11-16T03:42:55-05:00 END 173_measured_r05_legacy_dask_insurance_rf_data status=OK pkg_J=10.870000 elapsed_s=0.455938848 rss_kB=117036
+2026-11-16T03:43:35-05:00 START 174_measured_r05_current_dask_insurance_rf_data temp=37.0C
+2026-11-16T03:43:36-05:00 END 174_measured_r05_current_dask_insurance_rf_data status=OK pkg_J=20.280000 elapsed_s=0.858746694 rss_kB=168392
+2026-11-16T03:44:16-05:00 START 175_measured_r05_current_pandas_insurance_tabnet_full temp=41.0C
+2026-11-16T03:44:21-05:00 END 175_measured_r05_current_pandas_insurance_tabnet_full status=OK pkg_J=95.990000 elapsed_s=4.182402648 rss_kB=1971996
+2026-11-16T03:45:01-05:00 START 176_measured_r05_current_dask_insurance_tabnet_full temp=36.0C
+2026-11-16T03:45:06-05:00 END 176_measured_r05_current_dask_insurance_tabnet_full status=OK pkg_J=110.040000 elapsed_s=4.722494892 rss_kB=2003620
+2026-11-16T03:45:46-05:00 START 177_measured_r05_current_dask_insurance_svr_full temp=35.0C
+2026-11-16T03:45:47-05:00 END 177_measured_r05_current_dask_insurance_svr_full status=OK pkg_J=31.760000 elapsed_s=1.308431541 rss_kB=221896
+2026-11-16T03:46:27-05:00 START 178_measured_r05_current_pandas_insurance_rf_full temp=43.0C
+2026-11-16T03:46:28-05:00 END 178_measured_r05_current_pandas_insurance_rf_full status=OK pkg_J=23.040000 elapsed_s=0.923099761 rss_kB=205156
+2026-11-16T03:47:08-05:00 START 179_measured_r05_current_dask_ml-1m_svd_data temp=40.0C
+2026-11-16T03:47:18-05:00 END 179_measured_r05_current_dask_ml-1m_svd_data status=OK pkg_J=233.640000 elapsed_s=9.591339477 rss_kB=1762148
+2026-11-16T03:47:58-05:00 START 180_measured_r05_current_polars_ml-1m_svd_data temp=36.0C
+2026-11-16T03:47:59-05:00 END 180_measured_r05_current_polars_ml-1m_svd_data status=OK pkg_J=50.340000 elapsed_s=0.884064579 rss_kB=1042864
+2026-11-16T03:48:39-05:00 START 181_measured_r06_current_dask_insurance_rf_full temp=36.0C
+2026-11-16T03:48:41-05:00 END 181_measured_r06_current_dask_insurance_rf_full status=OK pkg_J=35.650000 elapsed_s=1.454104429 rss_kB=235364
+2026-11-16T03:49:21-05:00 START 182_measured_r06_current_dask_insurance_xgboost_full temp=36.0C
+2026-11-16T03:49:22-05:00 END 182_measured_r06_current_dask_insurance_xgboost_full status=OK pkg_J=34.710000 elapsed_s=1.465186045 rss_kB=390296
+2026-11-16T03:50:03-05:00 START 183_measured_r06_current_pandas_ml-1m_svd_full temp=41.0C
+2026-11-16T03:50:06-05:00 END 183_measured_r06_current_pandas_ml-1m_svd_full status=OK pkg_J=94.920000 elapsed_s=3.756736189 rss_kB=706808
+2026-11-16T03:50:46-05:00 START 184_measured_r06_current_pandas_insurance_rf_data temp=38.0C
+2026-11-16T03:50:47-05:00 END 184_measured_r06_current_pandas_insurance_rf_data status=OK pkg_J=5.430000 elapsed_s=0.229233975 rss_kB=110536
+2026-11-16T03:51:27-05:00 START 185_measured_r06_current_polars_ml-1m_svd_full temp=36.0C
+2026-11-16T03:51:29-05:00 END 185_measured_r06_current_polars_ml-1m_svd_full status=OK pkg_J=89.570000 elapsed_s=2.380185741 rss_kB=1059672
+2026-11-16T03:52:09-05:00 START 186_measured_r06_legacy_dask_insurance_rf_full temp=36.0C
+2026-11-16T03:52:10-05:00 END 186_measured_r06_legacy_dask_insurance_rf_full status=OK pkg_J=18.390000 elapsed_s=0.753955918 rss_kB=167780
+2026-11-16T03:52:50-05:00 START 187_measured_r06_current_polars_insurance_tabnet_full temp=34.0C
+2026-11-16T03:52:55-05:00 END 187_measured_r06_current_polars_insurance_tabnet_full status=OK pkg_J=98.580000 elapsed_s=4.299729199 rss_kB=2020792
+2026-11-16T03:53:35-05:00 START 188_measured_r06_current_pandas_insurance_xgboost_full temp=36.0C
+2026-11-16T03:53:36-05:00 END 188_measured_r06_current_pandas_insurance_xgboost_full status=OK pkg_J=21.250000 elapsed_s=0.921084502 rss_kB=359388
+2026-11-16T03:54:16-05:00 START 189_measured_r06_legacy_pandas_insurance_rf_full temp=35.0C
+2026-11-16T03:54:17-05:00 END 189_measured_r06_legacy_pandas_insurance_rf_full status=OK pkg_J=13.550000 elapsed_s=0.561317305 rss_kB=156140
+2026-11-16T03:54:57-05:00 START 190_measured_r06_legacy_polars_insurance_rf_full temp=36.0C
+2026-11-16T03:54:57-05:00 END 190_measured_r06_legacy_polars_insurance_rf_full status=OK pkg_J=14.570000 elapsed_s=0.587069184 rss_kB=173072
+2026-11-16T03:55:38-05:00 START 191_measured_r06_current_dask_ml-1m_ncf_full temp=59.0C
+2026-11-16T03:56:26-05:00 END 191_measured_r06_current_dask_ml-1m_ncf_full status=OK pkg_J=1134.960000 elapsed_s=48.560701510 rss_kB=2065536
+2026-11-16T03:57:06-05:00 START 192_measured_r06_current_polars_insurance_xgboost_full temp=40.0C
+2026-11-16T03:57:07-05:00 END 192_measured_r06_current_polars_insurance_xgboost_full status=OK pkg_J=23.600000 elapsed_s=1.002322954 rss_kB=408296
+2026-11-16T03:57:48-05:00 START 193_measured_r06_current_dask_insurance_svr_full temp=36.0C
+2026-11-16T03:57:49-05:00 END 193_measured_r06_current_dask_insurance_svr_full status=OK pkg_J=30.490000 elapsed_s=1.291072271 rss_kB=221920
+2026-11-16T03:58:29-05:00 START 194_measured_r06_current_dask_ml-1m_svd_data temp=38.0C
+2026-11-16T03:58:39-05:00 END 194_measured_r06_current_dask_ml-1m_svd_data status=OK pkg_J=239.800000 elapsed_s=9.567557358 rss_kB=1759056
+2026-11-16T03:59:19-05:00 START 195_measured_r06_current_dask_insurance_tabnet_full temp=42.0C
+2026-11-16T03:59:24-05:00 END 195_measured_r06_current_dask_insurance_tabnet_full status=OK pkg_J=109.950000 elapsed_s=4.714543191 rss_kB=2003440
+2026-11-16T04:00:04-05:00 START 196_measured_r06_current_pandas_insurance_svr_full temp=38.0C
+2026-11-16T04:00:05-05:00 END 196_measured_r06_current_pandas_insurance_svr_full status=OK pkg_J=18.150000 elapsed_s=0.766554860 rss_kB=190880
+2026-11-16T04:00:45-05:00 START 197_measured_r06_current_pandas_ml-1m_svd_data temp=37.0C
+2026-11-16T04:00:47-05:00 END 197_measured_r06_current_pandas_ml-1m_svd_data status=OK pkg_J=61.800000 elapsed_s=2.473532833 rss_kB=706352
+2026-11-16T04:01:27-05:00 START 198_measured_r06_legacy_pandas_insurance_rf_data temp=42.0C
+2026-11-16T04:01:28-05:00 END 198_measured_r06_legacy_pandas_insurance_rf_data status=OK pkg_J=5.150000 elapsed_s=0.210281191 rss_kB=88904
+2026-11-16T04:02:08-05:00 START 199_measured_r06_current_polars_insurance_svr_full temp=35.0C
+2026-11-16T04:02:09-05:00 END 199_measured_r06_current_polars_insurance_svr_full status=OK pkg_J=20.110000 elapsed_s=0.850326161 rss_kB=238776
+2026-11-16T04:02:49-05:00 START 200_measured_r06_current_pandas_insurance_tabnet_full temp=38.0C
+2026-11-16T04:02:53-05:00 END 200_measured_r06_current_pandas_insurance_tabnet_full status=OK pkg_J=97.760000 elapsed_s=4.183158461 rss_kB=1972064
+2026-11-16T04:03:33-05:00 START 201_measured_r06_current_dask_insurance_rf_data temp=40.0C
+2026-11-16T04:03:34-05:00 END 201_measured_r06_current_dask_insurance_rf_data status=OK pkg_J=20.810000 elapsed_s=0.860601306 rss_kB=168216
+2026-11-16T04:04:14-05:00 START 202_measured_r06_current_polars_ml-1m_ncf_full temp=36.0C
+2026-11-16T04:04:54-05:00 END 202_measured_r06_current_polars_ml-1m_ncf_full status=OK pkg_J=967.040000 elapsed_s=39.991578000 rss_kB=1910168
+2026-11-16T04:05:34-05:00 START 203_measured_r06_current_polars_insurance_rf_full temp=40.0C
+2026-11-16T04:05:35-05:00 END 203_measured_r06_current_polars_insurance_rf_full status=OK pkg_J=24.570000 elapsed_s=1.008512564 rss_kB=254760
+2026-11-16T04:06:16-05:00 START 204_measured_r06_legacy_polars_insurance_rf_data temp=36.0C
+2026-11-16T04:06:16-05:00 END 204_measured_r06_legacy_polars_insurance_rf_data status=OK pkg_J=5.840000 elapsed_s=0.239973219 rss_kB=106484
+2026-11-16T04:06:56-05:00 START 205_measured_r06_current_pandas_insurance_rf_full temp=39.0C
+2026-11-16T04:06:57-05:00 END 205_measured_r06_current_pandas_insurance_rf_full status=OK pkg_J=22.620000 elapsed_s=0.931410659 rss_kB=205176
+2026-11-16T04:07:37-05:00 START 206_measured_r06_current_polars_insurance_rf_data temp=36.0C
+2026-11-16T04:07:37-05:00 END 206_measured_r06_current_polars_insurance_rf_data status=OK pkg_J=3.480000 elapsed_s=0.145310077 rss_kB=93872
+2026-11-16T04:08:17-05:00 START 207_measured_r06_legacy_dask_insurance_rf_data temp=36.0C
+2026-11-16T04:08:18-05:00 END 207_measured_r06_legacy_dask_insurance_rf_data status=OK pkg_J=10.720000 elapsed_s=0.449255695 rss_kB=117196
+2026-11-16T04:08:58-05:00 START 208_measured_r06_current_polars_ml-1m_svd_data temp=37.0C
+2026-11-16T04:08:59-05:00 END 208_measured_r06_current_polars_ml-1m_svd_data status=OK pkg_J=50.620000 elapsed_s=0.897507971 rss_kB=1045056
+2026-11-16T04:09:39-05:00 START 209_measured_r06_current_pandas_ml-1m_ncf_full temp=39.0C
+2026-11-16T04:10:21-05:00 END 209_measured_r06_current_pandas_ml-1m_ncf_full status=OK pkg_J=956.340000 elapsed_s=41.397631655 rss_kB=1919164
+2026-11-16T04:11:01-05:00 START 210_measured_r06_current_dask_ml-1m_svd_full temp=43.0C
+2026-11-16T04:11:12-05:00 END 210_measured_r06_current_dask_ml-1m_svd_full status=OK pkg_J=276.060000 elapsed_s=10.849754820 rss_kB=1774628
+2026-11-16T04:11:52-05:00 START 211_measured_r07_legacy_polars_insurance_rf_data temp=39.0C
+2026-11-16T04:11:52-05:00 END 211_measured_r07_legacy_polars_insurance_rf_data status=OK pkg_J=5.860000 elapsed_s=0.243540483 rss_kB=107048
+2026-11-16T04:12:32-05:00 START 212_measured_r07_current_pandas_ml-1m_svd_data temp=38.0C
+2026-11-16T04:12:35-05:00 END 212_measured_r07_current_pandas_ml-1m_svd_data status=OK pkg_J=65.440000 elapsed_s=2.493036308 rss_kB=706656
+2026-11-16T04:13:15-05:00 START 213_measured_r07_current_pandas_insurance_xgboost_full temp=36.0C
+2026-11-16T04:13:16-05:00 END 213_measured_r07_current_pandas_insurance_xgboost_full status=OK pkg_J=21.000000 elapsed_s=0.921043417 rss_kB=359428
+2026-11-16T04:13:56-05:00 START 214_measured_r07_current_dask_ml-1m_svd_data temp=36.0C
+2026-11-16T04:14:06-05:00 END 214_measured_r07_current_dask_ml-1m_svd_data status=OK pkg_J=242.590000 elapsed_s=9.672972475 rss_kB=1739744
+2026-11-16T04:14:46-05:00 START 215_measured_r07_current_polars_insurance_rf_full temp=42.0C
+2026-11-16T04:14:47-05:00 END 215_measured_r07_current_polars_insurance_rf_full status=OK pkg_J=23.870000 elapsed_s=1.011688756 rss_kB=254164
+2026-11-16T04:15:27-05:00 START 216_measured_r07_current_dask_insurance_svr_full temp=38.0C
+2026-11-16T04:15:28-05:00 END 216_measured_r07_current_dask_insurance_svr_full status=OK pkg_J=32.000000 elapsed_s=1.302327285 rss_kB=220996
+2026-11-16T04:16:09-05:00 START 217_measured_r07_current_pandas_ml-1m_svd_full temp=40.0C
+2026-11-16T04:16:12-05:00 END 217_measured_r07_current_pandas_ml-1m_svd_full status=OK pkg_J=99.090000 elapsed_s=3.774741883 rss_kB=706668
+2026-11-16T04:16:53-05:00 START 218_measured_r07_current_polars_insurance_tabnet_full temp=38.0C
+2026-11-16T04:16:57-05:00 END 218_measured_r07_current_polars_insurance_tabnet_full status=OK pkg_J=99.900000 elapsed_s=4.318455790 rss_kB=2020420
+2026-11-16T04:17:37-05:00 START 219_measured_r07_legacy_pandas_insurance_rf_full temp=36.0C
+2026-11-16T04:17:38-05:00 END 219_measured_r07_legacy_pandas_insurance_rf_full status=OK pkg_J=13.360000 elapsed_s=0.555719581 rss_kB=155644
+2026-11-16T04:18:18-05:00 START 220_measured_r07_current_dask_insurance_rf_data temp=41.0C
+2026-11-16T04:18:19-05:00 END 220_measured_r07_current_dask_insurance_rf_data status=OK pkg_J=20.400000 elapsed_s=0.864131591 rss_kB=168360
+2026-11-16T04:18:59-05:00 START 221_measured_r07_current_pandas_insurance_rf_full temp=38.0C
+2026-11-16T04:19:00-05:00 END 221_measured_r07_current_pandas_insurance_rf_full status=OK pkg_J=21.810000 elapsed_s=0.921845576 rss_kB=204536
+2026-11-16T04:19:40-05:00 START 222_measured_r07_current_pandas_ml-1m_ncf_full temp=41.0C
+2026-11-16T04:20:21-05:00 END 222_measured_r07_current_pandas_ml-1m_ncf_full status=OK pkg_J=959.780000 elapsed_s=41.400571156 rss_kB=1918860
+2026-11-16T04:21:02-05:00 START 223_measured_r07_current_pandas_insurance_svr_full temp=38.0C
+2026-11-16T04:21:02-05:00 END 223_measured_r07_current_pandas_insurance_svr_full status=OK pkg_J=18.440000 elapsed_s=0.770277613 rss_kB=190808
+2026-11-16T04:21:43-05:00 START 224_measured_r07_legacy_dask_insurance_rf_full temp=41.0C
+2026-11-16T04:21:43-05:00 END 224_measured_r07_legacy_dask_insurance_rf_full status=OK pkg_J=18.470000 elapsed_s=0.754298997 rss_kB=167352
+2026-11-16T04:22:24-05:00 START 225_measured_r07_current_polars_ml-1m_ncf_full temp=36.0C
+2026-11-16T04:23:04-05:00 END 225_measured_r07_current_polars_ml-1m_ncf_full status=OK pkg_J=962.310000 elapsed_s=39.935160880 rss_kB=1911644
+2026-11-16T04:23:44-05:00 START 226_measured_r07_current_pandas_insurance_tabnet_full temp=42.0C
+2026-11-16T04:23:48-05:00 END 226_measured_r07_current_pandas_insurance_tabnet_full status=OK pkg_J=96.550000 elapsed_s=4.176523721 rss_kB=1972152
+2026-11-16T04:24:28-05:00 START 227_measured_r07_legacy_polars_insurance_rf_full temp=40.0C
+2026-11-16T04:24:29-05:00 END 227_measured_r07_legacy_polars_insurance_rf_full status=OK pkg_J=14.180000 elapsed_s=0.592505067 rss_kB=173368
+2026-11-16T04:25:09-05:00 START 228_measured_r07_current_polars_insurance_rf_data temp=40.0C
+2026-11-16T04:25:09-05:00 END 228_measured_r07_current_polars_insurance_rf_data status=OK pkg_J=3.480000 elapsed_s=0.142931630 rss_kB=93588
+2026-11-16T04:25:49-05:00 START 229_measured_r07_current_polars_ml-1m_svd_full temp=43.0C
+2026-11-16T04:25:52-05:00 END 229_measured_r07_current_polars_ml-1m_svd_full status=OK pkg_J=89.430000 elapsed_s=2.430446203 rss_kB=1055168
+2026-11-16T04:26:32-05:00 START 230_measured_r07_current_polars_insurance_svr_full temp=39.0C
+2026-11-16T04:26:33-05:00 END 230_measured_r07_current_polars_insurance_svr_full status=OK pkg_J=20.390000 elapsed_s=0.853074540 rss_kB=238712
+2026-11-16T04:27:13-05:00 START 231_measured_r07_current_dask_insurance_rf_full temp=36.0C
+2026-11-16T04:27:14-05:00 END 231_measured_r07_current_dask_insurance_rf_full status=OK pkg_J=34.240000 elapsed_s=1.471559262 rss_kB=236152
+2026-11-16T04:27:54-05:00 START 232_measured_r07_current_polars_insurance_xgboost_full temp=41.0C
+2026-11-16T04:27:56-05:00 END 232_measured_r07_current_polars_insurance_xgboost_full status=OK pkg_J=23.000000 elapsed_s=0.998586041 rss_kB=408816
+2026-11-16T04:28:36-05:00 START 233_measured_r07_legacy_pandas_insurance_rf_data temp=37.0C
+2026-11-16T04:28:36-05:00 END 233_measured_r07_legacy_pandas_insurance_rf_data status=OK pkg_J=5.090000 elapsed_s=0.208181869 rss_kB=89152
+2026-11-16T04:29:16-05:00 START 234_measured_r07_current_dask_ml-1m_ncf_full temp=39.0C
+2026-11-16T04:30:05-05:00 END 234_measured_r07_current_dask_ml-1m_ncf_full status=OK pkg_J=1131.620000 elapsed_s=48.760544924 rss_kB=2177992
+2026-11-16T04:30:45-05:00 START 235_measured_r07_legacy_dask_insurance_rf_data temp=38.0C
+2026-11-16T04:30:46-05:00 END 235_measured_r07_legacy_dask_insurance_rf_data status=OK pkg_J=10.890000 elapsed_s=0.458184131 rss_kB=116944
+2026-11-16T04:31:26-05:00 START 236_measured_r07_current_dask_insurance_xgboost_full temp=38.0C
+2026-11-16T04:31:27-05:00 END 236_measured_r07_current_dask_insurance_xgboost_full status=OK pkg_J=33.520000 elapsed_s=1.453975549 rss_kB=389440
+2026-11-16T04:32:07-05:00 START 237_measured_r07_current_dask_insurance_tabnet_full temp=35.0C
+2026-11-16T04:32:12-05:00 END 237_measured_r07_current_dask_insurance_tabnet_full status=OK pkg_J=107.340000 elapsed_s=4.682275833 rss_kB=2003784
+2026-11-16T04:32:52-05:00 START 238_measured_r07_current_dask_ml-1m_svd_full temp=37.0C
+2026-11-16T04:33:03-05:00 END 238_measured_r07_current_dask_ml-1m_svd_full status=OK pkg_J=265.080000 elapsed_s=10.637533538 rss_kB=1744932
+2026-11-16T04:33:43-05:00 START 239_measured_r07_current_polars_ml-1m_svd_data temp=38.0C
+2026-11-16T04:33:44-05:00 END 239_measured_r07_current_polars_ml-1m_svd_data status=OK pkg_J=51.170000 elapsed_s=0.890212114 rss_kB=1034432
+2026-11-16T04:34:24-05:00 START 240_measured_r07_current_pandas_insurance_rf_data temp=38.0C
+2026-11-16T04:34:24-05:00 END 240_measured_r07_current_pandas_insurance_rf_data status=OK pkg_J=5.700000 elapsed_s=0.232402161 rss_kB=110668
+2026-11-16T04:35:05-05:00 START 241_measured_r08_current_dask_insurance_xgboost_full temp=39.0C
+2026-11-16T04:35:06-05:00 END 241_measured_r08_current_dask_insurance_xgboost_full status=OK pkg_J=33.900000 elapsed_s=1.453248189 rss_kB=390152
+2026-11-16T04:35:46-05:00 START 242_measured_r08_current_pandas_insurance_rf_full temp=38.0C
+2026-11-16T04:35:47-05:00 END 242_measured_r08_current_pandas_insurance_rf_full status=OK pkg_J=21.860000 elapsed_s=0.918212850 rss_kB=205140
+2026-11-16T04:36:27-05:00 START 243_measured_r08_current_polars_insurance_tabnet_full temp=37.0C
+2026-11-16T04:36:32-05:00 END 243_measured_r08_current_polars_insurance_tabnet_full status=OK pkg_J=98.560000 elapsed_s=4.271934888 rss_kB=2020696
+2026-11-16T04:37:12-05:00 START 244_measured_r08_legacy_polars_insurance_rf_full temp=41.0C
+2026-11-16T04:37:12-05:00 END 244_measured_r08_legacy_polars_insurance_rf_full status=OK pkg_J=14.360000 elapsed_s=0.591003087 rss_kB=172812
+2026-11-16T04:37:53-05:00 START 245_measured_r08_current_pandas_ml-1m_ncf_full temp=36.0C
+2026-11-16T04:38:34-05:00 END 245_measured_r08_current_pandas_ml-1m_ncf_full status=OK pkg_J=972.050000 elapsed_s=41.751613821 rss_kB=1918836
+2026-11-16T04:39:14-05:00 START 246_measured_r08_current_dask_insurance_rf_data temp=40.0C
+2026-11-16T04:39:15-05:00 END 246_measured_r08_current_dask_insurance_rf_data status=OK pkg_J=21.140000 elapsed_s=0.873233766 rss_kB=168048
+2026-11-16T04:39:56-05:00 START 247_measured_r08_current_dask_ml-1m_ncf_full temp=40.0C
+2026-11-16T04:40:44-05:00 END 247_measured_r08_current_dask_ml-1m_ncf_full status=OK pkg_J=1137.880000 elapsed_s=48.469545787 rss_kB=2188992
+2026-11-16T04:41:24-05:00 START 248_measured_r08_current_polars_insurance_svr_full temp=37.0C
+2026-11-16T04:41:25-05:00 END 248_measured_r08_current_polars_insurance_svr_full status=OK pkg_J=20.290000 elapsed_s=0.852714890 rss_kB=238876
+2026-11-16T04:42:05-05:00 START 249_measured_r08_legacy_pandas_insurance_rf_data temp=41.0C
+2026-11-16T04:42:06-05:00 END 249_measured_r08_legacy_pandas_insurance_rf_data status=OK pkg_J=4.900000 elapsed_s=0.211397992 rss_kB=88908
+2026-11-16T04:42:46-05:00 START 250_measured_r08_current_dask_ml-1m_svd_data temp=41.0C
+2026-11-16T04:42:55-05:00 END 250_measured_r08_current_dask_ml-1m_svd_data status=OK pkg_J=230.200000 elapsed_s=9.208345671 rss_kB=1665260
+2026-11-16T04:43:35-05:00 START 251_measured_r08_current_pandas_insurance_tabnet_full temp=36.0C
+2026-11-16T04:43:39-05:00 END 251_measured_r08_current_pandas_insurance_tabnet_full status=OK pkg_J=95.500000 elapsed_s=4.178670146 rss_kB=1972488
+2026-11-16T04:44:19-05:00 START 252_measured_r08_legacy_polars_insurance_rf_data temp=40.0C
+2026-11-16T04:44:20-05:00 END 252_measured_r08_legacy_polars_insurance_rf_data status=OK pkg_J=5.750000 elapsed_s=0.242826151 rss_kB=106992
+2026-11-16T04:45:00-05:00 START 253_measured_r08_current_polars_ml-1m_svd_full temp=37.0C
+2026-11-16T04:45:02-05:00 END 253_measured_r08_current_polars_ml-1m_svd_full status=OK pkg_J=90.870000 elapsed_s=2.365780491 rss_kB=1064196
+2026-11-16T04:45:42-05:00 START 254_measured_r08_current_dask_ml-1m_svd_full temp=35.0C
+2026-11-16T04:45:53-05:00 END 254_measured_r08_current_dask_ml-1m_svd_full status=OK pkg_J=263.990000 elapsed_s=10.675776522 rss_kB=1780764
+2026-11-16T04:46:33-05:00 START 255_measured_r08_current_polars_insurance_xgboost_full temp=37.0C
+2026-11-16T04:46:34-05:00 END 255_measured_r08_current_polars_insurance_xgboost_full status=OK pkg_J=24.430000 elapsed_s=0.998966565 rss_kB=408716
+2026-11-16T04:47:15-05:00 START 256_measured_r08_current_dask_insurance_tabnet_full temp=40.0C
+2026-11-16T04:47:19-05:00 END 256_measured_r08_current_dask_insurance_tabnet_full status=OK pkg_J=107.270000 elapsed_s=4.707158695 rss_kB=2002216
+2026-11-16T04:47:59-05:00 START 257_measured_r08_current_dask_insurance_rf_full temp=35.0C
+2026-11-16T04:48:01-05:00 END 257_measured_r08_current_dask_insurance_rf_full status=OK pkg_J=34.330000 elapsed_s=1.457333460 rss_kB=235468
+2026-11-16T04:48:41-05:00 START 258_measured_r08_current_pandas_ml-1m_svd_full temp=41.0C
+2026-11-16T04:48:45-05:00 END 258_measured_r08_current_pandas_ml-1m_svd_full status=OK pkg_J=96.540000 elapsed_s=3.838697644 rss_kB=706112
+2026-11-16T04:49:25-05:00 START 259_measured_r08_current_polars_ml-1m_svd_data temp=38.0C
+2026-11-16T04:49:26-05:00 END 259_measured_r08_current_polars_ml-1m_svd_data status=OK pkg_J=50.440000 elapsed_s=0.895674969 rss_kB=1025216
+2026-11-16T04:50:06-05:00 START 260_measured_r08_current_pandas_insurance_rf_data temp=40.0C
+2026-11-16T04:50:07-05:00 END 260_measured_r08_current_pandas_insurance_rf_data status=OK pkg_J=5.580000 elapsed_s=0.230190701 rss_kB=110888
+2026-11-16T04:50:47-05:00 START 261_measured_r08_current_polars_ml-1m_ncf_full temp=36.0C
+2026-11-16T04:51:26-05:00 END 261_measured_r08_current_polars_ml-1m_ncf_full status=OK pkg_J=944.500000 elapsed_s=39.372642203 rss_kB=1912732
+2026-11-16T04:52:06-05:00 START 262_measured_r08_current_dask_insurance_svr_full temp=37.0C
+2026-11-16T04:52:08-05:00 END 262_measured_r08_current_dask_insurance_svr_full status=OK pkg_J=30.880000 elapsed_s=1.295848405 rss_kB=220660
+2026-11-16T04:52:48-05:00 START 263_measured_r08_legacy_pandas_insurance_rf_full temp=40.0C
+2026-11-16T04:52:48-05:00 END 263_measured_r08_legacy_pandas_insurance_rf_full status=OK pkg_J=13.450000 elapsed_s=0.554747346 rss_kB=155724
+2026-11-16T04:53:28-05:00 START 264_measured_r08_legacy_dask_insurance_rf_data temp=37.0C
+2026-11-16T04:53:29-05:00 END 264_measured_r08_legacy_dask_insurance_rf_data status=OK pkg_J=11.080000 elapsed_s=0.445023743 rss_kB=117008
+2026-11-16T04:54:09-05:00 START 265_measured_r08_current_polars_insurance_rf_data temp=37.0C
+2026-11-16T04:54:09-05:00 END 265_measured_r08_current_polars_insurance_rf_data status=OK pkg_J=3.480000 elapsed_s=0.148567703 rss_kB=93884
+2026-11-16T04:54:49-05:00 START 266_measured_r08_legacy_dask_insurance_rf_full temp=38.0C
+2026-11-16T04:54:50-05:00 END 266_measured_r08_legacy_dask_insurance_rf_full status=OK pkg_J=18.610000 elapsed_s=0.765014671 rss_kB=167280
+2026-11-16T04:55:30-05:00 START 267_measured_r08_current_polars_insurance_rf_full temp=36.0C
+2026-11-16T04:55:31-05:00 END 267_measured_r08_current_polars_insurance_rf_full status=OK pkg_J=23.920000 elapsed_s=1.010430301 rss_kB=254456
+2026-11-16T04:56:12-05:00 START 268_measured_r08_current_pandas_insurance_svr_full temp=41.0C
+2026-11-16T04:56:12-05:00 END 268_measured_r08_current_pandas_insurance_svr_full status=OK pkg_J=18.670000 elapsed_s=0.765237231 rss_kB=190892
+2026-11-16T04:56:53-05:00 START 269_measured_r08_current_pandas_insurance_xgboost_full temp=42.0C
+2026-11-16T04:56:54-05:00 END 269_measured_r08_current_pandas_insurance_xgboost_full status=OK pkg_J=21.420000 elapsed_s=0.914567354 rss_kB=359548
+2026-11-16T04:57:34-05:00 START 270_measured_r08_current_pandas_ml-1m_svd_data temp=38.0C
+2026-11-16T04:57:36-05:00 END 270_measured_r08_current_pandas_ml-1m_svd_data status=OK pkg_J=61.720000 elapsed_s=2.504540063 rss_kB=706800
+2026-11-16T04:58:16-05:00 START 271_measured_r09_legacy_pandas_insurance_rf_full temp=37.0C
+2026-11-16T04:58:17-05:00 END 271_measured_r09_legacy_pandas_insurance_rf_full status=OK pkg_J=13.390000 elapsed_s=0.559282906 rss_kB=155720
+2026-11-16T04:58:57-05:00 START 272_measured_r09_current_polars_insurance_tabnet_full temp=37.0C
+2026-11-16T04:59:01-05:00 END 272_measured_r09_current_polars_insurance_tabnet_full status=OK pkg_J=99.540000 elapsed_s=4.280820478 rss_kB=2019988
+2026-11-16T04:59:42-05:00 START 273_measured_r09_current_dask_insurance_xgboost_full temp=41.0C
+2026-11-16T04:59:43-05:00 END 273_measured_r09_current_dask_insurance_xgboost_full status=OK pkg_J=33.690000 elapsed_s=1.451748665 rss_kB=390456
+2026-11-16T05:00:23-05:00 START 274_measured_r09_current_polars_insurance_rf_data temp=36.0C
+2026-11-16T05:00:23-05:00 END 274_measured_r09_current_polars_insurance_rf_data status=OK pkg_J=3.490000 elapsed_s=0.145069816 rss_kB=93384
+2026-11-16T05:01:04-05:00 START 275_measured_r09_current_dask_ml-1m_svd_full temp=39.0C
+2026-11-16T05:01:15-05:00 END 275_measured_r09_current_dask_ml-1m_svd_full status=OK pkg_J=270.930000 elapsed_s=10.821620291 rss_kB=1780416
+2026-11-16T05:01:55-05:00 START 276_measured_r09_current_pandas_ml-1m_ncf_full temp=38.0C
+2026-11-16T05:02:36-05:00 END 276_measured_r09_current_pandas_ml-1m_ncf_full status=OK pkg_J=960.170000 elapsed_s=41.264279956 rss_kB=1919804
+2026-11-16T05:03:16-05:00 START 277_measured_r09_current_pandas_insurance_rf_full temp=40.0C
+2026-11-16T05:03:17-05:00 END 277_measured_r09_current_pandas_insurance_rf_full status=OK pkg_J=22.150000 elapsed_s=0.927893845 rss_kB=205012
+2026-11-16T05:03:57-05:00 START 278_measured_r09_legacy_pandas_insurance_rf_data temp=36.0C
+2026-11-16T05:03:58-05:00 END 278_measured_r09_legacy_pandas_insurance_rf_data status=OK pkg_J=5.000000 elapsed_s=0.209539741 rss_kB=88792
+2026-11-16T05:04:38-05:00 START 279_measured_r09_current_polars_insurance_svr_full temp=35.0C
+2026-11-16T05:04:39-05:00 END 279_measured_r09_current_polars_insurance_svr_full status=OK pkg_J=20.040000 elapsed_s=0.858272023 rss_kB=238572
+2026-11-16T05:05:19-05:00 START 280_measured_r09_current_dask_ml-1m_ncf_full temp=36.0C
+2026-11-16T05:06:07-05:00 END 280_measured_r09_current_dask_ml-1m_ncf_full status=OK pkg_J=1125.430000 elapsed_s=48.505899224 rss_kB=2057640
+2026-11-16T05:06:47-05:00 START 281_measured_r09_legacy_dask_insurance_rf_data temp=41.0C
+2026-11-16T05:06:48-05:00 END 281_measured_r09_legacy_dask_insurance_rf_data status=OK pkg_J=10.710000 elapsed_s=0.454057394 rss_kB=116900
+2026-11-16T05:07:28-05:00 START 282_measured_r09_current_dask_ml-1m_svd_data temp=38.0C
+2026-11-16T05:07:37-05:00 END 282_measured_r09_current_dask_ml-1m_svd_data status=OK pkg_J=237.290000 elapsed_s=9.348575524 rss_kB=1725432
+2026-11-16T05:08:18-05:00 START 283_measured_r09_current_polars_ml-1m_ncf_full temp=38.0C
+2026-11-16T05:08:58-05:00 END 283_measured_r09_current_polars_ml-1m_ncf_full status=OK pkg_J=965.900000 elapsed_s=40.464789283 rss_kB=1912436
+2026-11-16T05:09:38-05:00 START 284_measured_r09_current_pandas_insurance_xgboost_full temp=41.0C
+2026-11-16T05:09:39-05:00 END 284_measured_r09_current_pandas_insurance_xgboost_full status=OK pkg_J=21.130000 elapsed_s=0.917136197 rss_kB=359316
+2026-11-16T05:10:19-05:00 START 285_measured_r09_legacy_polars_insurance_rf_full temp=43.0C
+2026-11-16T05:10:20-05:00 END 285_measured_r09_legacy_polars_insurance_rf_full status=OK pkg_J=14.130000 elapsed_s=0.591459481 rss_kB=172804
+2026-11-16T05:11:00-05:00 START 286_measured_r09_current_pandas_ml-1m_svd_full temp=38.0C
+2026-11-16T05:11:04-05:00 END 286_measured_r09_current_pandas_ml-1m_svd_full status=OK pkg_J=95.240000 elapsed_s=3.767740333 rss_kB=706368
+2026-11-16T05:11:44-05:00 START 287_measured_r09_current_polars_ml-1m_svd_full temp=40.0C
+2026-11-16T05:11:47-05:00 END 287_measured_r09_current_polars_ml-1m_svd_full status=OK pkg_J=89.380000 elapsed_s=2.386928252 rss_kB=1042132
+2026-11-16T05:12:27-05:00 START 288_measured_r09_current_polars_ml-1m_svd_data temp=36.0C
+2026-11-16T05:12:28-05:00 END 288_measured_r09_current_polars_ml-1m_svd_data status=OK pkg_J=50.900000 elapsed_s=0.915357668 rss_kB=1026828
+2026-11-16T05:13:08-05:00 START 289_measured_r09_legacy_polars_insurance_rf_data temp=35.0C
+2026-11-16T05:13:08-05:00 END 289_measured_r09_legacy_polars_insurance_rf_data status=OK pkg_J=5.890000 elapsed_s=0.239271329 rss_kB=106744
+2026-11-16T05:13:48-05:00 START 290_measured_r09_current_pandas_insurance_rf_data temp=37.0C
+2026-11-16T05:13:49-05:00 END 290_measured_r09_current_pandas_insurance_rf_data status=OK pkg_J=5.540000 elapsed_s=0.228717868 rss_kB=110696
+2026-11-16T05:14:29-05:00 START 291_measured_r09_current_pandas_ml-1m_svd_data temp=43.0C
+2026-11-16T05:14:31-05:00 END 291_measured_r09_current_pandas_ml-1m_svd_data status=OK pkg_J=63.180000 elapsed_s=2.493477523 rss_kB=706132
+2026-11-16T05:15:11-05:00 START 292_measured_r09_current_dask_insurance_rf_data temp=37.0C
+2026-11-16T05:15:12-05:00 END 292_measured_r09_current_dask_insurance_rf_data status=OK pkg_J=20.430000 elapsed_s=0.868545445 rss_kB=168148
+2026-11-16T05:15:52-05:00 START 293_measured_r09_current_polars_insurance_rf_full temp=36.0C
+2026-11-16T05:15:53-05:00 END 293_measured_r09_current_polars_insurance_rf_full status=OK pkg_J=24.690000 elapsed_s=1.010568595 rss_kB=254936
+2026-11-16T05:16:34-05:00 START 294_measured_r09_current_dask_insurance_tabnet_full temp=38.0C
+2026-11-16T05:16:38-05:00 END 294_measured_r09_current_dask_insurance_tabnet_full status=OK pkg_J=109.940000 elapsed_s=4.717287613 rss_kB=2001504
+2026-11-16T05:17:19-05:00 START 295_measured_r09_current_polars_insurance_xgboost_full temp=41.0C
+2026-11-16T05:17:20-05:00 END 295_measured_r09_current_polars_insurance_xgboost_full status=OK pkg_J=22.870000 elapsed_s=1.005032957 rss_kB=408944
+2026-11-16T05:18:00-05:00 START 296_measured_r09_current_pandas_insurance_svr_full temp=42.0C
+2026-11-16T05:18:01-05:00 END 296_measured_r09_current_pandas_insurance_svr_full status=OK pkg_J=18.820000 elapsed_s=0.767443535 rss_kB=190892
+2026-11-16T05:18:41-05:00 START 297_measured_r09_current_pandas_insurance_tabnet_full temp=35.0C
+2026-11-16T05:18:45-05:00 END 297_measured_r09_current_pandas_insurance_tabnet_full status=OK pkg_J=95.380000 elapsed_s=4.185338900 rss_kB=1972504
+2026-11-16T05:19:25-05:00 START 298_measured_r09_legacy_dask_insurance_rf_full temp=39.0C
+2026-11-16T05:19:26-05:00 END 298_measured_r09_legacy_dask_insurance_rf_full status=OK pkg_J=18.200000 elapsed_s=0.759544114 rss_kB=167660
+2026-11-16T05:20:06-05:00 START 299_measured_r09_current_dask_insurance_rf_full temp=38.0C
+2026-11-16T05:20:08-05:00 END 299_measured_r09_current_dask_insurance_rf_full status=OK pkg_J=35.110000 elapsed_s=1.450207159 rss_kB=234812
+2026-11-16T05:20:48-05:00 START 300_measured_r09_current_dask_insurance_svr_full temp=36.0C
+2026-11-16T05:20:49-05:00 END 300_measured_r09_current_dask_insurance_svr_full status=OK pkg_J=30.460000 elapsed_s=1.296229714 rss_kB=221768
+2026-11-16T05:21:29-05:00 START 301_measured_r10_current_polars_insurance_rf_data temp=38.0C
+2026-11-16T05:21:29-05:00 END 301_measured_r10_current_polars_insurance_rf_data status=OK pkg_J=3.500000 elapsed_s=0.145091937 rss_kB=93276
+2026-11-16T05:22:09-05:00 START 302_measured_r10_current_dask_insurance_xgboost_full temp=36.0C
+2026-11-16T05:22:11-05:00 END 302_measured_r10_current_dask_insurance_xgboost_full status=OK pkg_J=33.460000 elapsed_s=1.441454546 rss_kB=390792
+2026-11-16T05:22:51-05:00 START 303_measured_r10_current_dask_ml-1m_ncf_full temp=39.0C
+2026-11-16T05:23:39-05:00 END 303_measured_r10_current_dask_ml-1m_ncf_full status=OK pkg_J=1140.700000 elapsed_s=48.329543152 rss_kB=2180716
+2026-11-16T05:24:20-05:00 START 304_measured_r10_current_pandas_ml-1m_svd_full temp=41.0C
+2026-11-16T05:24:23-05:00 END 304_measured_r10_current_pandas_ml-1m_svd_full status=OK pkg_J=97.450000 elapsed_s=3.786755513 rss_kB=706336
+2026-11-16T05:25:04-05:00 START 305_measured_r10_current_dask_insurance_rf_full temp=41.0C
+2026-11-16T05:25:05-05:00 END 305_measured_r10_current_dask_insurance_rf_full status=OK pkg_J=34.770000 elapsed_s=1.452426788 rss_kB=235380
+2026-11-16T05:25:45-05:00 START 306_measured_r10_current_dask_insurance_tabnet_full temp=38.0C
+2026-11-16T05:25:50-05:00 END 306_measured_r10_current_dask_insurance_tabnet_full status=OK pkg_J=110.640000 elapsed_s=4.658521733 rss_kB=2003004
+2026-11-16T05:26:30-05:00 START 307_measured_r10_current_dask_insurance_rf_data temp=36.0C
+2026-11-16T05:26:31-05:00 END 307_measured_r10_current_dask_insurance_rf_data status=OK pkg_J=20.730000 elapsed_s=0.861742794 rss_kB=168992
+2026-11-16T05:27:11-05:00 START 308_measured_r10_current_pandas_insurance_tabnet_full temp=38.0C
+2026-11-16T05:27:15-05:00 END 308_measured_r10_current_pandas_insurance_tabnet_full status=OK pkg_J=95.560000 elapsed_s=4.194901095 rss_kB=1972220
+2026-11-16T05:27:56-05:00 START 309_measured_r10_current_pandas_insurance_xgboost_full temp=35.0C
+2026-11-16T05:27:57-05:00 END 309_measured_r10_current_pandas_insurance_xgboost_full status=OK pkg_J=21.230000 elapsed_s=0.931898199 rss_kB=359244
+2026-11-16T05:28:37-05:00 START 310_measured_r10_current_pandas_ml-1m_svd_data temp=39.0C
+2026-11-16T05:28:39-05:00 END 310_measured_r10_current_pandas_ml-1m_svd_data status=OK pkg_J=61.210000 elapsed_s=2.451215218 rss_kB=706948
+2026-11-16T05:29:19-05:00 START 311_measured_r10_current_polars_insurance_rf_full temp=39.0C
+2026-11-16T05:29:20-05:00 END 311_measured_r10_current_polars_insurance_rf_full status=OK pkg_J=24.530000 elapsed_s=1.005398431 rss_kB=255028
+2026-11-16T05:30:01-05:00 START 312_measured_r10_legacy_polars_insurance_rf_full temp=35.0C
+2026-11-16T05:30:01-05:00 END 312_measured_r10_legacy_polars_insurance_rf_full status=OK pkg_J=14.140000 elapsed_s=0.588449926 rss_kB=172648
+2026-11-16T05:30:41-05:00 START 313_measured_r10_legacy_polars_insurance_rf_data temp=43.0C
+2026-11-16T05:30:42-05:00 END 313_measured_r10_legacy_polars_insurance_rf_data status=OK pkg_J=5.810000 elapsed_s=0.243131150 rss_kB=107032
+2026-11-16T05:31:22-05:00 START 314_measured_r10_current_polars_ml-1m_svd_data temp=39.0C
+2026-11-16T05:31:23-05:00 END 314_measured_r10_current_polars_ml-1m_svd_data status=OK pkg_J=51.300000 elapsed_s=0.889397048 rss_kB=1038552
+2026-11-16T05:32:03-05:00 START 315_measured_r10_current_polars_insurance_svr_full temp=39.0C
+2026-11-16T05:32:04-05:00 END 315_measured_r10_current_polars_insurance_svr_full status=OK pkg_J=20.140000 elapsed_s=0.852974391 rss_kB=239116
+2026-11-16T05:32:44-05:00 START 316_measured_r10_legacy_dask_insurance_rf_full temp=42.0C
+2026-11-16T05:32:45-05:00 END 316_measured_r10_legacy_dask_insurance_rf_full status=OK pkg_J=18.190000 elapsed_s=0.763326960 rss_kB=167780
+2026-11-16T05:33:25-05:00 START 317_measured_r10_legacy_pandas_insurance_rf_data temp=38.0C
+2026-11-16T05:33:25-05:00 END 317_measured_r10_legacy_pandas_insurance_rf_data status=OK pkg_J=4.970000 elapsed_s=0.209308977 rss_kB=88908
+2026-11-16T05:34:05-05:00 START 318_measured_r10_current_polars_ml-1m_svd_full temp=39.0C
+2026-11-16T05:34:08-05:00 END 318_measured_r10_current_polars_ml-1m_svd_full status=OK pkg_J=91.860000 elapsed_s=2.375687678 rss_kB=1046468
+2026-11-16T05:34:48-05:00 START 319_measured_r10_legacy_pandas_insurance_rf_full temp=40.0C
+2026-11-16T05:34:48-05:00 END 319_measured_r10_legacy_pandas_insurance_rf_full status=OK pkg_J=14.200000 elapsed_s=0.563962508 rss_kB=155728
+2026-11-16T05:35:29-05:00 START 320_measured_r10_current_dask_insurance_svr_full temp=42.0C
+2026-11-16T05:35:30-05:00 END 320_measured_r10_current_dask_insurance_svr_full status=OK pkg_J=30.620000 elapsed_s=1.293072499 rss_kB=221128
+2026-11-16T05:36:10-05:00 START 321_measured_r10_current_pandas_insurance_rf_full temp=38.0C
+2026-11-16T05:36:11-05:00 END 321_measured_r10_current_pandas_insurance_rf_full status=OK pkg_J=22.380000 elapsed_s=0.921632824 rss_kB=205228
+2026-11-16T05:36:51-05:00 START 322_measured_r10_current_dask_ml-1m_svd_full temp=42.0C
+2026-11-16T05:37:01-05:00 END 322_measured_r10_current_dask_ml-1m_svd_full status=OK pkg_J=259.810000 elapsed_s=10.235378200 rss_kB=1611380
+2026-11-16T05:37:42-05:00 START 323_measured_r10_legacy_dask_insurance_rf_data temp=38.0C
+2026-11-16T05:37:42-05:00 END 323_measured_r10_legacy_dask_insurance_rf_data status=OK pkg_J=10.680000 elapsed_s=0.447694937 rss_kB=117380
+2026-11-16T05:38:22-05:00 START 324_measured_r10_current_pandas_insurance_svr_full temp=36.0C
+2026-11-16T05:38:23-05:00 END 324_measured_r10_current_pandas_insurance_svr_full status=OK pkg_J=18.720000 elapsed_s=0.763754865 rss_kB=190820
+2026-11-16T05:39:03-05:00 START 325_measured_r10_current_polars_insurance_xgboost_full temp=42.0C
+2026-11-16T05:39:04-05:00 END 325_measured_r10_current_polars_insurance_xgboost_full status=OK pkg_J=23.700000 elapsed_s=0.996520257 rss_kB=408636
+2026-11-16T05:39:44-05:00 START 326_measured_r10_current_pandas_insurance_rf_data temp=37.0C
+2026-11-16T05:39:45-05:00 END 326_measured_r10_current_pandas_insurance_rf_data status=OK pkg_J=5.320000 elapsed_s=0.232434899 rss_kB=110760
+2026-11-16T05:40:25-05:00 START 327_measured_r10_current_dask_ml-1m_svd_data temp=39.0C
+2026-11-16T05:40:34-05:00 END 327_measured_r10_current_dask_ml-1m_svd_data status=OK pkg_J=233.500000 elapsed_s=9.579040244 rss_kB=1726196
+2026-11-16T05:41:15-05:00 START 328_measured_r10_current_polars_ml-1m_ncf_full temp=43.0C
+2026-11-16T05:41:55-05:00 END 328_measured_r10_current_polars_ml-1m_ncf_full status=OK pkg_J=961.050000 elapsed_s=40.306863320 rss_kB=1911908
+2026-11-16T05:42:35-05:00 START 329_measured_r10_current_polars_insurance_tabnet_full temp=39.0C
+2026-11-16T05:42:40-05:00 END 329_measured_r10_current_polars_insurance_tabnet_full status=OK pkg_J=102.350000 elapsed_s=4.353467558 rss_kB=2020992
+2026-11-16T05:43:20-05:00 START 330_measured_r10_current_pandas_ml-1m_ncf_full temp=37.0C
+2026-11-16T05:44:01-05:00 END 330_measured_r10_current_pandas_ml-1m_ncf_full status=OK pkg_J=967.230000 elapsed_s=41.316845522 rss_kB=1919232
+2026-11-16T05:44:07-05:00 Session complete: 300 measured runs.

@@ -1,0 +1,6 @@
+idle_power_w=3.460446
+idle_relative_gap=0.016773
+load_1_net_j=589.449146
+load_2_net_j=576.166033
+load_ratio=1.023054
+status=PASS

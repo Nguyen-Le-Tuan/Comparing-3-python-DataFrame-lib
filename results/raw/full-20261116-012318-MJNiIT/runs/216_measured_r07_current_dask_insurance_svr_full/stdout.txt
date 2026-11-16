@@ -1,0 +1,13 @@
+Model: svr
+Dask partitions: 1
+Feature order: ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast', 'region_northwest', 'region_southeast', 'region_southwest']
+X shape: (1338, 9) dtype: float64
+y shape: (1338,) dtype: float64
+X sum: 2288.0000000000
+y sum: 17755824.9907590002
+Train rows: 1070
+Test rows: 268
+Train index SHA-256: f15e1033bb8a365693305f68353c94cc90b6b96399a228d5eecf83fbe6334dc1
+Test index SHA-256: 510d587397473715a32283589c832990ab6f16be3f9caa6b78e642ed1b865663
+Test R²: 0.8475805587
+Test RMSE: 4864.4552535034

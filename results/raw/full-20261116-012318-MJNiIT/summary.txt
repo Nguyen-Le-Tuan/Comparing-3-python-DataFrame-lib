@@ -1,0 +1,6 @@
+mode=full
+seed=42
+warmups=30
+measured=300
+idle_power_w=5.524278
+completed_at=2026-11-16T05:44:07-05:00
