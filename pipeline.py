@@ -49,6 +49,37 @@ def polars_insurance():
 
     lazy = pl.scan_csv(DATA_PATH)
 
+    # Polars 0.10.18 (the paper's version) has different expression APIs.
+    # Keep the same lazy operations and final column order in both stacks.
+    if pl.__version__.startswith("0.10."):
+        lazy = lazy.with_columns(
+            [pl.col(col).fill_null("mean") for col in NUMERIC_COLUMNS]
+            + [
+                pl.when(pl.col(col).is_null())
+                .then(pl.col(col).mode().first())
+                .otherwise(pl.col(col)).alias(col)
+                for col in TEXT_COLUMNS
+            ]
+        )
+        lazy = lazy.with_columns([
+            pl.when(pl.col("sex") == "male").then(1).otherwise(0).alias("sex"),
+            pl.when(pl.col("smoker") == "yes").then(1).otherwise(0).alias("smoker"),
+            *[
+                (pl.col("region") == region).cast(pl.Int64).alias(f"region_{region}")
+                for region in REGIONS
+            ],
+        ]).drop("region")
+        lazy = lazy.with_columns(
+            [
+                ((pl.col(col) - pl.col(col).mean()) / pl.col(col).std()).alias(col)
+                for col in SCALE_COLUMNS
+            ]
+        ).select(FEATURE_COLUMNS + ["charges"])
+        df_scaled = lazy.collect()
+        X = df_scaled.select(FEATURE_COLUMNS).to_numpy().astype("float64", copy=False)
+        y = df_scaled["charges"].to_numpy().astype("float64", copy=False)
+        return X, y
+
     # Keep imputation, encoding, and scaling lazy until one final collect.
     lazy = lazy.with_columns(
         [pl.col(col).fill_null(pl.col(col).mean()) for col in NUMERIC_COLUMNS]
@@ -333,7 +364,7 @@ def dask_movielens():
 
     return X, user_ids, movie_ids
 
-def run_movielens(lib, stage):
+def run_movielens(lib, stage, model_name):
     import hashlib
     import numpy as np
 
@@ -366,11 +397,9 @@ def run_movielens(lib, stage):
     print("MovieID order SHA-256:", movie_hash)
 
     if stage == "full":
-        from sklearn.decomposition import TruncatedSVD
+        from models import train_movielens
 
-        model = TruncatedSVD(n_components=50, random_state=42)
-        user_factors = model.fit_transform(X)
-        print("SVD output shape:", user_factors.shape)
+        train_movielens(model_name, X)
 
 
 
@@ -379,10 +408,21 @@ def main():
     parser.add_argument("--lib", choices=["pandas", "polars", "dask"], required=True)
     parser.add_argument("--data", choices=["insurance","ml-1m"], required=True)
     parser.add_argument("--stage", choices=["data", "full"], required=True)
+    parser.add_argument("--model", choices=["rf", "svr", "xgboost", "tabnet", "svd", "ncf"])
     args = parser.parse_args()
+    allowed = {"insurance": {"rf", "svr", "xgboost", "tabnet"}, "ml-1m": {"svd", "ncf"}}
+    model_name = args.model or ("rf" if args.data == "insurance" else "svd")
+    if model_name not in allowed[args.data]:
+        parser.error(f"model {model_name!r} is not valid for {args.data}")
+    print("Model:", model_name)
+
+    if model_name in {"tabnet", "ncf"}:
+        import os
+
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:2"
 
     if args.data == "ml-1m":
-        run_movielens(args.lib, args.stage)
+        run_movielens(args.lib, args.stage, model_name)
         return
 
 
@@ -411,15 +451,9 @@ def main():
     print(f"y sum: {y_sum:.10f}")
 
     if args.stage == "full":
-        from sklearn.ensemble import RandomForestRegressor
-        from sklearn.model_selection import train_test_split
+        from models import train_insurance
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
-        model = RandomForestRegressor(random_state=42)
-        model.fit(X_train, y_train)
-        print("Test R²:", model.score(X_test, y_test))
+        train_insurance(model_name, X, y)
 
 
 if __name__ == "__main__":

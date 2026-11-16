@@ -5,3 +5,7 @@ pyarrow
 numpy
 scikit-learn
 psutil
+xgboost
+torch
+pytorch-tabnet
+nvidia-ml-py
