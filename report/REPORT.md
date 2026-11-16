@@ -2,13 +2,11 @@
 
 Le Tuan Nguyen · Computer Science, University at Buffalo · 25 October–16 November 2026
 
-[Repository](https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib)
-
 ## 1. What I replicated
 
 Session 1 tested two results from [Kumar, Imran, and Kosar's GREENS '26 paper](https://arxiv.org/pdf/2511.08644). For Insurance + Random Forest (C1; Table 1, Section 4.1), Pandas and Polars use nearly equal CPU energy, while Dask uses more and has the longest runtime (1.027 s versus 0.817 and 0.815 s). For MovieLens-1M + collaborative filtering (C2; Table 1, Section 4.3), the energy order is Polars < Pandas < Dask. Session 2 adds SVR, XGBoost, TabNet, NCF and an older-software-stack comparison; its results appear in Section 8.
 
-This is a small-scale **replication**, not an exact reproduction: I used different hardware, software, and model choices. C1 is partially reproduced: Dask uses more energy and runs longest, but Pandas and Polars differ clearly. For C2, Dask is highest, while Pandas and Polars have no clear energy difference—a pattern outside my pre-measurement categories. I compare directions and relative gaps, not absolute joules.
+This is a small-scale replication; I used different hardware, software, and model choices. C1 is partially reproduced: Dask uses more energy and runs longest, but Pandas and Polars differ clearly. For C2, Dask is highest, while Pandas and Polars have no clear energy difference—a pattern outside my pre-measurement categories. I compare directions and relative gaps, not absolute joules.
 
 ## 2. Setup and differences from the paper
 
