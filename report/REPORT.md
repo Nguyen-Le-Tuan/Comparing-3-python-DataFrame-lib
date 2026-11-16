@@ -14,6 +14,8 @@ My laptop has an Intel i5-12500H, 16 GB of RAM, and an RTX 3050 Laptop GPU with 
 
 My Insurance file has 1,338 rows, while the paper reports 1,000; MovieLens-1M has 1,000,209 ratings. The paper does not specify its model hyperparameters or its CF and NCF implementations, so I fixed my own before each session, as described in [Protocol Section 4](../PROTOCOL.md#4-pipeline-definition). These differences limit what a matching or mismatching result can mean.
 
+I did not test the paper's COCO models or measure DRAM energy: the laptop has 4 GB of GPU memory and no DRAM RAPL counter. CPU package energy can also include activity outside the pipeline, even after idle subtraction. The results describe this laptop and these model choices, not other machines.
+
 ## 3. Methodology
 
 All three backends did the same dataset-specific preparation, and their input and output checks matched. I measured both a `data` stage and a `full` stage that includes the model. The claims below use `full` because the paper's table reports end-to-end results. All Insurance models used the same 80/20 split; the [protocol](../PROTOCOL.md#4-pipeline-definition) gives the model and device settings.
@@ -23,11 +25,13 @@ All three backends did the same dataset-specific preparation, and their input an
 | 1, 25 October | C1 Random Forest; C2 TruncatedSVD collaborative filtering | 12 configurations; 12 excluded warm-ups; 120 measured runs |
 | 2, 16 November | C3 SVR; C4 XGBoost; C5 TabNet; C6 NCF | 30 configurations, including reference and older-stack runs; 30 excluded warm-ups; 300 measured runs |
 
-The [session-1 runner](../scripts/run_measurements.sh) and [session-2 runner](../scripts/run_session2.sh) used fresh Python processes, a randomized order (seed 42), and 40-second pauses. Before runs, the scripts checked for AC power, the `balanced` power profile (`powerprofilesctl get`), Wi-Fi turned off (`nmcli radio wifi`), and no default network route (`ip route`). I closed other apps by hand. The [session-1 notes](../results/raw/full-20261025-135703-JICxLk/session_notes.md) list the apps I closed; neither runner closes apps or checks that they are closed.
+The [session-1 runner](../scripts/run_measurements.sh) and [session-2 runner](../scripts/run_session2.sh) used fresh Python processes, a randomized order (seed 42), and 40-second pauses. Before runs, the scripts checked for AC power, the `balanced` power profile (`powerprofilesctl get`), Wi-Fi turned off (`nmcli radio wifi`), and no default network route (`ip route`). I closed avoidable apps manually for both sessions. The [session-1 notes](../results/raw/full-20261025-135703-JICxLk/session_notes.md) list them; for session 2, this is my recollection, without a separate app log. Neither runner closes apps or checks that they are closed.
 
 In each session, five 30-second idle readings set a session-specific baseline. I subtracted idle power × runtime from the `perf stat` CPU package energy. In session 2, I also integrated NVML GPU board power and subtracted the GPU idle baseline for C6. For each configuration, I report the median of ten measured runs with a 95% bootstrap interval, and I count intervals that do not overlap as a clear difference.
 
-The [validation rules](../PROTOCOL.md#9-outcome-criteria), [session-1 analysis](../results/analysis/summary.csv), and [session-2 audit](../results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md) give the checks and link to the raw data. Both sessions ran to completion. In session 2, all 300 measured runs succeeded, the checksums matched, and energy variation stayed below the 10% stop limit. A fresh local clone rebuilt both locked environments and regenerated the session-2 analysis byte for byte from data archives that had already been verified.
+The exact bootstrap and quartile conventions for session 1 were formalized after measurement, as recorded in the [analysis method](../results/analysis/method.md). I did not treat those later choices as pre-measurement rules.
+
+The [measurement procedure](../PROTOCOL.md#7-procedure), [outcome criteria](../PROTOCOL.md#9-outcome-criteria), [session-1 analysis](../results/analysis/summary.csv), and [session-2 audit](../results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md) give the checks and link to the raw data. Both sessions ran to completion. In session 2, all 300 measured runs succeeded, the checksums matched, and energy variation stayed below the 10% stop limit. A fresh local clone rebuilt both locked environments and regenerated the session-2 analysis byte for byte from data archives that had already been verified.
 
 ## 4. Results
 
@@ -81,7 +85,13 @@ The gaps were smaller than the paper's, and Dask was highest. However, all three
 
 > **Initial hypothesis (H6):** Pandas and Polars would have no clear CPU energy difference, Dask would be clearly highest on CPU, and GPU energy would have no clear library difference.
 
-![C6: net CPU package energy and net GPU board energy for NCF, each with 95% intervals and its own zoomed scale](../results/analysis/claim_figures/claim_C6.svg)
+**CPU package energy**
+
+![C6 CPU: Pandas 740.19 J, Polars 737.52 J, Dask 866.21 J; measured net CPU package energy with 95% intervals](../results/analysis/claim_figures/claim_C6_cpu.svg)
+
+**GPU board energy**
+
+![C6 GPU: Pandas 229.63 J, Polars 227.87 J, Dask 231.11 J; measured net GPU board energy with 95% intervals](../results/analysis/claim_figures/claim_C6_gpu.svg)
 
 On CPU, the Pandas and Polars intervals overlap and Dask is clearly higher. **C6 CPU: partially reproduced.** On GPU, all three intervals overlap. **C6 GPU: not reproduced** under the declared rule, although overlapping intervals do not show that the libraries used equal energy.
 
@@ -131,11 +141,19 @@ The order changes from Polars < Dask < Pandas in the paper to Pandas < Polars < 
 
 ### 5.6 C6: NCF
 
+**CPU energy**
+
 | My laptop | Paper |
 | --- | --- |
-| ![My C6 CPU and GPU results](../results/analysis/claim_figures/claim_C6.svg) | ![Paper C6 CPU and GPU values](../results/analysis/claim_figures/claim_C6_paper.svg) |
+| ![My C6 CPU result](../results/analysis/claim_figures/claim_C6_cpu.svg) | ![Paper C6 CPU values](../results/analysis/claim_figures/claim_C6_cpu_paper.svg) |
 
-The paper orders both CPU and GPU energy Polars < Pandas < Dask. Here only Dask's higher CPU energy is clear: Pandas and Polars overlap on CPU, and all three libraries overlap on GPU.
+**GPU energy**
+
+| My laptop | Paper |
+| --- | --- |
+| ![My C6 GPU result](../results/analysis/claim_figures/claim_C6_gpu.svg) | ![Paper C6 GPU values](../results/analysis/claim_figures/claim_C6_gpu_paper.svg) |
+
+The paper orders both CPU and GPU energy Polars < Pandas < Dask. Here only Dask's higher CPU energy is clear: Pandas and Polars overlap on CPU, and all three libraries overlap on GPU. The CPU and GPU plots have separate joule scales.
 
 ## 6. AI use disclosure
 
