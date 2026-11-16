@@ -33,19 +33,23 @@ I compare the `full` stage with the paper's end-to-end results. Table 1 gives me
 
 *Table 1. Full-stage results. Share = data-stage median / full-stage median from separate runs, not a directly metered phase. Source: [`summary.csv`](../results/analysis/summary.csv).*
 
-![Full-stage net CPU package energy and bootstrap intervals](../results/analysis/full_stage_energy.svg)
-
-*Figure 1. Net package energy with 95% bootstrap intervals; scales differ by dataset.*
-
 ### 3.1 C1: Insurance + Random Forest
 
 The paper reports Pandas and Polars at 146.760 and 146.776 J, with Dask about 14% higher. Here Polars uses 9.4% more than Pandas, and Dask 55.7% more. Their energy intervals do not overlap; Dask also runs longest. C1 is **partially reproduced** under Protocol Section 9: Dask's disadvantage holds, but the expected Pandas–Polars tie does not.
+
+![C1 full-stage net CPU package energy: Pandas 16.74 J, Polars 18.31 J, Dask 26.06 J, with 95% bootstrap intervals](../results/analysis/claim_figures/claim_C1.svg)
+
+*Figure 1. C1, session 1. Dots are measured full-stage medians; whiskers are 95% bootstrap intervals. Source: [session-1 summary](../results/analysis/summary.csv).*
 
 ### 3.2 C2: MovieLens-1M + TruncatedSVD
 
 The paper reports Polars < Pandas < Dask (1,437.00, 3,328.32, 3,748.08 J). My medians are Pandas 76.238 J, Polars 76.632 J, Dask 197.827 J. The Pandas–Polars gap is 0.52%, but their intervals overlap: **no clear difference**. Dask is clearly higher.
 
 I chose reading **D**: **not covered by the pre-registered criteria**. “Reproduced” requires Polars clearly below Pandas; “Partially reproduced” requires Polars lowest and Pandas–Dask unclear or reversed, whereas Pandas is clearly lower than Dask. “Not reproduced” from a 0.52% point-median reversal would ignore the overlapping intervals. I kept the rule and logged the gap in Protocol Section 13. Polars runs faster than Pandas (2.381 versus 3.744 s), but C2 judges energy.
+
+![C2 full-stage net CPU package energy: Pandas 76.24 J, Polars 76.63 J, Dask 197.83 J, with 95% bootstrap intervals](../results/analysis/claim_figures/claim_C2.svg)
+
+*Figure 2. C2, session 1. Pandas and Polars intervals overlap, although their whiskers are small on the full-range axis. Source: [session-1 summary](../results/analysis/summary.csv).*
 
 ### 3.3 Not tested in session 1
 
@@ -95,10 +99,48 @@ The following medians are net joules for the *full* stage, with one warm-up and 
 | C6 NCF, CPU | 740.193 | 737.516 | 866.208 | Partially reproduced |
 | C6 NCF, GPU | 229.634 | 227.870 | 231.111 | Not reproduced |
 
-For C3 and C4, Pandas is clearly below Polars, and Dask is clearly above both; the paper's Pandas–Polars similarity fails while Dask's disadvantage holds. For C5, all three CPU intervals are separate in the order **Pandas < Polars < Dask**, reversing two of the paper's three pairwise relations (Polars < Dask < Pandas). The largest C5 gap from the lowest median is 13.5%; the paper reported Polars 45.3% below Pandas. For C6 CPU, Pandas and Polars intervals overlap while Dask is clearly higher than both; the paper's Polars < Pandas relation is unclear. For C6 GPU, all three intervals overlap, so no paper-ordered pair is clear. Under the predeclared Section 9 rule, no clear pair means “Not reproduced,” not evidence that the libraries use equal GPU energy.
+Figures 3–6 plot the measured values in the table, not simulated data or the paper's absolute joules. Each figure has its own labeled joule scale; the C5 and C6 axes are zoomed to make the intervals visible.
+
+### 8.1 C3: Insurance + SVR
+
+Pandas is clearly below Polars, and Dask is clearly above both. The paper's Pandas–Polars similarity fails while Dask's disadvantage holds, so C3 is **partially reproduced**.
+
+![C3 SVR net CPU energy: Pandas 14.31 J, Polars 15.61 J, Dask 23.83 J, with separate 95% bootstrap intervals](../results/analysis/claim_figures/claim_C3.svg)
+
+*Figure 3. C3, session 2 current stack: full-stage net CPU package energy. Source: [session-2 summary](../results/analysis/session2-20261116-012318-MJNiIT/summary.csv).*
+
+### 8.2 C4: Insurance + XGBoost
+
+The same clear order, Pandas < Polars < Dask, appears with XGBoost. The paper's Pandas–Polars tie fails, and its Dask disadvantage holds, so C4 is **partially reproduced**.
+
+![C4 XGBoost net CPU energy: Pandas 15.99 J, Polars 17.60 J, Dask 25.50 J, with separate 95% bootstrap intervals](../results/analysis/claim_figures/claim_C4.svg)
+
+*Figure 4. C4, session 2 current stack: full-stage net CPU package energy. Source: [session-2 summary](../results/analysis/session2-20261116-012318-MJNiIT/summary.csv).*
+
+### 8.3 C5: Insurance + TabNet
+
+All three CPU intervals are separate in the order **Pandas < Polars < Dask**, reversing two of the paper's three pairwise relations (Polars < Dask < Pandas). C5 is **not reproduced**. The largest gap from the lowest median is 13.5%; the paper reported Polars 45.3% below Pandas.
+
+![C5 TabNet net CPU energy: Pandas 73.18 J, Polars 75.42 J, Dask 83.08 J, with separate 95% bootstrap intervals on a zoomed axis](../results/analysis/claim_figures/claim_C5.svg)
+
+*Figure 5. C5, session 2 current stack: full-stage net CPU package energy. The dot-plot axis begins at 70 J to show the intervals; it is not a bar chart. Source: [session-2 summary](../results/analysis/session2-20261116-012318-MJNiIT/summary.csv).*
+
+### 8.4 C6: MovieLens-1M + NCF
+
+On CPU, Pandas and Polars intervals overlap while Dask is clearly higher than both; the paper's Polars < Pandas relation is unclear, so C6 CPU is **partially reproduced**. On GPU, all three intervals overlap, so no paper-ordered pair is clear. Under the predeclared Section 9 rule, C6 GPU is **not reproduced**; this does not establish equal GPU energy.
+
+![C6 NCF net energy with separate CPU and GPU panels: CPU Pandas 740.19 J, Polars 737.52 J, Dask 866.21 J; GPU Pandas 229.63 J, Polars 227.87 J, Dask 231.11 J](../results/analysis/claim_figures/claim_C6.svg)
+
+*Figure 6. C6, session 2 current stack: full-stage net CPU package and GPU board energy. Panels use different zoomed joule scales; horizontal distances should not be compared across panels. Source: [session-2 summary](../results/analysis/session2-20261116-012318-MJNiIT/summary.csv).*
+
+### 8.5 Data stage and reference runs
 
 The NCF data-stage medians were 49.23 J (Pandas), 45.79 J (Polars) and 185.42 J (Dask), while the *full − data* training estimates were 690.97, 691.73 and 680.79 J. This pattern is consistent with the shared training code and a larger Dask preprocessing cost; the training estimate subtracts medians from separate processes and is not a directly metered training phase. The session-2 reference runs again put Dask highest for C1 and C2. C1 is partially reproduced; C2 again has overlapping Pandas–Polars energy intervals and the original session-1 criterion gap, which I do not force into an outcome.
 
+### 8.6 Older-software-stack comparison
+
 For the older-stack comparison, Insurance/Random Forest net CPU medians were **10.446 J Pandas, 11.159 J Polars and 14.169 J Dask** under Python 3.8 and the paper's dataframe versions. Pandas and Polars were still clearly different, and Dask remained clearly highest and slowest. Both the current and older stacks are therefore **Partially reproduced**, making the protocol's categorical version outcome **no change**. Descriptively, Dask's gap over Pandas shrank from 56.5% in the current stack to 35.6% in the older stack, closer to the paper's roughly 14% gap and consistent with hypothesis HV. Python and other dependencies changed together, so this cannot be assigned to a single dataframe package version.
+
+### 8.7 Hypotheses and limits
 
 The session-2 hypotheses in Protocol Section 1 predicted the observed directions for C3–C4, the smaller library gaps and Dask-high pattern for C5, the C6 CPU tie/Dask-high pattern, the unclear C6 GPU ranking, and the narrower older-stack Dask gap. These are checks of declared predictions, separate from whether the paper's claims were reproduced. A fresh local clone rebuilt both locked Python environments, re-extracted verified data archives, passed four-model and Python-3.8 smoke checks, and regenerated the two analysis files byte-for-byte. It reused previously verified ZIP archives rather than testing a new network download; details are in the [reproducibility audit](../results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md). GPU energy is NVML board energy on an RTX 3050 Laptop, unlike the paper's V100; absolute joules are not comparable.
