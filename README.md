@@ -19,13 +19,31 @@ The `data/` directory is ignored by Git. Do not commit the ML-1M archive or extr
 
 ## Run the pipelines
 
-Use `--lib pandas|polars|dask`, `--data insurance|ml-1m`, and `--stage data|full`. The `data` stage stops after preprocessing and checksums; `full` also runs Random Forest or TruncatedSVD.
+Use `--lib pandas|polars|dask`, `--data insurance|ml-1m`, and `--stage data|full`. The `data` stage stops after preprocessing and checksums; `full` also trains the chosen model. `--model` defaults to `rf` for Insurance and `svd` for ML-1M so the session-1 commands still work. Insurance also accepts `svr`, `xgboost` and `tabnet`; ML-1M also accepts `ncf`.
 
 ```bash
 .venv/bin/python pipeline.py --lib pandas --data insurance --stage data
 .venv/bin/python pipeline.py --lib pandas --data insurance --stage full
 .venv/bin/python pipeline.py --lib polars --data ml-1m --stage full
+.venv/bin/python pipeline.py --lib pandas --data insurance --model svr --stage full
 ```
+
+`models.py` holds the shared training code after the dataframe backends produce arrays. TabNet and NCF require CUDA on GPU 0; they stop if it is unavailable. Functional checks, which do **not** use `perf` or measure energy, are:
+
+```bash
+.venv/bin/python scripts/smoke_session2.py --models svr xgboost tabnet ncf
+```
+
+The older-stack comparison uses only Insurance and Random Forest. Create its separate environment and check that its three backends produce the same input checksums and split indices as the current environment:
+
+```bash
+uv python install 3.8.12
+uv venv --python 3.8.12 .venv-legacy
+uv pip sync requirements-legacy.lock --python .venv-legacy/bin/python
+.venv/bin/python scripts/smoke_legacy.py
+```
+
+Session-2 measurement code is in `scripts/run_session2.sh`; GPU power logging and offline integration are in `scripts/gpu_power.py`, the controlled GPU meter check is in `scripts/validate_gpu.py`, and session-2 raw-data auditing is in `scripts/analyze_session2.py`. These are separate from the session-1 runner and analyzer. They have not been used to collect or analyze a session-2 benchmark. The session-2 runner requires an explicit `--full` flag and a passing GPU validation file; do not use it before reviewing and freezing the protocol.
 
 The three backends must produce matching shapes, feature/axis order, and checksums before energy results are compared. See Protocol Sections 4 and 7 for the expected outputs and all twelve configurations.
 
