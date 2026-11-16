@@ -1,0 +1,9 @@
+2026-11-16T00:41:41-05:00 Starting pilot session; seed=42; pause=40s
+2026-11-16T00:41:41-05:00 Pilot does not enforce AC, balanced profile, or offline state; its data is not part of the final analysis.
+2026-11-16T00:41:44-05:00 Idle baseline 1/1
+2026-11-16T00:42:54-05:00 Idle power: 15.282149 W
+2026-11-16T00:42:54-05:00 START 001_warmup_r00_current_pandas_insurance_tabnet_full temp=35.0C
+2026-11-16T00:43:02-05:00 END 001_warmup_r00_current_pandas_insurance_tabnet_full status=OK pkg_J=127.150000 elapsed_s=7.138947787 rss_kB=1924888
+2026-11-16T00:43:42-05:00 START 002_measured_r01_current_pandas_insurance_tabnet_full temp=35.0C
+2026-11-16T00:43:46-05:00 END 002_measured_r01_current_pandas_insurance_tabnet_full status=OK pkg_J=98.570000 elapsed_s=4.252870772 rss_kB=1971408
+2026-11-16T00:43:49-05:00 Session complete: 1 measured runs.

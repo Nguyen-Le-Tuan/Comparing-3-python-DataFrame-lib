@@ -1,0 +1,3 @@
+run_id,start_ns,end_ns,window_s,gpu_energy_j,gpu_net_j
+001_warmup_r00_current_pandas_ml-1m_ncf_full,540288696689652,540330792654036,46.095964384,377.462307,224.246425
+002_measured_r01_current_pandas_ml-1m_ncf_full,540370870635009,540412586679387,45.716044378,382.208054,230.254966
