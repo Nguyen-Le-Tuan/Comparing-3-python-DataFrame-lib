@@ -31,6 +31,7 @@ MANIFEST
 .env.*
 !.env.example
 .venv/
+.venv-legacy/
 venv/
 env/
 ENV/
