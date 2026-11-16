@@ -1,6 +1,6 @@
 # DataFrame energy replication on a laptop
 
-This repository tests two results from [Kumar, Imran, and Kosar's paper](https://arxiv.org/pdf/2511.08644): Insurance + Random Forest (C1) and MovieLens-1M + collaborative filtering (C2). It compares Pandas, Polars, and Dask on one laptop. This is a small-scale replication, not an exact reproduction of the paper's hardware, software, or energy metric. The [protocol](PROTOCOL.md) fixes the workload and decision rules; the [report](report/REPORT.md) gives the interpretation. A second session ([Protocol Section 2](PROTOCOL.md#2-scope)) adds SVR, XGBoost and TabNet on Insurance, NCF on ML-1M, GPU energy, and a version comparison with the paper's library versions; results for these are pending.
+This repository tests six results from [Kumar, Imran, and Kosar's paper](https://arxiv.org/pdf/2511.08644) across two sessions. It compares Pandas, Polars and Dask on one laptop using Insurance with Random Forest, SVR, XGBoost and TabNet, and MovieLens-1M with collaborative filtering and NCF. Session 2 also measures NCF GPU energy and compares an older Python 3.8 software stack. This is a small-scale replication, not an exact reproduction of the paper's hardware, software or energy metric. The [protocol](PROTOCOL.md) fixes the workload and decision rules; the [report](report/REPORT.md) gives the interpretation.
 
 ## Setup
 
@@ -43,7 +43,7 @@ uv pip sync requirements-legacy.lock --python .venv-legacy/bin/python
 .venv/bin/python scripts/smoke_legacy.py
 ```
 
-Session-2 measurement code is in `scripts/run_session2.sh`; GPU power logging and offline integration are in `scripts/gpu_power.py`, the controlled GPU meter check is in `scripts/validate_gpu.py`, and session-2 raw-data auditing is in `scripts/analyze_session2.py`. These are separate from the session-1 runner and analyzer. Excluded pilots have run, but no official session-2 benchmark has been collected or analyzed. The protocol and code are frozen at tag `session2-frozen-20261116`. The official runner requires an explicit `--full` flag, a passing GPU validation file, a prepared environment and author approval.
+Session-2 measurement code is in `scripts/run_session2.sh`; GPU power logging and offline integration are in `scripts/gpu_power.py`, the controlled GPU meter check is in `scripts/validate_gpu.py`, and session-2 raw-data auditing is in `scripts/analyze_session2.py`. These are separate from the session-1 runner and analyzer. The protocol and measurement code were frozen at tag `session2-frozen-20261116` before the official session on Nov 16, 2026. The runner completed 30 warm-ups and 300 measured runs; the raw session and analysis are linked below. A new official run requires an explicit `--full` flag, a passing GPU validation file and the prepared environment in Protocol Section 7.
 
 The three backends must produce matching shapes, feature/axis order, and checksums before energy results are compared. See Protocol Sections 4 and 7 for the expected outputs and all twelve configurations.
 
@@ -76,10 +76,12 @@ These are local medians of **net CPU package energy** for `--stage full`, ten me
 | Insurance | 16.736 J | 18.309 J | 26.061 J | C1 partially reproduced: Dask highest, but Pandas and Polars differ clearly. |
 | ML-1M | 76.238 J | 76.632 J | 197.827 J | C2 is not covered by the pre-measurement verdict categories: Pandas and Polars have overlapping 95% intervals; Dask is clearly highest. |
 
-The [full table and figure](report/REPORT.md#3-results), [derived summary](results/analysis/summary.csv), and [raw full session](results/raw/full-20261025-135703-JICxLk/) are retained. The raw session includes failed runs if any; none of the 120 measured runs failed. No ML-1M data are in the repository.
+The [session-1 table and figure](report/REPORT.md#3-results), [derived summary](results/analysis/summary.csv), and [raw full session](results/raw/full-20261025-135703-JICxLk/) are retained. The raw session includes failed runs if any; none of the 120 measured runs failed.
+
+Session 2 found Pandas < Polars < Dask in net CPU energy for SVR, XGBoost and TabNet. NCF showed no clear Pandas–Polars CPU difference and clearly higher Dask CPU energy; its three GPU-energy intervals all overlap. Under the frozen criteria, C3, C4 and C6 CPU are **partially reproduced**; C5 and C6 GPU are **not reproduced**. The older Python 3.8 stack narrowed Dask's Random Forest gap over Pandas, while the categorical version-comparison outcome remained **no change**. See the [session-2 interpretation](report/REPORT.md#8-session-2-new-models-and-software-stack-comparison), [30-configuration summary](results/analysis/session2-20261116-012318-MJNiIT/summary.csv), [raw session](results/raw/full-20261116-012318-MJNiIT/) and [reproducibility audit](results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md). The session completed with 300/300 measured runs, matching checksums and CV below 10%. No ML-1M dataset files are redistributed in this repository.
 
 ## Limits and AI assistance
 
-The result applies to this laptop, dataset versions, and chosen models. Insurance has 1,338 rows versus the paper's reported 1,000; the library versions and energy domains also differ. RAPL package energy includes other machine activity even after idle subtraction. The C2 outcome rule has a gap when Pandas and Polars are indistinguishable but Dask is clearly higher. Untested models and GPU energy receive no verdict; see the report for details.
+The results apply to this laptop, dataset versions and chosen models. Insurance has 1,338 rows versus the paper's reported 1,000; the library versions and energy domains also differ. RAPL package energy includes other machine activity even after idle subtraction. The C2 outcome rule has a gap when Pandas and Polars are indistinguishable but Dask is clearly higher. COCO models and DRAM energy remain untested; see the report for details.
 
 I chose the claims, preprocessing rules, measurement conditions, and C2 interpretation; I ran and checked the measurements, including one manual median. The pipeline was developed step by step with AI assistance. AI also helped draft supporting scripts, documentation, and report prose. The measurements and raw files came from my machine, not from AI.

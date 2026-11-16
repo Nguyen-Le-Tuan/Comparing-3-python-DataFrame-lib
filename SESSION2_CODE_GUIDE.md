@@ -1,6 +1,6 @@
 # Session 2 code map
 
-This note explains the code added before any session-2 benchmark. Functional smoke tests train models to check behavior, but they do not call `perf`, sample energy, or produce an energy verdict.
+This note explains the code used for session 2. Functional smoke tests train models to check behavior, but they do not call `perf`, sample energy, or produce an energy verdict.
 
 ## One run through the pipeline
 
@@ -13,7 +13,7 @@ ML-1M files  -> Pandas / Polars / Dask -> identical X, IDs -> models.py -> SVD o
 
 `models.py` receives arrays after dataframe work. Insurance models share one seeded 80/20 split. SVR scales the target inside its estimator, XGBoost uses one CPU thread, and TabNet converts the data to `float32`, scales training targets and trains on CUDA. For NCF, only observed ratings are positives; it splits them per user, samples one missing movie per positive as an assumed negative, and trains user/movie embeddings plus an MLP on CUDA. All models print sanity metrics, not benchmark scores.
 
-The exact settings and the meaning of sampled negatives are in [Protocol Section 4](PROTOCOL.md#4-pipeline-definition). Changes to those choices need a protocol edit before a pilot.
+The exact settings and the meaning of sampled negatives are in [Protocol Section 4](PROTOCOL.md#4-pipeline-definition). They were frozen before the official session; a future change requires a recorded protocol revision and a new measurement session.
 
 ## Files and commands
 
@@ -25,7 +25,7 @@ The exact settings and the meaning of sampled negatives are in [Protocol Section
 | `scripts/smoke_legacy.py` | Runs Insurance data and Random Forest in both environments; verifies matching inputs and split indices. |
 | `scripts/gpu_power.py` | Samples NVML board watts every 100 ms; later integrates each run's ±2 s window and subtracts idle GPU power. |
 | `scripts/validate_gpu.py` | Controlled two-load GPU meter check with pass limits fixed in Section 7. It passed on Nov 15 after adding a 40 s cooldown. |
-| `scripts/run_session2.sh` | Separate runner for 30 configurations, 30 warm-ups and 300 measured runs. It requires an explicit `--full` and a passing GPU validation file. Excluded pilots ran; the official schedule has not. |
+| `scripts/run_session2.sh` | Separate runner for 30 configurations, 30 warm-ups and 300 measured runs. It requires an explicit `--full` and a passing GPU validation file. The official schedule completed on Nov 16. |
 | `scripts/analyze_session2.py` | Audits a complete session-2 directory, joins CPU and GPU raw values, and computes medians and confidence intervals within each environment/model. Never reads session-1 runs by default. |
 
 To repeat functional checks without measuring energy:
@@ -37,6 +37,6 @@ To repeat functional checks without measuring energy:
 
 The first smoke-test evidence is in `results/smoke_test/session2/`, and the first version-comparison evidence is in `results/smoke_test/session2_legacy/`. Each includes separate stdout and stderr files, so a failed command can be inspected. Repeated smoke tests create new timestamped directories instead of replacing that evidence.
 
-## What is still pending
+## Session status
 
-The new GPU meter passed its controlled validation on Nov 15; the failed first attempt and passing second attempt are both retained under `results/validation/`. The repeated CPU validation passed on Nov 16 with kernel `7.0.0-42-generic`; its evidence is in `results/validation-20261116-001345/`. The session-2 runner and analysis have passed syntax checks, a schedule-count check, and a synthetic raw-session audit. Excluded TabNet and NCF pilots ran on Nov 16; an offline TabNet repeat had a normal idle baseline, although the cause of the first high reading is unknown. The protocol and code are frozen at Git tag `session2-frozen-20261116`. No official session-2 benchmark has run; it requires a prepared environment and explicit author approval.
+The new GPU meter passed its controlled validation on Nov 15; the failed first attempt and passing second attempt are both retained under `results/validation/`. The repeated CPU validation passed on Nov 16 with kernel `7.0.0-42-generic`; its evidence is in `results/validation-20261116-001345/`. Excluded TabNet and NCF pilots ran on Nov 16; an offline TabNet repeat had a normal idle baseline, although the cause of the first high reading is unknown. The protocol and measurement code were frozen at Git tag `session2-frozen-20261116`. The official session completed on Nov 16 with 300/300 measured runs, and `scripts/analyze_session2.py` audited the [raw data](results/raw/full-20261116-012318-MJNiIT/) into the [session-2 summary](results/analysis/session2-20261116-012318-MJNiIT/summary.csv). The [report](report/REPORT.md#8-session-2-new-models-and-software-stack-comparison) interprets each claim.
