@@ -1,0 +1,3 @@
+file,energy_J,elapsed_s,net_J,net_power_W
+results/validation-20261116-001345/cpu_n.csv,397.310,14.784085,314.335,21.262
+results/validation-20261116-001345/cpu_2n.csv,823.210,28.615761,662.605,23.155
