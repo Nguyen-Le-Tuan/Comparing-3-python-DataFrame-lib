@@ -13,7 +13,7 @@ uv pip sync requirements.lock --python .venv/bin/python
 ./scripts/download_data.sh --verify-only
 ```
 
-`requirements.in` lists direct Python dependencies; `requirements.lock` pins the resolved package versions used for the measurements. The download script obtains Insurance from [Kaggle](https://www.kaggle.com/datasets/mirichoi0218/insurance) and MovieLens-1M from [GroupLens](https://grouplens.org/datasets/movielens/1m/). It checks SHA-256 before extracting fixed archive members and refuses to replace a local file with a different hash. The pipeline reads `data/raw/insurance.csv` and the `ratings.dat`, `users.dat`, and `movies.dat` files under `data/raw/ml-1m/`. Protocol Section 3 records the Insurance CSV and ML-1M ZIP hashes; the script also pins both archives and all extracted files.
+`requirements.in` lists the direct dependencies and `requirements.lock` pins the full package sets for both Python 3.12 and Python 3.8. Python-version markers select the matching set when syncing either environment. The original per-environment lock snapshots from the measured session remain in `results/raw/full-20261116-012318-MJNiIT/` as historical evidence. The download script obtains Insurance from [Kaggle](https://www.kaggle.com/datasets/mirichoi0218/insurance) and MovieLens-1M from [GroupLens](https://grouplens.org/datasets/movielens/1m/). It checks SHA-256 before extracting fixed archive members and refuses to replace a local file with a different hash. The pipeline reads `data/raw/insurance.csv` and the `ratings.dat`, `users.dat`, and `movies.dat` files under `data/raw/ml-1m/`. Protocol Section 3 records the Insurance CSV and ML-1M ZIP hashes; the script also pins both archives and all extracted files.
 
 The `data/` directory is ignored by Git. Do not commit the ML-1M archive or extracted files: its included `README` prohibits redistribution without separate permission and requires acknowledgment in publications. This Ubuntu host's `curl` does not trust the current GroupLens TLS issuer. Prefer fixing local CA trust, or download `ml-1m.zip` from the [official page](https://grouplens.org/datasets/movielens/1m/) in a browser, place it at `data/raw/ml-1m.zip`, and rerun the script. If neither works, `./scripts/download_data.sh --allow-unverified-ml-tls` explicitly permits a TLS-verification fallback **only for GroupLens**. The pinned ZIP SHA-256 must still match before the file is saved or extracted; the default command never bypasses TLS checks.
 
@@ -39,11 +39,11 @@ The older-stack comparison uses only Insurance and Random Forest. Create its sep
 ```bash
 uv python install 3.8.12
 uv venv --python 3.8.12 .venv-legacy
-uv pip sync requirements-legacy.lock --python .venv-legacy/bin/python
+uv pip sync requirements.lock --python .venv-legacy/bin/python
 .venv/bin/python scripts/smoke_legacy.py
 ```
 
-`uv venv` may warn that the project requires Python 3.12 or newer. The separate `.venv-legacy` intentionally uses Python 3.8 with `requirements-legacy.lock`; its smoke test passed in a fresh clone.
+`uv venv` may warn that the project requires Python 3.12 or newer. The separate `.venv-legacy` intentionally uses Python 3.8 with the Python 3.8 entries in `requirements.lock`; its smoke test passed in a fresh clone.
 
 Session-2 measurement code is in `scripts/run_session2.sh`; GPU power logging and offline integration are in `scripts/gpu_power.py`, the controlled GPU meter check is in `scripts/validate_gpu.py`, and session-2 raw-data auditing is in `scripts/analyze_session2.py`. These are separate from the session-1 runner and analyzer. The protocol and measurement code were frozen at tag `session2-frozen-20261116` before the official session on Nov 16, 2026. The runner completed 30 warm-ups and 300 measured runs; the raw session and analysis are linked below. A new official run requires an explicit `--full` flag, a passing GPU validation file and the prepared environment in Protocol Section 7.
 
@@ -78,9 +78,9 @@ These are local medians of **net CPU package energy** for `--stage full`, ten me
 | Insurance | 16.736 J | 18.309 J | 26.061 J | C1 partially reproduced: Dask highest, but Pandas and Polars differ clearly. |
 | ML-1M | 76.238 J | 76.632 J | 197.827 J | C2 is not covered by the pre-measurement verdict categories: Pandas and Polars have overlapping 95% intervals; Dask is clearly highest. |
 
-The [session-1 table and figure](report/REPORT.md#3-results), [derived summary](results/analysis/summary.csv), and [raw full session](results/raw/full-20261025-135703-JICxLk/) are retained. The raw session includes failed runs if any; none of the 120 measured runs failed.
+The [session-1 results](report/REPORT.md#41-session-1), [derived summary](results/analysis/summary.csv), and [raw full session](results/raw/full-20261025-135703-JICxLk/) are retained. The raw session includes failed runs if any; none of the 120 measured runs failed.
 
-Session 2 found Pandas < Polars < Dask in net CPU energy for SVR, XGBoost and TabNet. NCF showed no clear Pandas–Polars CPU difference and clearly higher Dask CPU energy; its three GPU-energy intervals all overlap. Under the frozen criteria, C3, C4 and C6 CPU are **partially reproduced**; C5 and C6 GPU are **not reproduced**. The older Python 3.8 stack narrowed Dask's Random Forest gap over Pandas, while the categorical version-comparison outcome remained **no change**. See the [session-2 interpretation and six claim figures](report/REPORT.md#8-session-2-new-models-and-software-stack-comparison), [30-configuration summary](results/analysis/session2-20261116-012318-MJNiIT/summary.csv), [raw session](results/raw/full-20261116-012318-MJNiIT/) and [reproducibility audit](results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md). The session completed with 300/300 measured runs, matching checksums and CV below 10%. No ML-1M dataset files are redistributed in this repository.
+Session 2 found Pandas < Polars < Dask in net CPU energy for SVR, XGBoost and TabNet. NCF showed no clear Pandas–Polars CPU difference and clearly higher Dask CPU energy; its three GPU-energy intervals all overlap. Under the frozen criteria, C3, C4 and C6 CPU are **partially reproduced**; C5 and C6 GPU are **not reproduced**. The older Python 3.8 stack narrowed Dask's Random Forest gap over Pandas, while the categorical version-comparison outcome remained **no change**. See the [session-2 results](report/REPORT.md#42-session-2), [paper comparison figures](report/REPORT.md#5-how-my-results-differ-from-the-paper), [30-configuration summary](results/analysis/session2-20261116-012318-MJNiIT/summary.csv), [raw session](results/raw/full-20261116-012318-MJNiIT/) and [reproducibility audit](results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md). The session completed with 300/300 measured runs, matching checksums and CV below 10%. No ML-1M dataset files are redistributed in this repository.
 
 ## Limits and AI assistance
 

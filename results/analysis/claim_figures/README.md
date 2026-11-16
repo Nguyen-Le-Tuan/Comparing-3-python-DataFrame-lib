@@ -11,3 +11,9 @@ The SVG files are embedded in `report/REPORT.md`; PNG copies are provided for ex
 ```bash
 uv run --no-project --python 3.12.14 --with matplotlib==3.11.2 python scripts/plot_claims.py
 ```
+
+The `claim_C1_paper` through `claim_C6_paper` figures redraw the original paper's Table 1 point values for the side-by-side comparisons in report Section 5. Their source values are transcribed in `PROTOCOL.md`; `scripts/plot_paper_claims.py` reads that table. The colors match the laptop figures. The paper's Table 1 does not show per-row confidence intervals, so no whiskers are drawn. Its CPU energy sums core and RAM energy; the laptop figures show net CPU package energy. Each plot has its own joule scale.
+
+```bash
+uv run --no-project --python 3.12.14 --with matplotlib==3.11.2 python scripts/plot_paper_claims.py
+```
