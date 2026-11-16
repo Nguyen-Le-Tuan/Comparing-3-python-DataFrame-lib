@@ -1,0 +1,6 @@
+idle_power_w=6.246560
+idle_relative_gap=0.903032
+load_1_net_j=541.729972
+load_2_net_j=563.798293
+load_ratio=1.040737
+status=FAIL
