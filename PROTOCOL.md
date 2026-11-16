@@ -107,6 +107,8 @@ All three backends pass the same arrays to the shared models in [`models.py`](mo
   - Python 3.8 with the paper's versions, 6 configurations: Insurance, Random Forest, `data` and `full` stages, compared with the matching current-environment runs of the same session.
   - GPU power is sampled in every run and judged only for C6.
 
+Both sessions completed: session 1 has 120 measured runs, and [session 2](results/raw/full-20261116-012318-MJNiIT/) has 300/300 successful measured runs. The [session-2 audit](results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md) records the validation and checksum checks.
+
 ## 6. Metrics and how they are measured
 
 | Metric | Unit | Tool and formula |
