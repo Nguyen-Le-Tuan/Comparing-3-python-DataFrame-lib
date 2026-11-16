@@ -3,21 +3,21 @@
 | Field | Value |
 | --- | --- |
 | Author | Le Tuan Nguyen (University at Buffalo, CS) |
-| Study type | Small-scale replication on a personal laptop with current library versions |
-| Session 1 (C1–C2) | Registered before measurement in commit `4badf06`; status set to FROZEN in `5881ae5`; measured Oct 25, 2026 |
-| Session 2 (C3–C6, version comparison) | FROZEN on Nov 16, 2026 at Git tag `session2-frozen-20261116`, before any official session-2 measurement. Model smoke tests, GPU validation and repeated CPU validation passed; excluded TabNet and NCF pilots were reviewed |
-| Repository | https://github.com/Nguyen-Le-Tuan/Comparing-3-python-DataFrame-lib |
+| Study type | Small-scale replication on a personal laptop |
+| Session 1 (C1–C2) | Pandas, Polars and Dask on Insurance with Random Forest and MovieLens-1M with collaborative filtering; 25 October 2026 |
+| Session 2 (C3–C6, version comparison) | The same three libraries on Insurance with SVR, XGBoost and TabNet, and MovieLens-1M with NCF; Python 3.8 comparison; 16 November 2026 |
+| UB email | letuanng@buffalo.edu |
 
 ## 0. Original paper
 
 The paper is *Energy Consumption of Dataframe Libraries for End-to-End Deep Learning Pipelines: A Comparative Analysis* by Punit Kumar, Asif Imran and Tevfik Kosar (DOI 10.48550/arXiv.2511.08644).
 
-Its reported setup is a 16-core / 32-thread CPU at 2.10 GHz, 128 GB RAM, an NVIDIA Tesla V100 32 GB, a 1 TB NVMe SSD and Ubuntu 20.04 LTS with Linux kernel 5.4, running Python 3.8.12, Pandas 1.4.2, Polars 0.10.18 and Dask 2022.2.0. CPU energy comes from `perf stat` (energy-cores + energy-ram), and GPU energy from pynvml sampled every second. The paper uses one warm-up run followed by five measured runs, with 40 s idle between runs, a fresh process for each run and a varied run order.
+According to the paper, the experiments ran on a 16-core / 32-thread CPU at 2.10 GHz with 128 GB RAM, an NVIDIA Tesla V100 32 GB, a 1 TB NVMe SSD and Ubuntu 20.04 LTS (Linux kernel 5.4), using Python 3.8.12, Pandas 1.4.2, Polars 0.10.18 and Dask 2022.2.0. The authors measured CPU energy with `perf stat` (energy-cores + energy-ram) and GPU energy with pynvml, sampled once per second. They ran one warm-up and then five measured runs, each in a fresh process, with 40 s of idle time between runs and a varied run order.
 
 ## 1. Claims and hypotheses
 
-- **C1:** Testing the energy consumption of Pandas, Polars and Dask on the Insurance Dataset. The paper reported that by using *Random Forest*, Pandas and Polars use similar CPU energy (146.8 J) while Dask uses more 14% (167.4 J); however, on SVR and XGBoost, Dask is even higher (20-22%).
-- **C2:** Testing on the MovieLens 1M will result in energy uses: Polars < Pandas < Dask.
+- **C1 (Insurance, Random Forest):** The paper reported nearly equal CPU energy for Pandas and Polars (146.760 and 146.776 J), with Dask about 14% higher (167.436 J) and the longest runtime.
+- **C2 (ML-1M, collaborative filtering):** The paper reported the CPU energy order Polars < Pandas < Dask (1,437.000, 3,328.320 and 3,748.080 J).
 - **C3 (Insurance, SVR):** The paper reported that Pandas and Polars use the same CPU energy (87.706 J and 87.712 J), while Dask uses about 21.5% more (106.572 J).
 - **C4 (Insurance, XGBoost):** The paper reported that Pandas and Polars use nearly the same CPU energy (96.336 J and 96.218 J), while Dask uses about 20.1% more (115.654 J).
 - **C5 (Insurance, TabNet):** The paper reported that Polars uses the least CPU energy (245.066 J), Dask is in the middle (334.002 J) and Pandas uses the most (447.914 J), so Polars is 45.3% below Pandas. The paper's runtimes follow a different order (Pandas 1.688 s, Polars 1.826 s, Dask 1.844 s), so this claim is judged on energy only.
@@ -91,31 +91,12 @@ The pipeline follows *Algorithm 1: Unified Data Processing Pipeline* (Section 3.
 **MovieLens-1M (C2, C6)**
 
 1. Load `ratings.dat` (1,000,209 × 4), `users.dat` (6,040 × 5) and `movies.dat` (3,883 × 3) with the `::` separator.
-2. Join ratings to users on `UserID` and to movies on `MovieID`, validating many-to-one joins and preserving all 1,000,209 ratings.
+2. Join ratings to users on `UserID` and to movies on `MovieID`; both joins must be many-to-one and keep all 1,000,209 ratings.
 3. Check that each `(UserID, MovieID)` pair is unique; pivot `Rating` to rows = sorted `UserID`, columns = sorted rated `MovieID`, and fill unrated cells with 0, giving a 6,040 × 3,706 `float64` matrix `X`.
 4. Slice `X` into batches of 64 user rows in sorted-UserID order without shuffling and sum every batch. The data-stage checksum is the `X` shape, sum, nonzero count and ordered-ID hashes.
 5. `--stage full` trains the downstream model on `X`; `--stage data` stops after the checksum. There is no target `y` in this pipeline.
 
-**Rules for both datasets**
-
-- **Output checksum:** the program prints the shapes of the output arrays and the sum of all their elements, computed over the mini-batches so every batch is used. All three libraries must give the same shapes, the same feature-column order and sums that differ by less than 1e-6 before any energy comparison. For ML-1M, the ordered `UserID` and `MovieID` axes are compared as well.
-- **Library-specific choices:**
-  - Pandas: eager, `pd.read_csv` with default settings.
-  - Polars: lazy, `pl.scan_csv` and expressions, with a single `.collect()` before the NumPy conversion, because the paper credits Polars' lazy expressions for its efficiency. For ML-1M, Polars scans and joins lazily, collects the joined rows once, then pivots eagerly before NumPy conversion; the rated `MovieID` columns are not known before scanning, so the pivot cannot be lazy.
-  - Dask: `dd.read_csv` with the default block size and the default threaded scheduler; the number of partitions is printed at runtime. Categorical columns are made "known" with `.categorize()` before one-hot encoding. For ML-1M, Dask reads `::` with the Python CSV engine, joins the three tables, checks joined-row and unique-pair counts, categorizes `MovieID`, then uses `pivot_table(aggfunc="first")`. Because pairs are unique, this gives the same matrix as the Pandas pivot. The matrix is sorted by numeric `UserID` and `MovieID` before NumPy conversion.
-- **Randomness:** mini-batches are taken in file order, so the data stage has no randomness. Models use seed 42; the measurement schedule is randomized separately with seed 42 (Section 7).
-- **Two stages per configuration:** `--stage data` runs only the dataframe part; `--stage full` also trains the downstream model. Training energy is estimated as *full* − *data*.
-- **Downstream models.** The paper reports no hyperparameters, so these are my choices. Insurance models train on 80% of the rows (`train_test_split` with `test_size=0.2`, `random_state=42`: 1,070 training rows, 268 test rows) and print the test R² as a sanity check; the mini-batch step is kept only to follow the paper.
-  - Random Forest (C1): scikit-learn `RandomForestRegressor` with default hyperparameters (100 trees, one CPU core) and `random_state=42`.
-  - CF (C2): `TruncatedSVD(n_components=50, random_state=42)` on the whole `X`, giving a 6,040 × 50 user-factor matrix.
-  - SVR (C3): scikit-learn `SVR` with its defaults: `kernel="rbf"`, `C=1.0`, `epsilon=0.1`, `gamma="scale"`. No tuning, and no value is chosen from test-set scores. `charges` is standardized inside the shared training function with `TransformedTargetRegressor(regressor=SVR(), transformer=StandardScaler())`: the scaler is fitted on the 1,070 training targets only, and predictions are inverse-transformed before test R² and RMSE are computed. The three dataframe backends still return the unscaled `charges`, so the data stage is identical to session 1. Features, the 80/20 split and the mini-batch step are unchanged. With `gamma="scale"`, gamma is computed from the training features (0.2278 in a check on the training rows only) and is the same for all three libraries.
-  - XGBoost (C4): `xgboost.XGBRegressor(objective="reg:squarederror", booster="gbtree", n_estimators=100, max_depth=6, learning_rate=0.1, subsample=1.0, colsample_bytree=1.0, tree_method="hist", device="cpu", n_jobs=1, random_state=42)`. Other parameters use the locked package's defaults. Fit once on the same 1,070 training rows as C1 and C3, without an evaluation set, early stopping or tuning; predict the 268 held-out rows and print test R² and RMSE in the original `charges` units. `X` and `y` remain `float64` from the shared data stage. The model must report CPU execution, so a GPU fallback is not accepted.
-  - TabNet (C5): `pytorch_tabnet.tab_model.TabNetRegressor` with `n_d=8`, `n_a=8`, `n_steps=3`, `gamma=1.3`, `mask_type="sparsemax"`, `lambda_sparse=0.001`, `seed=42`, `device_name="cuda"`, Adam optimizer with learning rate `0.02`, and otherwise the locked package's defaults. Convert the shared `X` to `float32` for training; standardize `charges` using the mean and standard deviation of the 1,070 training targets only, and pass a `float32` target array shaped `(1070, 1)`. Fit for exactly 20 epochs with `batch_size=256`, `virtual_batch_size=64`, `patience=0`, no evaluation set, `num_workers=0`, `drop_last=False` and `compute_importance=False`. No early stopping or tuning. Inverse-transform predictions and print held-out R² and RMSE in the original `charges` units. The model must run on the RTX 3050 (`cuda:0`); stop if CUDA is unavailable or the model uses the CPU. The data-stage `y` remains unscaled, and its existing 64-row slices are separate from TabNet's training batches.
-  - NCF (C6): use the existing 6,040 × 3,706 `X` and sorted `user_ids`/`movie_ids`; `X > 0` identifies the 1,000,209 observed user–movie interactions. A rating of 1–5 means a positive interaction (`1`); the rating magnitude is not a regression target. Map each user and rated movie to its zero-based position on the sorted axes. Initialize one NumPy `default_rng(42)` and iterate users in sorted-ID order: for each user, sort the observed movie positions, shuffle them with this generator and hold out `floor(0.2 × number of that user's interactions)` for testing; the rest are training positives. Each user retains training interactions. With one separate `default_rng(43)`, sample exactly one unrated movie for every training positive and one for every test positive, uniformly from that user's movies with `X == 0`, rejecting a sampled movie if that user rated it anywhere in `X`. Negatives may repeat; generate both fixed negative sets once per fresh run and reuse them for every epoch. Sampled zeros are *assumed* negative for this implicit-feedback task; all other unrated cells are excluded. Do not train on held-out positives or use test scores to choose settings.
-    - Architecture and fit: PyTorch user and movie embeddings of size 32 each (`num_embeddings=6040` and `3706`); concatenate the two vectors, then apply `Linear(64, 64)` → ReLU → `Linear(64, 32)` → ReLU → `Linear(32, 16)` → ReLU → `Linear(16, 1)` to produce one logit per pair. Train with `BCEWithLogitsLoss(reduction="mean")` and Adam (`lr=0.001`, `weight_decay=0`) for exactly 5 epochs, `batch_size=4096`, shuffled training batches, `drop_last=False`, `num_workers=0`, and no early stopping. Test with the fixed held-out positives and negatives; print test binary cross-entropy and ROC AUC. The paper does not disclose its NCF architecture, so this is my own implicit-feedback NCF with an MLP interaction function.
-    - Device and repeatability: train and infer on `cuda:0` on the RTX 3050; stop if CUDA is unavailable, and synchronize CUDA before the measured process exits. For TabNet and NCF, seed Python, NumPy and PyTorch with 42 immediately before model setup, use a seeded PyTorch data-loader generator for NCF shuffling, disable cuDNN benchmarking, and require deterministic PyTorch algorithms. Set `CUBLAS_WORKSPACE_CONFIG=:4096:2` before importing PyTorch. A deterministic-kernel failure stops the pilot; devices and algorithms are never switched silently. Print the actual device, split counts and hashes of the ordered positive and sampled-negative pair arrays in every full run so that all three backends can be checked against the same workload. The 64-user-row slices in the data stage do not set the NCF training batch size.
-
-The [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_api.html), [pytorch-tabnet parameters](https://github.com/dreamquark-ai/tabnet#model-parameters), [NCF paper](https://arxiv.org/abs/1708.05031) and [PyTorch reproducibility guidance](https://docs.pytorch.org/docs/stable/notes/randomness.html) document the APIs and the model family. Exact package builds for both Python environments are recorded in `requirements.lock` with Python-version markers; the two original lock snapshots remain with the session-2 raw results.
+All three backends pass the same arrays to the shared models in [`models.py`](models.py). Insurance uses a fixed 80/20 train/test split (seed 42). SVR fits its target scaler on the training rows only, XGBoost runs on the CPU, and TabNet trains on the GPU for 20 epochs. For MovieLens-1M, C2 uses a 50-component TruncatedSVD and C6 trains NCF on the GPU for five epochs. NCF holds out part of each user's interactions and samples one unrated movie as a negative for each positive; unrated cells are not treated as observed ratings. The code and the raw session records keep the full model settings and output checks.
 
 ## 5. Comparisons
 
@@ -125,15 +106,6 @@ The [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_
   - Current environment (Python 3.12), 24 configurations: `full` stage of C3–C6 (12); `data` stage of Insurance and ML-1M, re-measured so that baselines and the training estimate come from the same session (6); `full` stage of C1 and C2 as reference runs that check whether the laptop still reproduces session 1 (6).
   - Python 3.8 with the paper's versions, 6 configurations: Insurance, Random Forest, `data` and `full` stages, compared with the matching current-environment runs of the same session.
   - GPU power is sampled in every run and judged only for C6.
-
-**Implementation checklist, updated Nov 16, 2026.** Session 2 is FROZEN at tag `session2-frozen-20261116`. Model settings, claims, hypotheses, measurement methods and criteria were recorded before any official comparative energy results. Pilot output is excluded from final analysis.
-
-- [x] **Define C3 (Nov 15):** write the author's SVR hypothesis and the paper claim in Section 1; fix kernel, `C`, `epsilon`, `gamma` and target scaling in Section 4. If target scaling is used, fit its statistics on training targets only and inverse-transform predictions for evaluation. Keep the existing Insurance preprocessing and 80/20 split.
-- [x] **Implement SVR (Nov 15):** add `--model` selection with dataset/model validation and keep existing commands working. Use one shared training function after the three backends produce their arrays. Fit the same model on the same training rows, report test R² and RMSE, and save smoke-test evidence for all three libraries. Completion means matching input checksums and split indices, finite predictions and metrics, and successful `data` and `full` runs; this is not an energy verdict.
-- [x] **Implement XGBoost, then TabNet and NCF (Nov 15):** record each model's settings before its pilot; for NCF, define observed interactions, ID mapping, train/test split, loss and any negative sampling. Unrated cells are not automatically training targets of zero. Lock new dependencies and record actual CPU/GPU execution. Functional smoke evidence is in `results/smoke_test/session2/`.
-- [x] **Validate measurement and analysis before official use:** `scripts/run_session2.sh`, `scripts/gpu_power.py` and `scripts/analyze_session2.py` identify configurations by session, software environment, library, dataset, model and stage; record both Python executable paths, copy each dependency lock and schedule data-stage baselines in the same session/environment. Static and synthetic checks, GPU validation and repeated CPU validation for kernel `7.0.0-42-generic` passed. Excluded TabNet and NCF pilots completed and were reviewed. No official session-2 benchmark has been run.
-- [x] **Prepare version comparison (Nov 15):** use a separate Python 3.8 environment, record all resolved dependencies, and verify matching preprocessing outputs. Fix the Insurance model(s), parameters and run schedule in advance; differences cannot be attributed to a single library version when Python and other dependencies also change. Functional evidence is in `results/smoke_test/session2_legacy/`.
-- [x] **Before official measurement:** finish Sections 1, 4–7 and 9, pass the functional checks and measurement validation, review the excluded pilots, then freeze the protocol/code at tag `session2-frozen-20261116`. The runner and analyzer write session-2 raw and analysis outputs to separate directories. The official measurement itself remains pending.
 
 ## 6. Metrics and how they are measured
 
@@ -156,36 +128,20 @@ The [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_
 - **Net GPU energy** = integral of power over the window − idle power × window length. It is recorded for every run but judged only for C6.
 - **Validity:** a GPU result is accepted only if the GPU validation test (Section 7) passes. NVML board power is not the paper's V100 measurement, so GPU energy is compared by direction only.
 
-The session-1 measurement runner is `scripts/run_measurements.sh`; session 2 uses the separate `scripts/run_session2.sh`. They call `perf stat` and `/usr/bin/time -v` around each fresh pipeline process, record both RAPL domains, and check the pipeline output. They set `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1` and `PYTHONDONTWRITEBYTECODE=1` for every run. The command below is for the completed session-1 method only:
-
-```bash
-sudo ./scripts/run_measurements.sh
-```
-
-A session-1 pilot uses `sudo ./scripts/run_measurements.sh --pilot pandas insurance data`; its results are stored separately and never analyzed. The session-2 runner requires `--full --gpu-validation <passing-file>` for an official run, or `--pilot <environment> <library> <dataset> <model> <stage>` for an excluded pilot. Excluded session-2 pilots have run; the official session-2 measurement has not. `scripts/analyze_session2.py` audits only a complete session-2 raw directory.
+The [session-1 runner](scripts/run_measurements.sh) and [session-2 runner](scripts/run_session2.sh) wrap each fresh pipeline process in `perf stat` and `/usr/bin/time -v` and limit BLAS and OpenMP to one thread. Pilot results are stored apart from the completed sessions, and the [session-2 analyzer](scripts/analyze_session2.py) accepts only a complete raw session.
 
 ## 7. Procedure
 
-Before each session, review the pilot output and this protocol, then freeze and commit the protocol and runner before the first measured run. If a pilot reveals a problem, fix and document it before freezing.
-
-1. **Before measuring:** AC power for the whole session; browser, IDE and other avoidable apps closed; Airplane mode on. The runner requires Wi-Fi disabled and no IPv4/IPv6 default route. CPU settings stay fixed: governor `powersave` on all 16 logical CPUs (`intel_pstate`, active mode), CPU0 EPP `balance_performance`, power profile `balanced`, Turbo Boost enabled (`no_turbo=0`). The runner checks these before every baseline and pipeline run and records system state before and after the session. Closing apps is manual and cannot be verified by the script.
-2. **Idle baseline:** the runner measures `power/energy-pkg/` during `sleep 30` five times with a 40 s pause after each; idle power is the median of the five average powers. Each session has its own baseline.
-3. **Measurement validation** (pass limits in `results/validation/criteria.txt`, written before the first measurement; both must pass before any pipeline is measured):
-   - Test 1: the energy of `sleep 10` is within 15% of idle power × elapsed time.
-   - Test 2: a single-threaded loop, `sum(i*i for i in range(N))` with N = 400,000,000 (about 15 s), run with N and 2N iterations; the 2N/N ratio of net energy must be between 1.8 and 2.2.
-   - Scripts: `scripts/validate_measurement.sh` and `scripts/analyze_validation.sh`. Result on Oct 19, 2026: idle 4.776 W (4.755–4.814 W); Test 1 error 0.38%; Test 2 ratio 1.854; both pass (`results/validation/`). The tests are repeated if the kernel, BIOS or power settings change.
-   - Repeated CPU validation on Nov 16, 2026, with kernel `7.0.0-42-generic` (`results/validation-20261116-001345/`): idle 5.612 W; Test 1 error 1.673%; Test 2 net-energy ratio 2.108; both pass. AC power, `balanced` profile and CPU settings were recorded before and after. This is measurement validation, not a session-2 benchmark.
-   - Session 2 adds `scripts/validate_gpu.py`, run manually before measuring. It samples NVML power at 100 ms during two 5 s idle windows and two 10 s GPU matrix-multiply loads, with 40 s between loads and before the final idle window so the GPU can return to its idle power state. It passes only if the idle powers differ by at most 10% of their median, each load has at least 100 J net GPU energy over its ±2 s window, and the larger/smaller net-load-energy ratio is at most 1.30. A failure stops the session; validation output is kept separately from benchmark results.
-   - GPU validation on Nov 15, 2026: the first attempt (`results/validation/gpu-20261115-caF93U/`) failed the idle check (90.3% gap), because its 3 s cooldown left the board near 9 W after the load versus 3.4 W before it. The cooldown was changed to 40 s without changing the pass limits. The second attempt (`results/validation/gpu-20261115-BYr5YB/`) passed: idle gap 1.68%, load net energies 589.45 J and 576.17 J, ratio 1.023. These are validation loads, not session-2 benchmark results.
-   - Excluded session-2 pilots on Nov 16, 2026: `results/raw/pilot-20261116-004141-G12aZ5/` (TabNet) and `results/raw/pilot-20261116-005404-xMveRU/` (NCF) each completed one warm-up and one measured attempt with `status=OK`, identical model outputs across the two attempts, and CUDA execution. The first TabNet pilot had a single 30 s CPU idle baseline of 15.282 W, versus 5.612 W in the repeated CPU validation and 5.510 W in the NCF pilot. Its cause was not established. The offline repeat `results/raw/pilot-20261116-010439-89kBvK/` completed with AC power, balanced profile, no default route, all 16 governors set to `powersave`, and a 5.688 W CPU idle baseline. Its warm-up and measured runtimes were 4.272 s and 4.240 s, with identical model outputs and 18.659 J and 18.173 J net GPU energy. NCF warm-up and measured runtimes were 42.067 s and 41.689 s, with 224.246 J and 230.255 J net GPU energy. These pilots support keeping the predeclared model settings; neither their energy values nor their one measured attempt per configuration are used for a library outcome. The first two pilots were online, which pilot mode permits; the official runner requires networking disabled.
-4. **Smoke test:** every configuration runs in both stages through Pandas, Polars and Dask; input shape, columns and missing values are checked; output shapes, feature or ID order and checksums must match across libraries. Session 1 evidence is in `results/smoke_test/`. In session 2 the same check covers the new models and the version-comparison environment.
-5. **Runs per configuration:** one warm-up of each configuration (excluded from analysis), then 10 rounds in which each configuration appears once. Order within warm-ups and each round is randomized with schedule seed 42. Each run is a fresh Python process, with a 40 s pause between runs and the CPU package temperature recorded before each run. Session 1: 12 configurations, 12 warm-ups, 120 measured runs.
-6. **Raw data and failures:** each session has its own directory under `results/raw/full-.../` with the schedule, input SHA-256 values, Git state, pre/post CPU/network/power state, idle baseline, `runs.csv`, and each run's `perf.csv`, `time.txt`, stdout and stderr. Warm-ups and failed attempts stay in the raw data. The runner stops on a failed run and marks the session `INCOMPLETE`; such a session is not used. Pilots are stored under `results/raw/pilot-.../`. No result is deleted after inspection.
-7. **Session notes:** after each session, `session_notes.md` in its raw directory states whether apps were closed, whether AC and Airplane mode held, and any interruptions, updates, thermal concerns or reruns.
+1. **Prepare the machine.** Use AC power and the `balanced` power profile, with Wi-Fi off and no default network route, and close avoidable apps by hand. The runners check the power and network state before each baseline and each run, and the [session-1](results/raw/full-20261025-135703-JICxLk/) and [session-2](results/raw/full-20261116-012318-MJNiIT/) raw records keep the settings they observed.
+2. **Validate the measurements.** Before measuring, run the [CPU validation](scripts/validate_measurement.sh), and for session 2 also the [GPU validation](scripts/validate_gpu.py). The pass criteria and results are in [`results/validation/`](results/validation/) and [`results/validation-20261116-001345/`](results/validation-20261116-001345/). Smoke tests must also show the same shapes, feature or ID order and checksums for all three libraries. Pilot runs are not used in the analysis.
+3. **Measure each session.** Five 30-second idle readings set the session's baseline. Each configuration then gets one warm-up, which is excluded, and ten measured runs, each in a fresh process. The run order is randomized with seed 42, with a 40-second pause between runs.
+4. **Keep the evidence.** Each raw session directory keeps the schedule, inputs, environment, baselines, energy logs and failed attempts. A failed or incomplete session is not used. The [session-2 audit](results/analysis/session2-20261116-012318-MJNiIT/reproducibility.md) checks the completed session.
 
 ## 8. Analysis plan
 
 For each configuration (library × dataset × stage), I report the median and interquartile range (IQR) of net energy and runtime over the 10 measured runs. I use the median because one run may be unusually slow when a background process wakes up. I also report the trimmed mean, because the paper uses it.
+
+The exact quartile and bootstrap conventions for session 1 were formalized after that measurement; the [analysis method](results/analysis/method.md) records them. The original C2 outcome categories remain unchanged even though they do not cover the observed Pandas–Polars overlap with Dask clearly higher.
 
 - **Decision rule:** two libraries "differ" only if the 95% bootstrap confidence intervals of their median net energy do not overlap (10,000 resamples, seed 42); otherwise I report "no clear difference". The same rule is used for runtime.
 - **Comparison with the paper:** my laptop and library versions differ from the paper's, so I compare the **direction** of the results (which library uses more energy, and by roughly what percentage), not the absolute joules. Table 1 reports end-to-end numbers, so this comparison uses `--stage full`.
@@ -204,7 +160,7 @@ Each claim is judged on `--stage full` with the decision rule in Section 8. Crit
 | Not reproduced | Neither part holds | Polars is not the lowest |
 | Not tested | — | Not run before the report is written |
 
-**Criteria for C3–C6 and the version comparison, written before session 2.** The C1 and C2 table above is unchanged. Overlapping intervals mean "no clear difference" (Section 8). A tie satisfies a "similar" condition, fails a "lowest", "highest" or "<" condition, and is never counted as a reversal; this closes the gap the C2 criteria left (Section 13). For C3–C6, runtime is reported but does not change an outcome.
+**Criteria for C3–C6 and the version comparison, written before session 2.** The C1 and C2 table above is unchanged. Overlapping intervals mean "no clear difference" (Section 8). A tie satisfies a "similar" condition, fails a "lowest", "highest" or "<" condition, and is never counted as a reversal. For C3–C6, runtime is reported but does not change an outcome.
 
 For C5 and C6, the paper's order (C5: Polars < Dask < Pandas; C6: Polars < Pandas < Dask) is checked on its three library pairs. A pair *holds* if the paper's lower library is clearly lower, is *reversed* if it is clearly higher, and is *unclear* if the intervals overlap. C6 is judged separately on net CPU package energy and net GPU energy; the GPU outcome is "Not tested" if the GPU measurement cannot be validated.
 
@@ -229,7 +185,7 @@ The hypotheses in Section 1 are checked separately in the report; they do not ch
 
 | Item | Value |
 | --- | --- |
-| CPU | Intel Core i5-12500H (12 cores: 4 performance + 8 efficient, 16 threads) |
+| CPU | Intel Core i5-12500H (12 cores: 4 performance + 8 efficiency; 16 threads) |
 | RAM | 16 GB |
 | GPU | NVIDIA GeForce RTX 3050 Laptop, 4 GB; NVIDIA kernel module 615.71.09 (from `/proc/driver/nvidia/version`, Oct 25, 2026) |
 | OS / kernel | Ubuntu 26.04.1 LTS; session-1 kernel `7.0.0-38-generic`; current kernel `7.0.0-42-generic` on Nov 16, 2026; CPU measurement validation repeated and passed before the session-2 pilot |
@@ -242,24 +198,17 @@ The hypotheses in Section 1 are checked separately in the report; they do not ch
 
 ## 11. Known differences from the paper and threats to validity
 
-- Laptop instead of workstation; current library versions instead of the 2022 versions (the version comparison isolates part of this).
+- A laptop instead of a workstation, and current library versions instead of the 2022 versions (the version comparison isolates part of the version effect).
 - Insurance has 1,338 rows, while the paper reports 1,000 records; I use all 1,338 rows and do not subsample to match.
 - RAPL measures the whole CPU package, not only the pipeline process; the idle baseline and closed apps reduce this noise.
-- No DRAM energy domain, so CPU energy is not the paper's energy-cores + energy-ram sum.
+- The CPU has no DRAM energy domain, so my CPU energy is not the paper's energy-cores + energy-ram sum.
 - Possible thermal throttling: temperature is recorded before each run, but clock throttling is not measured directly.
 - Disk I/O is not measured.
 - One-thread BLAS/OpenMP settings and the laptop's power policy may change timings relative to the paper, but they are fixed across all local configurations.
-- The paper is inconsistent: it states both "five runs, trimmed mean and 95% CI" and "mean of four measured runs"; its Insurance row count differs from the cited dataset; Section 4.1 says TabNet requires a GPU, but Section 3.2.2 lists only ResNet, Mask R-CNN and NCF as GPU experiments, and Table 1 reports GPU energy for SVR and XGBoost without naming their device.
+- The paper contradicts itself in places. It states both "five runs, trimmed mean and 95% CI" and "mean of four measured runs", and its Insurance row count differs from the cited dataset. Section 4.1 says TabNet requires a GPU, but Section 3.2.2 lists only ResNet, Mask R-CNN and NCF as GPU experiments. Table 1 also reports GPU energy for SVR and XGBoost without naming their device.
 - The paper does not report hyperparameters, the train/test split, the CF algorithm, or the architecture and device of any model; the choices in Section 4 are mine.
-- Session 2 was planned after the session-1 results were known. Its claims, hypotheses, settings and criteria are written before any session-2 measurement.
+- Session 2 was planned after the session-1 results were known. Its claims, hypotheses, settings and criteria were written before any session-2 measurement.
 
 ## 12. Use of AI assistance
 
-Pipeline code is written with AI assistance, one step at a time, then reviewed, run and annotated by the author. Sections 2, 4, 7, 8 and 9 of this protocol and the scripts in `scripts/` were drafted with AI assistance from the author's decisions and terminal commands, then reviewed by the author; the current structure of this document was revised the same way on Oct 28, 2026. The claims, hypotheses, data choices and all measurements are the author's own.
-
-## 13. Notes after measurement
-
-| Date | Note | Reason |
-| --- | --- | --- |
-| 2026-10-25 | Analysis conventions set in `scripts/analyze_results.py` (described in `results/analysis/method.md`) after session 1: percentile bootstrap interval for the median; quartiles with linear interpolation; 10% trimmed mean drops the lowest and highest of the 10 values; CV = sample standard deviation / mean net energy; data share and training estimate use stage medians, not paired run differences; peak memory reported in MiB (kB / 1024) instead of MB. | These details were not specified before measurement. The script reports measurements and derived statistics; I interpret each claim separately. |
-| 2026-10-25 | For C2, I report the outcome as "not covered by the pre-registered criteria" when Pandas and Polars have overlapping energy CIs while Dask is clearly higher. The Section 9 categories are unchanged. | Section 9 does not specify what "Polars is the lowest" means when the Pandas–Polars difference is unclear. Its partial-outcome row also requires Pandas–Dask to be unclear or reversed, which is not observed. A standard label would force the result into a row whose conditions do not fit. |
+The pipeline code was written with AI assistance one step at a time, then reviewed, run and annotated by the author. Sections 2, 4, 7, 8 and 9 of this protocol and the scripts in `scripts/` were drafted with AI assistance from the author's decisions and terminal commands, then reviewed by the author; the current structure of this document was revised the same way on Oct 28, 2026. The claims, hypotheses, data choices and all measurements are the author's own.
