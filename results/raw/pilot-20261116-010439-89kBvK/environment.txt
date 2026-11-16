@@ -1,0 +1,17 @@
+mode=pilot
+seed=42
+pause_seconds=40
+python_current_command=/home/nguyenletuan/Desktop/Comparing-3-python-DataFrame-lib/.venv/bin/python
+python_current_executable=/home/nguyenletuan/Desktop/Comparing-3-python-DataFrame-lib/.venv/bin/python
+python_current_realpath=/home/nguyenletuan/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/bin/python3.12
+python_current_version=Python 3.12.14
+python_legacy_command=/home/nguyenletuan/Desktop/Comparing-3-python-DataFrame-lib/.venv-legacy/bin/python
+python_legacy_executable=/home/nguyenletuan/Desktop/Comparing-3-python-DataFrame-lib/.venv-legacy/bin/python
+python_legacy_realpath=/home/nguyenletuan/.local/share/uv/python/cpython-3.8.12-linux-x86_64-gnu/bin/python3.8
+python_legacy_version=Python 3.8.12
+perf=perf version 7.0.14
+openblas_threads=1
+omp_threads=1
+mkl_threads=1
+python_dont_write_bytecode=1
+git_commit=1a0ffd38a9a4cb7866fa8f91749cad7c72a1bf56

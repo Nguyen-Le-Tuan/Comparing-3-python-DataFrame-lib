@@ -1,0 +1,6 @@
+mode=pilot
+seed=42
+warmups=1
+measured=1
+idle_power_w=5.688373
+completed_at=2026-11-16T01:06:44-05:00

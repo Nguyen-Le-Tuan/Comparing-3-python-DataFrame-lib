@@ -1,0 +1,4 @@
+id,kind,start_ns,end_ns
+baseline_01,idle,540853031286177,540883067879260
+001_warmup_r00_current_pandas_insurance_tabnet_full,run,540923152026837,540927454275758
+002_measured_r01_current_pandas_insurance_tabnet_full,run,540967522722647,540971792911725
