@@ -43,6 +43,8 @@ uv pip sync requirements-legacy.lock --python .venv-legacy/bin/python
 .venv/bin/python scripts/smoke_legacy.py
 ```
 
+`uv venv` may warn that the project requires Python 3.12 or newer. The separate `.venv-legacy` intentionally uses Python 3.8 with `requirements-legacy.lock`; its smoke test passed in a fresh clone.
+
 Session-2 measurement code is in `scripts/run_session2.sh`; GPU power logging and offline integration are in `scripts/gpu_power.py`, the controlled GPU meter check is in `scripts/validate_gpu.py`, and session-2 raw-data auditing is in `scripts/analyze_session2.py`. These are separate from the session-1 runner and analyzer. The protocol and measurement code were frozen at tag `session2-frozen-20261116` before the official session on Nov 16, 2026. The runner completed 30 warm-ups and 300 measured runs; the raw session and analysis are linked below. A new official run requires an explicit `--full` flag, a passing GPU validation file and the prepared environment in Protocol Section 7.
 
 The three backends must produce matching shapes, feature/axis order, and checksums before energy results are compared. See Protocol Sections 4 and 7 for the expected outputs and all twelve configurations.
